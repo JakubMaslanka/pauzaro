@@ -1,10 +1,12 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
-
 ## Project Overview
 
 Pauzaro is a desktop habit-tracking app (Tauri 2 + React 19 + TypeScript + Rust). Think "Duolingo for building habits" — reminds developers to take breaks and do exercises. See `@idea-notes.md` for full product vision.
+
+## Data handling
+
+- always use UTC dates, not local JS time new Date()
 
 ## Architecture Decisions
 
@@ -13,6 +15,12 @@ Pauzaro is a desktop habit-tracking app (Tauri 2 + React 19 + TypeScript + Rust)
 - **Persistence**: SQLite via Tauri SQL plugin
 - **Bundler**: Vite 7
 - **Package manager**: pnpm
+
+## Code Style
+
+- Biome for linting and formatting (tab indentation, double quotes)
+- Prefer `interface` for object shapes, `type` for unions/intersections/utility types
+- Use discriminated unions for state variants
 
 ## Commands
 
@@ -30,14 +38,6 @@ Pauzaro is a desktop habit-tracking app (Tauri 2 + React 19 + TypeScript + Rust)
 | Lint + format fix | `pnpm lint:fix` |
 | Format only | `pnpm format` |
 
-## Code Style
-
-- Biome for linting and formatting (tab indentation, double quotes)
-- TypeScript strict mode with `noUnusedLocals`, `noUnusedParameters`, `noFallthroughCasesInSwitch`
-- Prefer `interface` for object shapes, `type` for unions/intersections/utility types
-- Use discriminated unions for state variants
-- Tauri commands in `src-tauri/src/` expose to frontend via `@tauri-apps/api/core` invoke
-
 ## Git Conventions
 
 - Conventional Commits: `feat:`, `fix:`, `chore:`, `refactor:`, `docs:`, `test:`
@@ -47,11 +47,3 @@ Pauzaro is a desktop habit-tracking app (Tauri 2 + React 19 + TypeScript + Rust)
 
 - Respond in English
 - Code comments in English
-
-## Project Structure
-
-- `src/` — React frontend (TypeScript)
-- `src-tauri/src/` — Rust backend (Tauri commands)
-- `src-tauri/tauri.conf.json` — Tauri app config (identifier: `com.nondescriptstudio.pauzaro`)
-
-For module-specific instructions, add `CLAUDE.md` files in subdirectories — they load automatically when working in those directories. For cross-cutting rules (e.g., code style, testing), use `.claude/rules/` with focused files.
