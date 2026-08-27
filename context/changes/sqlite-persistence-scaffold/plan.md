@@ -165,12 +165,12 @@ Greenfield — no existing data. The `schema_version` tracking ensures future mi
 
 #### Automated
 
-- [x] 1.1 Rust compiles cleanly: `cd src-tauri && cargo check`
-- [x] 1.2 All tests pass: `cd src-tauri && cargo test`
-- [x] 1.3 Integration test verifies migration runner: `cd src-tauri && cargo test --test db_integration`
+- [x] 1.1 Rust compiles cleanly: `cd src-tauri && cargo check` — a1ce762
+- [x] 1.2 All tests pass: `cd src-tauri && cargo test` — a1ce762
+- [x] 1.3 Integration test verifies migration runner: `cd src-tauri && cargo test --test db_integration` — a1ce762
 
 #### Manual
 
-- [x] 1.4 App launches via `pnpm tauri dev` without errors
-- [x] 1.5 SQLite file created in app data directory
-- [x] 1.6 No console errors related to database
+- [x] 1.4 App launches via `pnpm tauri dev` without errors — a1ce762
+- [x] 1.5 SQLite file created in app data directory — a1ce762
+- [x] 1.6 No console errors related to database — a1ce762

@@ -1,9 +1,9 @@
 ---
 change_id: sqlite-persistence-scaffold
 title: Wire SQLite persistence through Tauri SQL plugin with migration runner
-status: implementing
+status: implemented
 created: 2026-08-26
-updated: 2026-08-26
+updated: 2026-08-27
 archived_at: null
 ---
 
