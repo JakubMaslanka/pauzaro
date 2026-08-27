@@ -1,14 +1,21 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, isRedirect, redirect } from "@tanstack/react-router";
+import { Dashboard } from "../components/dashboard/Dashboard";
+import { getUserProfile } from "../lib/invoke";
 
 export const Route = createFileRoute("/dashboard")({
-	component: DashboardPage,
+	beforeLoad: async () => {
+		try {
+			const profile = await getUserProfile();
+			if (!profile?.onboarding_completed) {
+				throw redirect({ to: "/onboarding" });
+			}
+		} catch (error) {
+			if (isRedirect(error)) {
+				throw error;
+			}
+			console.error("Failed to check onboarding status:", error);
+			throw redirect({ to: "/onboarding" });
+		}
+	},
+	component: Dashboard,
 });
-
-function DashboardPage() {
-	return (
-		<div>
-			<h1>Dashboard</h1>
-			<p>Dashboard will be implemented in Phase 4.</p>
-		</div>
-	);
-}

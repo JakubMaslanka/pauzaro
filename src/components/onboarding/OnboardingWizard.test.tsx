@@ -10,10 +10,6 @@ vi.mock("@tauri-apps/api/core", () => ({
 	invoke: vi.fn(),
 }));
 
-vi.mock("@tanstack/react-router", () => ({
-	useNavigate: () => vi.fn(),
-}));
-
 function Wrapper({ children }: { children: ReactNode }) {
 	return <MantineProvider theme={theme}>{children}</MantineProvider>;
 }

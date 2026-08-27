@@ -553,7 +553,7 @@ Existing `pauzaro.db` from F-01 has only `schema_version` table at version 0. Th
 
 #### Manual
 
-- [ ] 1.4 Migration applies to existing pauzaro.db (tables verified with sqlite3)
+- [x] 1.4 Migration applies to existing pauzaro.db (tables verified with sqlite3)
 
 ### Phase 2: Frontend Foundation
 
@@ -574,31 +574,31 @@ Existing `pauzaro.db` from F-01 has only `schema_version` table at version 0. Th
 
 #### Automated
 
-- [x] 3.1 TypeScript compiles: `tsc --noEmit`
-- [x] 3.2 Frontend tests pass: `pnpm test`
-- [x] 3.3 Lint passes: `pnpm lint`
+- [x] 3.1 TypeScript compiles: `tsc --noEmit` — 1282f3b
+- [x] 3.2 Frontend tests pass: `pnpm test` — 1282f3b
+- [x] 3.3 Lint passes: `pnpm lint` — 1282f3b
 
 #### Manual
 
-- [x] 3.4 Welcome screen shows with animation
-- [x] 3.5 Name input validates and persists
-- [x] 3.6 Icon picker works (search, color, stroke width)
-- [x] 3.7 Schedule picker works (days toggle, time slots add/remove)
-- [x] 3.8 Habit creation succeeds and navigates to dashboard
-- [x] 3.9 Back navigation between wizard steps works
+- [x] 3.4 Welcome screen shows with animation — 1282f3b
+- [x] 3.5 Name input validates and persists — 1282f3b
+- [x] 3.6 Icon picker works (search, color, stroke width) — 1282f3b
+- [x] 3.7 Schedule picker works (days toggle, time slots add/remove) — 1282f3b
+- [x] 3.8 Habit creation succeeds and navigates to dashboard — 1282f3b
+- [x] 3.9 Back navigation between wizard steps works — 1282f3b
 
 ### Phase 4: Dashboard + Routing Guard
 
 #### Automated
 
-- [ ] 4.1 TypeScript compiles: `tsc --noEmit`
-- [ ] 4.2 Frontend tests pass: `pnpm test`
-- [ ] 4.3 Lint passes: `pnpm lint`
-- [ ] 4.4 Rust tests still pass: `cd src-tauri && cargo test`
+- [x] 4.1 TypeScript compiles: `tsc --noEmit`
+- [x] 4.2 Frontend tests pass: `pnpm test`
+- [x] 4.3 Lint passes: `pnpm lint`
+- [x] 4.4 Rust tests still pass: `cd src-tauri && cargo test`
 
 #### Manual
 
-- [ ] 4.5 Dashboard shows created habit with correct icon/color/schedule
-- [ ] 4.6 Relaunching app goes directly to dashboard
-- [ ] 4.7 Habit card displays schedule summary correctly
-- [ ] 4.8 No console errors
+- [x] 4.5 Dashboard shows created habit with correct icon/color/schedule
+- [x] 4.6 Relaunching app goes directly to dashboard
+- [x] 4.7 Habit card displays schedule summary correctly
+- [x] 4.8 No console errors

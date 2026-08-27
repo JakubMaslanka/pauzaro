@@ -1,4 +1,4 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute, isRedirect, redirect } from "@tanstack/react-router";
 import { getUserProfile } from "../lib/invoke";
 
 export const Route = createFileRoute("/")({
@@ -9,7 +9,7 @@ export const Route = createFileRoute("/")({
 				throw redirect({ to: "/dashboard" });
 			}
 		} catch (error) {
-			if (error && typeof error === "object" && "to" in error) {
+			if (isRedirect(error)) {
 				throw error;
 			}
 			console.error("Failed to check profile:", error);
