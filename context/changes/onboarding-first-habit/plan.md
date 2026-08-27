@@ -141,9 +141,9 @@ All timestamps use UTC per CLAUDE.md data handling rule.
 
 **File**: `src-tauri/src/lib.rs`
 
-**Intent**: Register new modules (`mod models`, `mod commands`) and add all new commands to `invoke_handler`. Remove `greet` command.
+**Intent**: Register new modules (`mod models`, `mod commands`) and add all new commands to `invoke_handler`. Keep `greet` command — it is removed in Phase 2 alongside the frontend that calls it.
 
-**Contract**: `tauri::generate_handler![commands::user_profile::create_user_profile, commands::user_profile::get_user_profile, commands::user_profile::complete_onboarding, commands::habits::create_habit, commands::habits::get_habit, commands::habits::list_habits]`
+**Contract**: `tauri::generate_handler![greet, commands::user_profile::create_user_profile, commands::user_profile::get_user_profile, commands::user_profile::complete_onboarding, commands::habits::create_habit, commands::habits::get_habit, commands::habits::list_habits]`
 
 #### 9. Integration tests
 
@@ -263,10 +263,12 @@ Install all frontend dependencies, set up TanStack Router with file-based routin
 
 **File**: `src/App.tsx` (delete)
 **File**: `src/App.css` (delete)
+**File**: `src/assets/react.svg` (delete)
+**File**: `index.html` (update title)
 
-**Intent**: Remove default Tauri scaffold UI — replaced by route-based pages.
+**Intent**: Remove default Tauri scaffold UI — replaced by route-based pages. Also remove `greet` command from `src-tauri/src/lib.rs` invoke_handler (deferred from Phase 1 to keep frontend working between phases). Clean up orphaned assets and update HTML title.
 
-**Contract**: Delete both files. Remove any imports referencing them.
+**Contract**: Delete App.tsx, App.css, and react.svg. Remove any imports referencing them. In `src-tauri/src/lib.rs`, remove the `greet` function and drop `greet` from `generate_handler![]`. In `index.html`, change `<title>` from "Tauri + React + Typescript" to "Pauzaro".
 
 #### 9. Base styles
 
@@ -326,7 +328,7 @@ Build the 3-step onboarding wizard: welcome screen, name input, habit creator (w
 
 **Intent**: Collect user's name. Validates non-empty before allowing advance.
 
-**Contract**: Text input for name, synced to onboarding store. "Continue" button calls `createUserProfile` invoke wrapper, then advances step. Shows validation error if name empty.
+**Contract**: Text input for name, synced to onboarding store. "Continue" button first calls `getUserProfile()` — if profile exists, skip creation and advance. Otherwise calls `createUserProfile` invoke wrapper, then advances step. Shows validation error if name empty. This handles the resume case: if the user closed the app mid-onboarding and relaunches, the existing profile is reused instead of creating a duplicate.
 
 #### 4. Icon picker component
 
@@ -339,6 +341,8 @@ Build the 3-step onboarding wizard: welcome screen, name input, habit creator (w
 - Scrollable icon grid
 - Color picker (preset palette or hex input)
 - Stroke width slider (1-3 range)
+
+**Icon import strategy**: Use `import { icons } from "lucide-react"` to get the full `Record<string, LucideIcon>` map. Bundle size (~200KB) is acceptable for a desktop app. Create a shared `DynamicIcon` helper component (`src/components/shared/DynamicIcon.tsx`) that takes `{ name: string, color: string, strokeWidth: number }` and renders `icons[name]` with fallback for unknown names. Both IconPicker and HabitCard (Phase 4) use this helper.
 
 #### 5. Schedule picker component
 
@@ -377,8 +381,8 @@ Build the 3-step onboarding wizard: welcome screen, name input, habit creator (w
 
 #### 8. Component tests
 
-**File**: `src/components/onboarding/__tests__/OnboardingWizard.test.tsx`
-**File**: `src/components/shared/__tests__/SchedulePicker.test.tsx`
+**File**: `src/components/onboarding/OnboardingWizard.test.tsx`
+**File**: `src/components/shared/SchedulePicker.test.tsx`
 
 **Intent**: Test key onboarding flows and schedule picker logic.
 
@@ -452,8 +456,8 @@ Build minimal dashboard showing the created habit as a card. Add routing guard s
 
 #### 5. Dashboard component tests
 
-**File**: `src/components/dashboard/__tests__/Dashboard.test.tsx`
-**File**: `src/components/dashboard/__tests__/HabitCard.test.tsx`
+**File**: `src/components/dashboard/Dashboard.test.tsx`
+**File**: `src/components/dashboard/HabitCard.test.tsx`
 
 **Intent**: Test dashboard rendering and habit card display.
 
