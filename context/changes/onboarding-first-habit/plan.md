@@ -553,7 +553,7 @@ Existing `pauzaro.db` from F-01 has only `schema_version` table at version 0. Th
 
 #### Manual
 
-- [x] 1.4 Migration applies to existing pauzaro.db (tables verified with sqlite3)
+- [x] 1.4 Migration applies to existing pauzaro.db (tables verified with sqlite3) — a6ba808
 
 ### Phase 2: Frontend Foundation
 
@@ -591,14 +591,14 @@ Existing `pauzaro.db` from F-01 has only `schema_version` table at version 0. Th
 
 #### Automated
 
-- [x] 4.1 TypeScript compiles: `tsc --noEmit`
-- [x] 4.2 Frontend tests pass: `pnpm test`
-- [x] 4.3 Lint passes: `pnpm lint`
-- [x] 4.4 Rust tests still pass: `cd src-tauri && cargo test`
+- [x] 4.1 TypeScript compiles: `tsc --noEmit` — a6ba808
+- [x] 4.2 Frontend tests pass: `pnpm test` — a6ba808
+- [x] 4.3 Lint passes: `pnpm lint` — a6ba808
+- [x] 4.4 Rust tests still pass: `cd src-tauri && cargo test` — a6ba808
 
 #### Manual
 
-- [x] 4.5 Dashboard shows created habit with correct icon/color/schedule
-- [x] 4.6 Relaunching app goes directly to dashboard
-- [x] 4.7 Habit card displays schedule summary correctly
-- [x] 4.8 No console errors
+- [x] 4.5 Dashboard shows created habit with correct icon/color/schedule — a6ba808
+- [x] 4.6 Relaunching app goes directly to dashboard — a6ba808
+- [x] 4.7 Habit card displays schedule summary correctly — a6ba808
+- [x] 4.8 No console errors — a6ba808
