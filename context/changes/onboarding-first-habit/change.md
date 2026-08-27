@@ -1,7 +1,7 @@
 ---
 change_id: onboarding-first-habit
 title: Onboarding flow and first habit creation with schedule
-status: plan_reviewed
+status: implementing
 created: 2026-08-27
 updated: 2026-08-27
 archived_at: null

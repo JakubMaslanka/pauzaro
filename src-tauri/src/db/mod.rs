@@ -1,4 +1,6 @@
+pub mod habits;
 pub mod migrations;
+pub mod user_profile;
 
 use std::path::Path;
 
@@ -13,6 +15,7 @@ pub struct Database {
 impl Database {
     pub fn open(path: impl AsRef<Path>) -> Result<Self, AppError> {
         let conn = Connection::open(path)?;
+        conn.execute_batch("PRAGMA foreign_keys = ON")?;
         migrations::run_migrations(&conn)?;
         Ok(Self { conn })
     }

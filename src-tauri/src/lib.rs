@@ -1,5 +1,7 @@
+pub mod commands;
 pub mod db;
-mod error;
+pub mod error;
+pub mod models;
 
 use std::sync::Mutex;
 
@@ -40,7 +42,15 @@ pub fn run() {
 
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![greet])
+        .invoke_handler(tauri::generate_handler![
+            greet,
+            commands::user_profile::create_user_profile,
+            commands::user_profile::get_user_profile,
+            commands::user_profile::complete_onboarding,
+            commands::habits::create_habit,
+            commands::habits::get_habit,
+            commands::habits::list_habits,
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

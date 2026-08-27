@@ -541,9 +541,9 @@ Existing `pauzaro.db` from F-01 has only `schema_version` table at version 0. Th
 
 #### Automated
 
-- [ ] 1.1 Rust compiles cleanly: `cd src-tauri && cargo check`
-- [ ] 1.2 All tests pass: `cd src-tauri && cargo test`
-- [ ] 1.3 Integration tests cover profile + habit CRUD with schedules
+- [x] 1.1 Rust compiles cleanly: `cd src-tauri && cargo check`
+- [x] 1.2 All tests pass: `cd src-tauri && cargo test`
+- [x] 1.3 Integration tests cover profile + habit CRUD with schedules
 
 #### Manual
 
