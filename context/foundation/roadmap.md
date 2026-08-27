@@ -3,7 +3,7 @@ project: "Pauzaro"
 version: 1
 status: draft
 created: 2026-08-25
-updated: 2026-08-25
+updated: 2026-08-26
 prd_version: 1
 main_goal: learn
 top_blocker: skills
@@ -29,7 +29,7 @@ A developer in deep focus loses track of time — forgets breaks, movement, and 
 
 | ID   | Change ID                   | Outcome (user can …)                                                                      | Prerequisites | PRD refs                              | Status   |
 | ---- | --------------------------- | ------------------------------------------------------------------------------------------ | ------------- | ------------------------------------- | -------- |
-| F-01 | sqlite-persistence-scaffold | (foundation) SQLite persistence wired through Tauri SQL plugin; migration runner operational | —             | NFR (local-only data)                 | ready    |
+| F-01 | sqlite-persistence-scaffold | (foundation) SQLite persistence wired through Tauri SQL plugin; migration runner operational | —             | NFR (local-only data)                 | in-progress |
 | S-01 | onboarding-first-habit      | launch app, complete onboarding, and create first habit with schedule                       | F-01          | US-01, FR-001, FR-002, FR-003, FR-004 | proposed |
 | S-02 | overlay-habit-loop          | receive overlay at scheduled time, mark habit done or snooze, and see streak update         | S-01          | US-02, FR-006, FR-007                 | proposed |
 | S-03 | dashboard-month-view        | view full month calendar with per-day completion status and streak history                   | S-02          | US-02, FR-008                         | proposed |
@@ -70,7 +70,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** Tauri SQL plugin API is new territory; if plugin configuration is non-trivial, downstream slices stall. Sequenced first so any friction surfaces before domain work begins.
-- **Status:** ready
+- **Status:** in-progress
 
 ## Slices
 

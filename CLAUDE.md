@@ -42,6 +42,7 @@ Pauzaro is a desktop habit-tracking app (Tauri 2 + React 19 + TypeScript + Rust)
 
 - Conventional Commits: `feat:`, `fix:`, `chore:`, `refactor:`, `docs:`, `test:`
 - Scope optional: `feat(notifications): add break reminder`
+- Never append `Co-Authored-By` or `Claude-Session` lines to commit messages
 
 ## Communication
 
