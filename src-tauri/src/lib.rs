@@ -13,11 +13,6 @@ pub struct AppState {
     pub db: Mutex<Database>,
 }
 
-#[tauri::command]
-fn greet(name: &str) -> String {
-    format!("Hello, {}! You've been greeted from Rust!", name)
-}
-
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -43,7 +38,6 @@ pub fn run() {
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
-            greet,
             commands::user_profile::create_user_profile,
             commands::user_profile::get_user_profile,
             commands::user_profile::complete_onboarding,

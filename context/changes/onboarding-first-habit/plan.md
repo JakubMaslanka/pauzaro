@@ -541,9 +541,9 @@ Existing `pauzaro.db` from F-01 has only `schema_version` table at version 0. Th
 
 #### Automated
 
-- [x] 1.1 Rust compiles cleanly: `cd src-tauri && cargo check`
-- [x] 1.2 All tests pass: `cd src-tauri && cargo test`
-- [x] 1.3 Integration tests cover profile + habit CRUD with schedules
+- [x] 1.1 Rust compiles cleanly: `cd src-tauri && cargo check` — 0c7c314
+- [x] 1.2 All tests pass: `cd src-tauri && cargo test` — 0c7c314
+- [x] 1.3 Integration tests cover profile + habit CRUD with schedules — 0c7c314
 
 #### Manual
 
@@ -553,16 +553,16 @@ Existing `pauzaro.db` from F-01 has only `schema_version` table at version 0. Th
 
 #### Automated
 
-- [ ] 2.1 TypeScript compiles: `tsc --noEmit`
-- [ ] 2.2 Frontend tests pass: `pnpm test`
-- [ ] 2.3 Lint passes: `pnpm lint`
-- [ ] 2.4 Routes generate without errors (routeTree.gen.ts created)
+- [x] 2.1 TypeScript compiles: `tsc --noEmit`
+- [x] 2.2 Frontend tests pass: `pnpm test`
+- [x] 2.3 Lint passes: `pnpm lint`
+- [x] 2.4 Routes generate without errors (routeTree.gen.ts created)
 
 #### Manual
 
-- [ ] 2.5 App launches via `pnpm tauri dev`
-- [ ] 2.6 Index redirects to onboarding (no profile yet)
-- [ ] 2.7 No console errors
+- [x] 2.5 App launches via `pnpm tauri dev`
+- [x] 2.6 Index redirects to onboarding (no profile yet)
+- [x] 2.7 No console errors
 
 ### Phase 3: Onboarding Wizard
 
