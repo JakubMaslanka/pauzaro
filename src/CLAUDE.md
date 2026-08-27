@@ -1,4 +1,15 @@
-# Frontend — React 19 + TypeScript + Zustand
+# Frontend — React 19 + TypeScript + Zustand + Mantine 9
+
+## Design & Styling
+
+- **Theme**: Mantine 9 — all UI must use Mantine components, never raw HTML elements for interactive controls
+- **Font**: Nunito (via `@fontsource/nunito`), sans-serif fallback
+- **Primary color**: Teal (`primaryColor: "teal"` in Mantine theme)
+- **Background**: Warm off-white `#F7F5F0`, sandy gold accent `#E28743`
+- **Personality**: Joyful, playful, colorful — like made for a kid, NOT corporate/boring. Use emoji in UI copy, fun micro-copy for errors and labels, rounded corners (`radius: "xl"` default for buttons), animated transitions with Framer Motion
+- **Animations**: Every step transition, button interaction, and state change should feel alive. Use Framer Motion for page transitions, Mantine's built-in transitions for dropdowns/modals
+- **Right-click**: Context menu disabled in Tauri app (see `__root.tsx`)
+- **Do NOT**: Use shadcn/ui patterns, neutral gray palettes, or flat corporate layouts. Keep it warm and fun
 
 ## Component Patterns
 

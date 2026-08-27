@@ -11,6 +11,7 @@ Pauzaro is a desktop habit-tracking app (Tauri 2 + React 19 + TypeScript + Rust)
 ## Architecture Decisions
 
 - **Frontend**: React 19 with Zustand for state management
+- **UI Library**: Mantine 9 with custom theme (see `src/theme.ts`)
 - **Backend**: Rust via Tauri 2 (commands, system notifications, window management)
 - **Persistence**: SQLite via Tauri SQL plugin
 - **Bundler**: Vite 7

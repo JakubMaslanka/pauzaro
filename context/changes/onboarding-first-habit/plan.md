@@ -2,7 +2,7 @@
 
 ## Overview
 
-Build the complete onboarding flow (US-01): 3-step wizard (welcome → name → habit creator), persist user profile and habit with normalized schedule to SQLite, show created habit on a minimal dashboard. First real feature on top of the F-01 persistence scaffold.
+Build the complete onboarding flow (US-01): 4-step wizard (welcome → name → habit details → schedule), persist user profile and habit with normalized schedule to SQLite, show created habit on a minimal dashboard. First real feature on top of the F-01 persistence scaffold. UI uses Mantine 9 with Nunito font, teal primary, warm off-white background — joyful/playful design, NOT corporate.
 
 ## Current State Analysis
 
@@ -45,6 +45,10 @@ Bottom-up: data layer first (Rust migrations, models, repos, commands), then fro
 
 - **Hash history for TanStack Router** — Tauri serves frontend from local files / dev server without HTML5 history fallback. Must use `createHashHistory()` when creating the router, otherwise navigation breaks in production builds.
 - **TanStack Router plugin ordering** — `TanStackRouterVite()` must come before `react()` in the Vite plugins array, or file-based route generation fails silently.
+- **Mantine 9 + PostCSS** — requires `postcss-preset-mantine` and `postcss-simple-vars`. Theme defined in `src/theme.ts`. All UI components must use Mantine, never raw HTML for interactive elements.
+- **Design tone** — Joyful, playful, colorful. Emoji in UI copy, fun error messages, rounded shapes, animated transitions. Not corporate/boring. Think "app made for a kid".
+- **Right-click disabled** — context menu prevented via event listener in `__root.tsx` to avoid browser-style navigation in Tauri.
+- **4-step onboarding** (adapted from original 3-step plan): Welcome → Name → Habit Details (name/desc/icon) → Schedule (days/times/dates). Splitting habit creation prevents form overwhelm.
 
 ---
 
@@ -302,7 +306,9 @@ Install all frontend dependencies, set up TanStack Router with file-based routin
 
 ### Overview
 
-Build the 3-step onboarding wizard: welcome screen, name input, habit creator (with lucide-react icon picker, schedule picker, dates). Wire to backend commands. Add Framer Motion transitions between steps. Component tests for key flows.
+Build the 4-step onboarding wizard using Mantine 9: welcome screen, name input, habit details (name/desc/icon), schedule (days/times/dates). Wire to backend commands. Add Framer Motion transitions between steps. Mantine components throughout — joyful, playful design with emoji, fun copy, rounded corners, animated progress bar. Component tests for key flows.
+
+**Adapted from plan**: Original 3-step split into 4 steps to avoid overwhelming users with a massive form. Added Mantine 9 as UI framework with PostCSS, Nunito font, teal primary, warm off-white (#F7F5F0) background. Right-click context menu disabled. Duplicate time slot prevention added.
 
 ### Changes Required:
 
@@ -553,33 +559,33 @@ Existing `pauzaro.db` from F-01 has only `schema_version` table at version 0. Th
 
 #### Automated
 
-- [x] 2.1 TypeScript compiles: `tsc --noEmit`
-- [x] 2.2 Frontend tests pass: `pnpm test`
-- [x] 2.3 Lint passes: `pnpm lint`
-- [x] 2.4 Routes generate without errors (routeTree.gen.ts created)
+- [x] 2.1 TypeScript compiles: `tsc --noEmit` — 79734d6
+- [x] 2.2 Frontend tests pass: `pnpm test` — 79734d6
+- [x] 2.3 Lint passes: `pnpm lint` — 79734d6
+- [x] 2.4 Routes generate without errors (routeTree.gen.ts created) — 79734d6
 
 #### Manual
 
-- [x] 2.5 App launches via `pnpm tauri dev`
-- [x] 2.6 Index redirects to onboarding (no profile yet)
-- [x] 2.7 No console errors
+- [x] 2.5 App launches via `pnpm tauri dev` — 79734d6
+- [x] 2.6 Index redirects to onboarding (no profile yet) — 79734d6
+- [x] 2.7 No console errors — 79734d6
 
 ### Phase 3: Onboarding Wizard
 
 #### Automated
 
-- [ ] 3.1 TypeScript compiles: `tsc --noEmit`
-- [ ] 3.2 Frontend tests pass: `pnpm test`
-- [ ] 3.3 Lint passes: `pnpm lint`
+- [x] 3.1 TypeScript compiles: `tsc --noEmit`
+- [x] 3.2 Frontend tests pass: `pnpm test`
+- [x] 3.3 Lint passes: `pnpm lint`
 
 #### Manual
 
-- [ ] 3.4 Welcome screen shows with animation
-- [ ] 3.5 Name input validates and persists
-- [ ] 3.6 Icon picker works (search, color, stroke width)
-- [ ] 3.7 Schedule picker works (days toggle, time slots add/remove)
-- [ ] 3.8 Habit creation succeeds and navigates to dashboard
-- [ ] 3.9 Back navigation between wizard steps works
+- [x] 3.4 Welcome screen shows with animation
+- [x] 3.5 Name input validates and persists
+- [x] 3.6 Icon picker works (search, color, stroke width)
+- [x] 3.7 Schedule picker works (days toggle, time slots add/remove)
+- [x] 3.8 Habit creation succeeds and navigates to dashboard
+- [x] 3.9 Back navigation between wizard steps works
 
 ### Phase 4: Dashboard + Routing Guard
 
