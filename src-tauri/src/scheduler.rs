@@ -4,6 +4,7 @@ use chrono::{Datelike, Local, NaiveTime, TimeZone};
 use tokio::sync::Notify;
 
 use tauri::Manager;
+use tauri::webview::WebviewWindowBuilder;
 
 use crate::db::completions::CompletionRepository;
 use crate::db::habits::HabitRepository;
@@ -113,7 +114,50 @@ impl Scheduler {
                                 next.habit_id,
                                 next.scheduled_time
                             );
-                            // Phase 3 replaces this log with overlay window creation
+
+                            // Upsert pending trigger if not already pending
+                            if next.pending_trigger_id.is_none() {
+                                let app_upsert = app.clone();
+                                let habit_id = next.habit_id.clone();
+                                let sched_time = next.scheduled_time.clone();
+                                let now_str = Local::now().naive_local()
+                                    .format("%Y-%m-%dT%H:%M:%S").to_string();
+                                let today_str = Local::now().date_naive()
+                                    .format("%Y-%m-%d").to_string();
+                                let _ = tokio::task::spawn_blocking(move || {
+                                    let state = app_upsert.state::<AppState>();
+                                    let db = state.db.lock();
+                                    if let Ok(db) = db {
+                                        let repo = PendingTriggerRepository::new(db.connection());
+                                        let _ = repo.upsert(&habit_id, &today_str, &sched_time, &now_str);
+                                    }
+                                }).await;
+                            }
+
+                            // Create overlay window
+                            let label = format!("overlay-{}", next.habit_id);
+                            if app.get_webview_window(&label).is_some() {
+                                log::info!("Overlay already open for {}", next.habit_id);
+                                continue;
+                            }
+
+                            let url = format!("/#/overlay/{}", next.habit_id);
+                            match WebviewWindowBuilder::new(
+                                &app,
+                                &label,
+                                tauri::WebviewUrl::App(url.into()),
+                            )
+                            .title("Pauzaro")
+                            .inner_size(400.0, 300.0)
+                            .always_on_top(true)
+                            .decorations(false)
+                            .center()
+                            .focused(true)
+                            .build()
+                            {
+                                Ok(_) => log::info!("Overlay window created: {label}"),
+                                Err(e) => log::error!("Failed to create overlay: {e}"),
+                            }
                         }
                         _ = self.notify.notified() => {
                             log::info!("Scheduler woken — re-evaluating");

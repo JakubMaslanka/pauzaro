@@ -31,3 +31,28 @@ export async function getHabit(id: string): Promise<Habit> {
 export async function listHabits(): Promise<Habit[]> {
 	return invoke<Habit[]>("list_habits");
 }
+
+export interface MarkDoneInput {
+	habit_id: string;
+	trigger_date: string;
+	scheduled_time: string;
+	override_failed?: boolean;
+}
+
+export async function markDone(input: MarkDoneInput): Promise<void> {
+	return invoke<void>("mark_done", { ...input });
+}
+
+export interface SnoozeInput {
+	habit_id: string;
+	trigger_date: string;
+	scheduled_time: string;
+}
+
+export interface SnoozeResult {
+	status: "snoozed" | "auto_failed";
+}
+
+export async function snoozeHabit(input: SnoozeInput): Promise<SnoozeResult> {
+	return invoke<SnoozeResult>("snooze_habit", { ...input });
+}

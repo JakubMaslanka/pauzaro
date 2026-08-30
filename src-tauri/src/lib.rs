@@ -54,6 +54,8 @@ pub fn run() {
             commands::habits::create_habit,
             commands::habits::get_habit,
             commands::habits::list_habits,
+            commands::overlay::mark_done,
+            commands::overlay::snooze_habit,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

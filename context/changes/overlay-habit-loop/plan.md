@@ -598,8 +598,8 @@ pub fn calculate_streak(
 
 #### Automated
 
-- [x] 2.1 All find_next_trigger unit tests pass
-- [x] 2.2 Rust compiles with zero warnings
+- [x] 2.1 All find_next_trigger unit tests pass — d797807
+- [x] 2.2 Rust compiles with zero warnings — d797807
 
 #### Manual
 
@@ -610,10 +610,10 @@ pub fn calculate_streak(
 
 #### Automated
 
-- [ ] 3.1 Rust compiles
-- [ ] 3.2 Type check passes
-- [ ] 3.3 Lint passes
-- [ ] 3.4 Existing tests pass
+- [x] 3.1 Rust compiles
+- [x] 3.2 Type check passes
+- [x] 3.3 Lint passes
+- [x] 3.4 Existing tests pass
 
 #### Manual
 
