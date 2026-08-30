@@ -56,3 +56,11 @@ export interface SnoozeResult {
 export async function snoozeHabit(input: SnoozeInput): Promise<SnoozeResult> {
 	return invoke<SnoozeResult>("snooze_habit", { ...input });
 }
+
+export async function getHabitStatus(
+	habitId: string,
+): Promise<import("../types").HabitStatus> {
+	return invoke<import("../types").HabitStatus>("get_habit_status", {
+		habit_id: habitId,
+	});
+}

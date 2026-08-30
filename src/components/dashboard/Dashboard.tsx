@@ -1,9 +1,16 @@
 import { Alert, Container, Loader, Stack, Text, Title } from "@mantine/core";
+import { listen } from "@tauri-apps/api/event";
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
-import { getUserProfile, listHabits } from "../../lib/invoke";
-import type { Habit, UserProfile } from "../../types";
+import { useCallback, useEffect, useState } from "react";
+import {
+	getHabitStatus,
+	getUserProfile,
+	listHabits,
+	markDone,
+} from "../../lib/invoke";
+import type { Habit, HabitStatus, UserProfile } from "../../types";
 import { HabitCard } from "./HabitCard";
+import { TodayStatus } from "./TodayStatus";
 
 type DashboardState =
 	| { status: "loading" }
@@ -12,6 +19,21 @@ type DashboardState =
 
 export function Dashboard() {
 	const [state, setState] = useState<DashboardState>({ status: "loading" });
+	const [habitStatuses, setHabitStatuses] = useState<
+		Record<string, HabitStatus>
+	>({});
+
+	const fetchStatuses = useCallback(async (habits: Habit[]) => {
+		const statuses: Record<string, HabitStatus> = {};
+		for (const habit of habits) {
+			try {
+				statuses[habit.id] = await getHabitStatus(habit.id);
+			} catch (error) {
+				console.error(`Failed to fetch status for habit ${habit.id}:`, error);
+			}
+		}
+		setHabitStatuses(statuses);
+	}, []);
 
 	useEffect(() => {
 		async function load() {
@@ -27,6 +49,7 @@ export function Dashboard() {
 				}
 
 				setState({ status: "ready", profile, habits });
+				fetchStatuses(habits);
 			} catch (error) {
 				const message = error instanceof Error ? error.message : String(error);
 				console.error("Dashboard load failed:", message);
@@ -34,7 +57,40 @@ export function Dashboard() {
 			}
 		}
 		load();
-	}, []);
+	}, [fetchStatuses]);
+
+	// Listen for habit-updated events from overlay interactions
+	useEffect(() => {
+		const unlisten = listen("habit-updated", () => {
+			if (state.status === "ready") {
+				fetchStatuses(state.habits);
+			}
+		});
+
+		return () => {
+			unlisten.then((fn) => fn());
+		};
+	}, [state, fetchStatuses]);
+
+	const handleLifebuoy = useCallback(
+		async (habitId: string, scheduledTime: string) => {
+			const today = new Date().toISOString().split("T")[0];
+			try {
+				await markDone({
+					habit_id: habitId,
+					trigger_date: today,
+					scheduled_time: scheduledTime,
+					override_failed: true,
+				});
+				// Re-fetch status for this habit
+				const updated = await getHabitStatus(habitId);
+				setHabitStatuses((prev) => ({ ...prev, [habitId]: updated }));
+			} catch (error) {
+				console.error("Lifebuoy failed:", error);
+			}
+		},
+		[],
+	);
 
 	if (state.status === "loading") {
 		return (
@@ -78,7 +134,15 @@ export function Dashboard() {
 
 			<Stack gap="md">
 				{habits.map((habit) => (
-					<HabitCard key={habit.id} habit={habit} />
+					<div key={habit.id}>
+						<HabitCard habit={habit} />
+						{habitStatuses[habit.id] ? (
+							<TodayStatus
+								habitStatus={habitStatuses[habit.id]}
+								onMarkDone={(time) => handleLifebuoy(habit.id, time)}
+							/>
+						) : null}
+					</div>
 				))}
 			</Stack>
 		</Container>

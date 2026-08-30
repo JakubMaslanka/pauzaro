@@ -610,10 +610,10 @@ pub fn calculate_streak(
 
 #### Automated
 
-- [x] 3.1 Rust compiles
-- [x] 3.2 Type check passes
-- [x] 3.3 Lint passes
-- [x] 3.4 Existing tests pass
+- [x] 3.1 Rust compiles — a58ff3e
+- [x] 3.2 Type check passes — a58ff3e
+- [x] 3.3 Lint passes — a58ff3e
+- [x] 3.4 Existing tests pass — a58ff3e
 
 #### Manual
 
@@ -629,10 +629,10 @@ pub fn calculate_streak(
 
 #### Automated
 
-- [ ] 4.1 Streak calculation tests pass
-- [ ] 4.2 Type check passes
-- [ ] 4.3 Lint passes
-- [ ] 4.4 All tests pass
+- [x] 4.1 Streak calculation tests pass
+- [x] 4.2 Type check passes
+- [x] 4.3 Lint passes
+- [x] 4.4 All tests pass
 
 #### Manual
 

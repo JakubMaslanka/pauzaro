@@ -3,6 +3,7 @@ pub mod db;
 pub mod error;
 pub mod models;
 pub mod scheduler;
+pub mod streak;
 
 use std::sync::Mutex;
 
@@ -54,6 +55,7 @@ pub fn run() {
             commands::habits::create_habit,
             commands::habits::get_habit,
             commands::habits::list_habits,
+            commands::habits::get_habit_status,
             commands::overlay::mark_done,
             commands::overlay::snooze_habit,
         ])

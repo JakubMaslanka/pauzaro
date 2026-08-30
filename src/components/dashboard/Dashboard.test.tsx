@@ -7,10 +7,18 @@ import { Dashboard } from "./Dashboard";
 
 const mockGetUserProfile = vi.fn();
 const mockListHabits = vi.fn();
+const mockGetHabitStatus = vi.fn();
+const mockMarkDone = vi.fn();
 
 vi.mock("../../lib/invoke", () => ({
 	getUserProfile: (...args: unknown[]) => mockGetUserProfile(...args),
 	listHabits: (...args: unknown[]) => mockListHabits(...args),
+	getHabitStatus: (...args: unknown[]) => mockGetHabitStatus(...args),
+	markDone: (...args: unknown[]) => mockMarkDone(...args),
+}));
+
+vi.mock("@tauri-apps/api/event", () => ({
+	listen: vi.fn(() => Promise.resolve(() => {})),
 }));
 
 function Wrapper({ children }: { children: ReactNode }) {
@@ -46,9 +54,14 @@ describe("Dashboard", () => {
 				is_active: true,
 				created_at: "2026-08-27T10:00:00Z",
 				schedule_days: [1, 3, 5],
-				schedule_times: [{ start_time: "10:00", end_time: "10:15" }],
+				schedule_times: [{ start_time: "10:00" }],
 			},
 		]);
+		mockGetHabitStatus.mockResolvedValue({
+			habit_id: "h1",
+			streak: 0,
+			today_slots: [],
+		});
 
 		render(<Dashboard />, { wrapper: Wrapper });
 
