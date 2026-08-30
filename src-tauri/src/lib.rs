@@ -2,6 +2,7 @@ pub mod commands;
 pub mod db;
 pub mod error;
 pub mod models;
+pub mod scheduler;
 
 use std::sync::Mutex;
 
@@ -33,6 +34,15 @@ pub fn run() {
 
             app.manage(AppState {
                 db: Mutex::new(db),
+            });
+
+            let sched = std::sync::Arc::new(scheduler::Scheduler::new());
+            app.manage(sched.clone());
+
+            let app_handle = app.handle().clone();
+            let sched_run = sched.clone();
+            tauri::async_runtime::spawn(async move {
+                sched_run.run(app_handle).await;
             });
 
             Ok(())

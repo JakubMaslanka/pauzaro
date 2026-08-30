@@ -584,10 +584,10 @@ pub fn calculate_streak(
 
 #### Automated
 
-- [x] 1.1 Migration applies cleanly on fresh DB
-- [x] 1.2 Rust compiles
-- [x] 1.3 Type check passes
-- [x] 1.4 Lint passes
+- [x] 1.1 Migration applies cleanly on fresh DB — 64c5dd8
+- [x] 1.2 Rust compiles — 64c5dd8
+- [x] 1.3 Type check passes — 64c5dd8
+- [x] 1.4 Lint passes — 64c5dd8
 
 #### Manual
 
@@ -598,8 +598,8 @@ pub fn calculate_streak(
 
 #### Automated
 
-- [ ] 2.1 All find_next_trigger unit tests pass
-- [ ] 2.2 Rust compiles with zero warnings
+- [x] 2.1 All find_next_trigger unit tests pass
+- [x] 2.2 Rust compiles with zero warnings
 
 #### Manual
 
