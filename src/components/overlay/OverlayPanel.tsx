@@ -1,4 +1,4 @@
-import { Button, Card, Group, Loader, Stack, Text } from "@mantine/core";
+import { Button, Card, Loader, Stack, Text } from "@mantine/core";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { getHabit, markDone, snoozeHabit } from "../../lib/invoke";
@@ -164,11 +164,12 @@ export function OverlayPanel({ habitId }: OverlayPanelProps) {
 						{habit.description}
 					</Text>
 				) : null}
-				<Group gap="md" mt="sm">
+				<Stack gap="sm" mt="sm" w="100%">
 					<Button
 						color="teal"
 						radius="xl"
 						size="lg"
+						fullWidth
 						onClick={handleDone}
 						loading={processing}
 					>
@@ -179,12 +180,13 @@ export function OverlayPanel({ habitId }: OverlayPanelProps) {
 						color="gray"
 						radius="xl"
 						size="lg"
+						fullWidth
 						onClick={handleSnooze}
 						loading={processing}
 					>
 						💤 Snooze 9 min
 					</Button>
-				</Group>
+				</Stack>
 			</Stack>
 		</OverlayCard>
 	);

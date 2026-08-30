@@ -18,7 +18,7 @@ pub struct SnoozeResult {
     pub status: String,
 }
 
-#[tauri::command]
+#[tauri::command(rename_all = "snake_case")]
 pub async fn mark_done(
     app: AppHandle,
     scheduler: State<'_, Arc<Scheduler>>,
@@ -65,7 +65,7 @@ pub async fn mark_done(
     Ok(())
 }
 
-#[tauri::command]
+#[tauri::command(rename_all = "snake_case")]
 pub async fn snooze_habit(
     app: AppHandle,
     scheduler: State<'_, Arc<Scheduler>>,

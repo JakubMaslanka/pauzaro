@@ -58,7 +58,7 @@ pub struct HabitStatusResponse {
     pub today_slots: Vec<SlotStatus>,
 }
 
-#[tauri::command]
+#[tauri::command(rename_all = "snake_case")]
 pub fn get_habit_status(
     state: State<'_, AppState>,
     habit_id: String,
