@@ -7,7 +7,6 @@ export interface UserProfile {
 
 export interface TimeSlot {
 	start_time: string;
-	end_time: string;
 }
 
 export interface Habit {
@@ -39,4 +38,26 @@ export interface CreateHabitInput {
 	schedule_times: TimeSlot[];
 	start_date: string;
 	end_date?: string;
+}
+
+export type CompletionStatus = "done" | "failed";
+
+export interface Completion {
+	id: string;
+	habit_id: string;
+	trigger_date: string;
+	scheduled_time: string;
+	status: CompletionStatus;
+	completed_at: string;
+}
+
+export interface SlotStatus {
+	scheduled_time: string;
+	status: "pending" | "done" | "failed";
+}
+
+export interface HabitStatus {
+	habit_id: string;
+	streak: number;
+	today_slots: SlotStatus[];
 }

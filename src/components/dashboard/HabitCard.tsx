@@ -12,9 +12,7 @@ function formatScheduleSummary(habit: Habit): string {
 		.map((d) => DAY_LABELS[d])
 		.join(", ");
 
-	const times = habit.schedule_times
-		.map((t) => `${t.start_time}–${t.end_time}`)
-		.join(", ");
+	const times = habit.schedule_times.map((t) => t.start_time).join(", ");
 
 	return `${days} · ${times}`;
 }

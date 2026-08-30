@@ -26,7 +26,7 @@ fn migration_runner_creates_schema_version_table() {
         })
         .expect("schema_version table should exist");
 
-    assert_eq!(version, 2, "version should be 2 after two migrations");
+    assert_eq!(version, 3, "version should be 3 after three migrations");
 }
 
 #[test]
@@ -45,7 +45,7 @@ fn database_open_is_idempotent() {
         })
         .expect("schema_version table should exist after second open");
 
-    assert_eq!(version, 2, "version should remain 2");
+    assert_eq!(version, 3, "version should remain 3");
 }
 
 #[test]
@@ -64,7 +64,7 @@ fn app_state_wraps_database_in_mutex() {
         })
         .expect("should query through AppState");
 
-    assert_eq!(version, 2);
+    assert_eq!(version, 3);
 }
 
 // --- User profile tests ---
@@ -139,11 +139,9 @@ fn sample_habit_input() -> CreateHabitInput {
         schedule_times: vec![
             TimeSlot {
                 start_time: "10:00".into(),
-                end_time: "10:15".into(),
             },
             TimeSlot {
                 start_time: "15:00".into(),
-                end_time: "15:10".into(),
             },
         ],
         start_date: "2026-08-27".into(),
@@ -170,7 +168,6 @@ fn create_habit_with_schedule_and_retrieve() {
     assert_eq!(habit.schedule_days, vec![1, 3, 5]);
     assert_eq!(habit.schedule_times.len(), 2);
     assert_eq!(habit.schedule_times[0].start_time, "10:00");
-    assert_eq!(habit.schedule_times[0].end_time, "10:15");
 }
 
 #[test]
@@ -213,7 +210,6 @@ fn list_habits_returns_all_with_schedules() {
         schedule_days: vec![0, 6],
         schedule_times: vec![TimeSlot {
             start_time: "08:00".into(),
-            end_time: "08:30".into(),
         }],
         start_date: "2026-08-27".into(),
         end_date: Some("2026-12-31".into()),
@@ -246,7 +242,6 @@ fn create_habit_rejects_empty_name() {
         schedule_days: vec![1],
         schedule_times: vec![TimeSlot {
             start_time: "10:00".into(),
-            end_time: "10:15".into(),
         }],
         start_date: "2026-08-27".into(),
         end_date: None,
@@ -270,7 +265,6 @@ fn create_habit_rejects_empty_schedule_days() {
         schedule_days: vec![],
         schedule_times: vec![TimeSlot {
             start_time: "10:00".into(),
-            end_time: "10:15".into(),
         }],
         start_date: "2026-08-27".into(),
         end_date: None,

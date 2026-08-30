@@ -22,7 +22,7 @@ const MOCK_HABIT: Habit = {
 	is_active: true,
 	created_at: "2026-08-27T10:00:00Z",
 	schedule_days: [1, 3, 5],
-	schedule_times: [{ start_time: "10:00", end_time: "10:15" }],
+	schedule_times: [{ start_time: "10:00" }],
 };
 
 describe("HabitCard", () => {
@@ -40,9 +40,7 @@ describe("HabitCard", () => {
 
 	it("renders schedule summary with days and times", () => {
 		render(<HabitCard habit={MOCK_HABIT} />, { wrapper: Wrapper });
-		expect(
-			screen.getByText("📅 Mon, Wed, Fri · 10:00–10:15"),
-		).toBeInTheDocument();
+		expect(screen.getByText("📅 Mon, Wed, Fri · 10:00")).toBeInTheDocument();
 	});
 
 	it("handles habit without description", () => {
@@ -57,14 +55,11 @@ describe("HabitCard", () => {
 	it("renders multiple time slots in summary", () => {
 		const multiTime = {
 			...MOCK_HABIT,
-			schedule_times: [
-				{ start_time: "09:00", end_time: "09:15" },
-				{ start_time: "14:00", end_time: "14:15" },
-			],
+			schedule_times: [{ start_time: "09:00" }, { start_time: "14:00" }],
 		};
 		render(<HabitCard habit={multiTime} />, { wrapper: Wrapper });
 		expect(
-			screen.getByText("📅 Mon, Wed, Fri · 09:00–09:15, 14:00–14:15"),
+			screen.getByText("📅 Mon, Wed, Fri · 09:00, 14:00"),
 		).toBeInTheDocument();
 	});
 });

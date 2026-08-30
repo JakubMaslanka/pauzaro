@@ -48,8 +48,8 @@ impl<'a> HabitRepository<'a> {
         for slot in &input.schedule_times {
             let time_id = uuid::Uuid::new_v4().to_string();
             tx.execute(
-                "INSERT INTO habit_schedule_times (id, habit_id, start_time, end_time) VALUES (?1, ?2, ?3, ?4)",
-                params![time_id, habit_id, slot.start_time, slot.end_time],
+                "INSERT INTO habit_schedule_times (id, habit_id, start_time) VALUES (?1, ?2, ?3)",
+                params![time_id, habit_id, slot.start_time],
             )?;
         }
 
@@ -102,6 +102,53 @@ impl<'a> HabitRepository<'a> {
             schedule_days,
             schedule_times,
         })
+    }
+
+    pub fn list_active_with_schedules(&self) -> Result<Vec<Habit>, AppError> {
+        let mut stmt = self.conn.prepare(
+            "SELECT id, name, description, icon, icon_color, icon_stroke_width, start_date, end_date, is_active, created_at
+             FROM habits WHERE is_active = 1 ORDER BY created_at DESC",
+        )?;
+
+        let rows: Vec<HabitRow> = stmt
+            .query_map([], |row| {
+                let is_active: i32 = row.get(8)?;
+                Ok(HabitRow {
+                    id: row.get(0)?,
+                    name: row.get(1)?,
+                    description: row.get(2)?,
+                    icon: row.get(3)?,
+                    icon_color: row.get(4)?,
+                    icon_stroke_width: row.get(5)?,
+                    start_date: row.get(6)?,
+                    end_date: row.get(7)?,
+                    is_active: is_active != 0,
+                    created_at: row.get(9)?,
+                })
+            })?
+            .collect::<Result<Vec<_>, _>>()?;
+
+        let mut habits = Vec::with_capacity(rows.len());
+        for row in rows {
+            let schedule_days = self.get_schedule_days(&row.id)?;
+            let schedule_times = self.get_schedule_times(&row.id)?;
+            habits.push(Habit {
+                id: row.id,
+                name: row.name,
+                description: row.description,
+                icon: row.icon,
+                icon_color: row.icon_color,
+                icon_stroke_width: row.icon_stroke_width,
+                start_date: row.start_date,
+                end_date: row.end_date,
+                is_active: row.is_active,
+                created_at: row.created_at,
+                schedule_days,
+                schedule_times,
+            });
+        }
+
+        Ok(habits)
     }
 
     pub fn list(&self) -> Result<Vec<Habit>, AppError> {
@@ -165,14 +212,13 @@ impl<'a> HabitRepository<'a> {
 
     fn get_schedule_times(&self, habit_id: &str) -> Result<Vec<TimeSlot>, AppError> {
         let mut stmt = self.conn.prepare(
-            "SELECT start_time, end_time FROM habit_schedule_times WHERE habit_id = ?1",
+            "SELECT start_time FROM habit_schedule_times WHERE habit_id = ?1",
         )?;
 
         let times = stmt
             .query_map(params![habit_id], |row| {
                 Ok(TimeSlot {
                     start_time: row.get(0)?,
-                    end_time: row.get(1)?,
                 })
             })?
             .collect::<Result<Vec<_>, _>>()?;

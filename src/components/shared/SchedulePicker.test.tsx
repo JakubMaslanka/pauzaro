@@ -14,7 +14,7 @@ describe("SchedulePicker", () => {
 		render(
 			<SchedulePicker
 				days={[]}
-				times={[{ start_time: "09:00", end_time: "09:15" }]}
+				times={[{ start_time: "09:00" }]}
 				onDaysChange={vi.fn()}
 				onTimesChange={vi.fn()}
 			/>,
@@ -31,7 +31,7 @@ describe("SchedulePicker", () => {
 		render(
 			<SchedulePicker
 				days={[1, 3]}
-				times={[{ start_time: "09:00", end_time: "09:15" }]}
+				times={[{ start_time: "09:00" }]}
 				onDaysChange={onDaysChange}
 				onTimesChange={vi.fn()}
 			/>,
@@ -47,7 +47,7 @@ describe("SchedulePicker", () => {
 		render(
 			<SchedulePicker
 				days={[1, 3, 5]}
-				times={[{ start_time: "09:00", end_time: "09:15" }]}
+				times={[{ start_time: "09:00" }]}
 				onDaysChange={onDaysChange}
 				onTimesChange={vi.fn()}
 			/>,
@@ -63,7 +63,7 @@ describe("SchedulePicker", () => {
 		render(
 			<SchedulePicker
 				days={[1]}
-				times={[{ start_time: "09:00", end_time: "09:15" }]}
+				times={[{ start_time: "09:00" }]}
 				onDaysChange={vi.fn()}
 				onTimesChange={onTimesChange}
 			/>,
@@ -81,7 +81,7 @@ describe("SchedulePicker", () => {
 		render(
 			<SchedulePicker
 				days={[1]}
-				times={[{ start_time: "09:00", end_time: "09:15" }]}
+				times={[{ start_time: "09:00" }]}
 				onDaysChange={vi.fn()}
 				onTimesChange={onTimesChange}
 			/>,
@@ -92,10 +92,7 @@ describe("SchedulePicker", () => {
 		const newTimes = onTimesChange.mock.calls[0][0];
 		expect(newTimes.length).toBe(2);
 		// Second slot should not duplicate the first
-		const keys = newTimes.map(
-			(s: { start_time: string; end_time: string }) =>
-				`${s.start_time}-${s.end_time}`,
-		);
+		const keys = newTimes.map((s: { start_time: string }) => s.start_time);
 		expect(new Set(keys).size).toBe(2);
 	});
 
@@ -103,10 +100,7 @@ describe("SchedulePicker", () => {
 		render(
 			<SchedulePicker
 				days={[1]}
-				times={[
-					{ start_time: "09:00", end_time: "09:15" },
-					{ start_time: "09:00", end_time: "09:15" },
-				]}
+				times={[{ start_time: "09:00" }, { start_time: "09:00" }]}
 				onDaysChange={vi.fn()}
 				onTimesChange={vi.fn()}
 			/>,

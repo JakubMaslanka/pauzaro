@@ -41,6 +41,30 @@ const MIGRATIONS: &[&str] = &[
 
     CREATE INDEX IF NOT EXISTS idx_habit_schedule_days_habit_id ON habit_schedule_days(habit_id);
     CREATE INDEX IF NOT EXISTS idx_habit_schedule_times_habit_id ON habit_schedule_times(habit_id);",
+    // Migration 2: completions + pending_triggers tables, drop end_time
+    "CREATE TABLE IF NOT EXISTS completions (
+        id TEXT PRIMARY KEY,
+        habit_id TEXT NOT NULL REFERENCES habits(id) ON DELETE CASCADE,
+        trigger_date TEXT NOT NULL,
+        scheduled_time TEXT NOT NULL,
+        status TEXT NOT NULL CHECK(status IN ('done', 'failed')),
+        completed_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );
+    CREATE INDEX IF NOT EXISTS idx_completions_habit ON completions(habit_id);
+    CREATE INDEX IF NOT EXISTS idx_completions_date ON completions(trigger_date);
+
+    CREATE TABLE IF NOT EXISTS pending_triggers (
+        id TEXT PRIMARY KEY,
+        habit_id TEXT NOT NULL REFERENCES habits(id) ON DELETE CASCADE,
+        trigger_date TEXT NOT NULL,
+        scheduled_time TEXT NOT NULL,
+        snooze_count INTEGER NOT NULL DEFAULT 0,
+        next_fire_at TEXT NOT NULL,
+        created_at TEXT NOT NULL DEFAULT (datetime('now')),
+        UNIQUE(habit_id, trigger_date, scheduled_time)
+    );
+
+    ALTER TABLE habit_schedule_times DROP COLUMN end_time;",
 ];
 
 /// Applies pending migrations tracked by `schema_version`.

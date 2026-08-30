@@ -21,7 +21,7 @@ export function ScheduleStep({ habitDetails, onBack }: ScheduleStepProps) {
 	const navigate = useNavigate();
 	const [scheduleDays, setScheduleDays] = useState<number[]>([1, 2, 3, 4, 5]);
 	const [scheduleTimes, setScheduleTimes] = useState<TimeSlot[]>([
-		{ start_time: "10:00", end_time: "10:15" },
+		{ start_time: "10:00" },
 	]);
 	const [startDate, setStartDate] = useState(
 		new Date().toISOString().split("T")[0],
@@ -33,9 +33,8 @@ export function ScheduleStep({ habitDetails, onBack }: ScheduleStepProps) {
 	const hasDuplicates = () => {
 		const seen = new Set<string>();
 		for (const slot of scheduleTimes) {
-			const key = `${slot.start_time}-${slot.end_time}`;
-			if (seen.has(key)) return true;
-			seen.add(key);
+			if (seen.has(slot.start_time)) return true;
+			seen.add(slot.start_time);
 		}
 		return false;
 	};
