@@ -3,7 +3,7 @@ project: "Pauzaro"
 version: 1
 status: draft
 created: 2026-08-25
-updated: 2026-08-27
+updated: 2026-08-30
 
 prd_version: 1
 main_goal: learn
@@ -32,7 +32,7 @@ A developer in deep focus loses track of time — forgets breaks, movement, and 
 | ---- | --------------------------- | ------------------------------------------------------------------------------------------ | ------------- | ------------------------------------- | -------- |
 | F-01 | sqlite-persistence-scaffold | (foundation) SQLite persistence wired through Tauri SQL plugin; migration runner operational | —             | NFR (local-only data)                 | done |
 | S-01 | onboarding-first-habit      | launch app, complete onboarding, and create first habit with schedule                       | F-01          | US-01, FR-001, FR-002, FR-003, FR-004 | done |
-| S-02 | overlay-habit-loop          | receive overlay at scheduled time, mark habit done or snooze, and see streak update         | S-01          | US-02, FR-006, FR-007                 | proposed |
+| S-02 | overlay-habit-loop          | receive overlay at scheduled time, mark habit done or snooze, and see streak update         | S-01          | US-02, FR-006, FR-007                 | done |
 | S-03 | dashboard-month-view        | view full month calendar with per-day completion status and streak history                   | S-02          | US-02, FR-008                         | proposed |
 | S-04 | streak-freeze               | freeze streak for up to 2 days to protect series from missed days                           | S-02          | FR-012                                | proposed |
 | S-05 | dinosaur-mascot             | see dinosaur mascot reacting to current streak status (happy/neutral/sad)                    | S-02          | FR-009                                | proposed |
@@ -99,7 +99,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
   - How does Tauri 2 create always-on-top overlay windows that capture focus? — Owner: user. Block: no.
   - What is the idiomatic Rust pattern for background timers in Tauri (tokio interval vs OS-level scheduler)? — Owner: user. Block: no.
 - **Risk:** Hardest technical slice — overlay window management, background scheduling, and snooze re-scheduling all exercise unfamiliar Tauri/Rust APIs. This IS the learning target (main_goal: learn). If overlay windows behave differently on macOS vs Windows, cross-platform work may expand scope.
-- **Status:** proposed
+- **Status:** done
 
 ### S-03: Dashboard month view
 
@@ -136,17 +136,6 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Unknowns:** —
 - **Risk:** Needs static dinosaur assets (2-3 states). If no suitable assets are available, creating them is a design task outside code. PRD accepts relaxed visual polish for MVP — simple SVGs or placeholder images suffice.
 - **Status:** proposed
-
-## Backlog Handoff
-
-| Roadmap ID | Change ID                   | Suggested issue title                          | Ready for `/10x-plan` | Notes                                        |
-| ---------- | --------------------------- | ---------------------------------------------- | --------------------- | -------------------------------------------- |
-| F-01       | sqlite-persistence-scaffold | Set up SQLite persistence via Tauri SQL plugin | yes                   | Run `/10x-plan sqlite-persistence-scaffold`  |
-| S-01       | onboarding-first-habit      | Onboarding flow + first habit creation         | no                    | Needs F-01                                   |
-| S-02       | overlay-habit-loop          | Core habit loop: overlay + done/snooze + streak | no                    | Needs S-01                                   |
-| S-03       | dashboard-month-view        | Dashboard with month calendar view             | no                    | Needs S-02                                   |
-| S-04       | streak-freeze               | Streak freeze mechanism (max 2 days)           | no                    | Needs S-02                                   |
-| S-05       | dinosaur-mascot             | Dinosaur mascot with streak-based states       | no                    | Needs S-02                                   |
 
 ## Open Roadmap Questions
 
