@@ -1,0 +1,129 @@
+import { Box, Text } from "@mantine/core";
+import { AlertCircle, CircleCheck, CircleX } from "lucide-react";
+
+type DayCellStatus =
+	| "done"
+	| "failed"
+	| "partial"
+	| "not-scheduled"
+	| "future"
+	| "today-pending";
+
+interface DayCellProps {
+	dayNumber: number;
+	status: DayCellStatus;
+	isToday: boolean;
+	isCurrentMonth: boolean;
+	partialLabel?: string;
+}
+
+const STATUS_CONFIG: Record<
+	DayCellStatus,
+	{
+		bg: string;
+		icon: React.ComponentType<{ size: number; color: string }> | null;
+		outline?: boolean;
+	}
+> = {
+	done: { bg: "#0d9488", icon: CircleCheck },
+	failed: { bg: "#e03131", icon: CircleX },
+	partial: { bg: "#E28743", icon: AlertCircle },
+	"not-scheduled": { bg: "transparent", icon: null },
+	future: { bg: "transparent", icon: null, outline: true },
+	"today-pending": { bg: "transparent", icon: null, outline: true },
+};
+
+export function DayCell({
+	dayNumber,
+	status,
+	isToday,
+	isCurrentMonth,
+	partialLabel,
+}: DayCellProps) {
+	if (!isCurrentMonth) {
+		return (
+			<Box
+				style={{
+					width: 40,
+					height: 44,
+					display: "flex",
+					alignItems: "center",
+					justifyContent: "center",
+				}}
+			>
+				<Text size="xs" c="dimmed" style={{ opacity: 0.3 }}>
+					{dayNumber}
+				</Text>
+			</Box>
+		);
+	}
+
+	const config = STATUS_CONFIG[status];
+	const hasIcon = config.icon !== null;
+	const IconComponent = config.icon;
+
+	return (
+		<Box
+			style={{
+				width: 40,
+				height: 44,
+				display: "flex",
+				flexDirection: "column",
+				alignItems: "center",
+				justifyContent: "center",
+				position: "relative",
+			}}
+		>
+			{hasIcon && IconComponent ? (
+				<Box
+					style={{
+						width: 32,
+						height: 32,
+						borderRadius: "50%",
+						backgroundColor: config.bg,
+						display: "flex",
+						alignItems: "center",
+						justifyContent: "center",
+						border: isToday ? "2px solid #0d9488" : "none",
+						boxShadow: isToday ? "0 0 0 2px rgba(13,148,136,0.25)" : "none",
+					}}
+				>
+					<IconComponent size={18} color="white" />
+				</Box>
+			) : (
+				<Box
+					style={{
+						width: 32,
+						height: 32,
+						borderRadius: "50%",
+						display: "flex",
+						alignItems: "center",
+						justifyContent: "center",
+						border:
+							isToday || config.outline
+								? `2px ${isToday ? "solid" : "dashed"} ${isToday ? "#0d9488" : "#c4b090"}`
+								: "none",
+					}}
+				>
+					<Text
+						size="sm"
+						fw={isToday ? 700 : 400}
+						c={status === "not-scheduled" ? "dimmed" : undefined}
+					>
+						{dayNumber}
+					</Text>
+				</Box>
+			)}
+			{status === "partial" && partialLabel ? (
+				<Text
+					size="xs"
+					c="dimmed"
+					lh={1}
+					style={{ position: "absolute", bottom: 0 }}
+				>
+					{partialLabel}
+				</Text>
+			) : null}
+		</Box>
+	);
+}

@@ -392,10 +392,10 @@ Layout order: `StreakHero` → `MonthStats` → `MonthCalendar`. Wrapped in `Con
 
 #### Automated
 
-- [x] 1.1 Rust unit test for `list_by_habit_in_range` passes
-- [x] 1.2 Rust compiles cleanly (`cargo check`)
-- [x] 1.3 TypeScript type-check passes (`tsc --noEmit`)
-- [x] 1.4 Lint passes (`pnpm lint`)
+- [x] 1.1 Rust unit test for `list_by_habit_in_range` passes — a6973f8
+- [x] 1.2 Rust compiles cleanly (`cargo check`) — a6973f8
+- [x] 1.3 TypeScript type-check passes (`tsc --noEmit`) — a6973f8
+- [x] 1.4 Lint passes (`pnpm lint`) — a6973f8
 
 #### Manual
 
@@ -405,9 +405,9 @@ Layout order: `StreakHero` → `MonthStats` → `MonthCalendar`. Wrapped in `Con
 
 #### Automated
 
-- [ ] 2.1 All component tests pass (`pnpm test`)
-- [ ] 2.2 TypeScript type-check passes (`tsc --noEmit`)
-- [ ] 2.3 Lint passes (`pnpm lint`)
+- [x] 2.1 All component tests pass (`pnpm test`)
+- [x] 2.2 TypeScript type-check passes (`tsc --noEmit`)
+- [x] 2.3 Lint passes (`pnpm lint`)
 
 #### Manual
 
