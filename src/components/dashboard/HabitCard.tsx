@@ -1,21 +1,7 @@
-import { Badge, Card, Group, Stack, Text } from "@mantine/core";
+import { Card, Group, Stack, Text } from "@mantine/core";
 import { motion } from "framer-motion";
 import type { Habit } from "../../types";
 import { DynamicIcon } from "../shared/DynamicIcon";
-
-const DAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] as const;
-
-function formatScheduleSummary(habit: Habit): string {
-	const days = habit.schedule_days
-		.slice()
-		.sort((a, b) => a - b)
-		.map((d) => DAY_LABELS[d])
-		.join(", ");
-
-	const times = habit.schedule_times.map((t) => t.start_time).join(", ");
-
-	return `${days} · ${times}`;
-}
 
 interface HabitCardProps {
 	habit: Habit;
@@ -45,15 +31,6 @@ export function HabitCard({ habit }: HabitCardProps) {
 								{habit.description}
 							</Text>
 						) : null}
-						<Badge
-							variant="light"
-							color="teal"
-							size="sm"
-							radius="xl"
-							style={{ alignSelf: "flex-start" }}
-						>
-							📅 {formatScheduleSummary(habit)}
-						</Badge>
 					</Stack>
 				</Group>
 			</Card>

@@ -38,11 +38,6 @@ describe("HabitCard", () => {
 		).toBeInTheDocument();
 	});
 
-	it("renders schedule summary with days and times", () => {
-		render(<HabitCard habit={MOCK_HABIT} />, { wrapper: Wrapper });
-		expect(screen.getByText("📅 Mon, Wed, Fri · 10:00")).toBeInTheDocument();
-	});
-
 	it("handles habit without description", () => {
 		const noDesc = { ...MOCK_HABIT, description: "" };
 		render(<HabitCard habit={noDesc} />, { wrapper: Wrapper });
@@ -50,16 +45,5 @@ describe("HabitCard", () => {
 		expect(
 			screen.queryByText("Stand up and stretch for a few minutes"),
 		).not.toBeInTheDocument();
-	});
-
-	it("renders multiple time slots in summary", () => {
-		const multiTime = {
-			...MOCK_HABIT,
-			schedule_times: [{ start_time: "09:00" }, { start_time: "14:00" }],
-		};
-		render(<HabitCard habit={multiTime} />, { wrapper: Wrapper });
-		expect(
-			screen.getByText("📅 Mon, Wed, Fri · 09:00, 14:00"),
-		).toBeInTheDocument();
 	});
 });

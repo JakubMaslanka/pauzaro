@@ -405,9 +405,9 @@ Layout order: `StreakHero` → `MonthStats` → `MonthCalendar`. Wrapped in `Con
 
 #### Automated
 
-- [x] 2.1 All component tests pass (`pnpm test`)
-- [x] 2.2 TypeScript type-check passes (`tsc --noEmit`)
-- [x] 2.3 Lint passes (`pnpm lint`)
+- [x] 2.1 All component tests pass (`pnpm test`) — 4dab6ac
+- [x] 2.2 TypeScript type-check passes (`tsc --noEmit`) — 4dab6ac
+- [x] 2.3 Lint passes (`pnpm lint`) — 4dab6ac
 
 #### Manual
 
@@ -419,10 +419,10 @@ Layout order: `StreakHero` → `MonthStats` → `MonthCalendar`. Wrapped in `Con
 
 #### Automated
 
-- [ ] 3.1 All tests pass (`pnpm test`)
-- [ ] 3.2 TypeScript type-check passes (`tsc --noEmit`)
-- [ ] 3.3 Lint passes (`pnpm lint`)
-- [ ] 3.4 Rust tests still pass (`cargo test`)
+- [x] 3.1 All tests pass (`pnpm test`)
+- [x] 3.2 TypeScript type-check passes (`tsc --noEmit`)
+- [x] 3.3 Lint passes (`pnpm lint`)
+- [x] 3.4 Rust tests still pass (`cargo test`)
 
 #### Manual
 
