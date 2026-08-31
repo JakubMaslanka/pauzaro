@@ -9,6 +9,8 @@ const AUTO_SNOOZE_MS = 2 * 60 * 1000; // 2 minutes
 
 interface OverlayPanelProps {
 	habitId: string;
+	triggerDate: string;
+	scheduledTime: string;
 }
 
 type OverlayState =
@@ -17,7 +19,11 @@ type OverlayState =
 	| { status: "auto_failed" }
 	| { status: "error"; message: string };
 
-export function OverlayPanel({ habitId }: OverlayPanelProps) {
+export function OverlayPanel({
+	habitId,
+	triggerDate,
+	scheduledTime,
+}: OverlayPanelProps) {
 	const [state, setState] = useState<OverlayState>({ status: "loading" });
 	const [processing, setProcessing] = useState(false);
 	const autoSnoozeRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -51,14 +57,10 @@ export function OverlayPanel({ habitId }: OverlayPanelProps) {
 		clearAutoSnooze();
 		setProcessing(true);
 
-		const today = new Date().toISOString().split("T")[0];
 		try {
-			const habit = (state as { status: "ready"; habit: Habit }).habit;
-			const scheduledTime = habit.schedule_times[0]?.start_time ?? "00:00";
-
 			await markDone({
 				habit_id: habitId,
-				trigger_date: today,
+				trigger_date: triggerDate,
 				scheduled_time: scheduledTime,
 			});
 			closeWindow();
@@ -66,20 +68,16 @@ export function OverlayPanel({ habitId }: OverlayPanelProps) {
 			console.error("Failed to mark done:", error);
 			setProcessing(false);
 		}
-	}, [habitId, state, clearAutoSnooze, closeWindow]);
+	}, [habitId, triggerDate, scheduledTime, clearAutoSnooze, closeWindow]);
 
 	const handleSnooze = useCallback(async () => {
 		clearAutoSnooze();
 		setProcessing(true);
 
-		const today = new Date().toISOString().split("T")[0];
 		try {
-			const habit = (state as { status: "ready"; habit: Habit }).habit;
-			const scheduledTime = habit.schedule_times[0]?.start_time ?? "00:00";
-
 			const result = await snoozeHabit({
 				habit_id: habitId,
-				trigger_date: today,
+				trigger_date: triggerDate,
 				scheduled_time: scheduledTime,
 			});
 
@@ -93,7 +91,7 @@ export function OverlayPanel({ habitId }: OverlayPanelProps) {
 			console.error("Failed to snooze:", error);
 			setProcessing(false);
 		}
-	}, [habitId, state, clearAutoSnooze, closeWindow]);
+	}, [habitId, triggerDate, scheduledTime, clearAutoSnooze, closeWindow]);
 
 	// Auto-snooze timer: fires if no interaction within 2 minutes
 	useEffect(() => {

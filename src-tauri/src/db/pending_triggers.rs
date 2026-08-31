@@ -56,7 +56,9 @@ impl<'a> PendingTriggerRepository<'a> {
     pub fn list_active(&self) -> Result<Vec<PendingTrigger>, AppError> {
         let mut stmt = self.conn.prepare(
             "SELECT id, habit_id, trigger_date, scheduled_time, snooze_count, next_fire_at, created_at
-             FROM pending_triggers ORDER BY next_fire_at ASC",
+             FROM pending_triggers
+             WHERE trigger_date >= date('now', '-1 day')
+             ORDER BY next_fire_at ASC",
         )?;
 
         let triggers = stmt

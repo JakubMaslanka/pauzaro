@@ -56,28 +56,17 @@ pub struct HabitStatusResponse {
     pub habit_id: String,
     pub streak: u32,
     pub today_slots: Vec<SlotStatus>,
+    pub today_date: String,
 }
 
-#[tauri::command(rename_all = "snake_case")]
-pub fn get_habit_status(
-    state: State<'_, AppState>,
-    habit_id: String,
+fn build_habit_status(
+    habit: &Habit,
+    completion_repo: &CompletionRepository<'_>,
+    today: chrono::NaiveDate,
+    today_str: &str,
 ) -> Result<HabitStatusResponse, AppError> {
-    let db = state.db.lock().map_err(|e| {
-        AppError::Database(format!("Failed to acquire database lock: {e}"))
-    })?;
-    let conn = db.connection();
-    let habit_repo = HabitRepository::new(conn);
-    let completion_repo = CompletionRepository::new(conn);
+    let today_completions = completion_repo.get_by_habit_and_date(&habit.id, today_str)?;
 
-    let habit = habit_repo.get(&habit_id)?;
-    let today = chrono::Local::now().date_naive();
-    let today_str = today.format("%Y-%m-%d").to_string();
-
-    // Get today's completions
-    let today_completions = completion_repo.get_by_habit_and_date(&habit_id, &today_str)?;
-
-    // Build slot statuses
     let today_dow = today.weekday().num_days_from_sunday() as u8;
     let is_scheduled_today = habit.schedule_days.contains(&today_dow);
 
@@ -86,9 +75,9 @@ pub fn get_habit_status(
             .schedule_times
             .iter()
             .map(|slot| {
-                let completion = today_completions.iter().find(|c| {
-                    c.scheduled_time == slot.start_time
-                });
+                let completion = today_completions
+                    .iter()
+                    .find(|c| c.scheduled_time == slot.start_time);
 
                 let status = match completion {
                     Some(c) => match c.status {
@@ -108,16 +97,57 @@ pub fn get_habit_status(
         vec![]
     };
 
-    // Calculate streak — look back 90 days
     let from_date = (today - chrono::Duration::days(90))
         .format("%Y-%m-%d")
         .to_string();
-    let all_completions = completion_repo.list_by_habit_since(&habit_id, &from_date)?;
-    let streak = calculate_streak(today, &habit.schedule_days, &all_completions);
+    let all_completions = completion_repo.list_by_habit_since(&habit.id, &from_date)?;
+    let slots_per_day = habit.schedule_times.len();
+    let streak = calculate_streak(today, &habit.schedule_days, slots_per_day, &all_completions);
 
     Ok(HabitStatusResponse {
-        habit_id,
+        habit_id: habit.id.clone(),
         streak,
         today_slots,
+        today_date: today_str.to_string(),
     })
+}
+
+#[tauri::command(rename_all = "snake_case")]
+pub fn get_habit_status(
+    state: State<'_, AppState>,
+    habit_id: String,
+) -> Result<HabitStatusResponse, AppError> {
+    let db = state.db.lock().map_err(|e| {
+        AppError::Database(format!("Failed to acquire database lock: {e}"))
+    })?;
+    let conn = db.connection();
+    let habit_repo = HabitRepository::new(conn);
+    let completion_repo = CompletionRepository::new(conn);
+
+    let habit = habit_repo.get(&habit_id)?;
+    let today = chrono::Local::now().date_naive();
+    let today_str = today.format("%Y-%m-%d").to_string();
+
+    build_habit_status(&habit, &completion_repo, today, &today_str)
+}
+
+#[tauri::command]
+pub fn get_all_habit_statuses(
+    state: State<'_, AppState>,
+) -> Result<Vec<HabitStatusResponse>, AppError> {
+    let db = state.db.lock().map_err(|e| {
+        AppError::Database(format!("Failed to acquire database lock: {e}"))
+    })?;
+    let conn = db.connection();
+    let habit_repo = HabitRepository::new(conn);
+    let completion_repo = CompletionRepository::new(conn);
+
+    let habits = habit_repo.list()?;
+    let today = chrono::Local::now().date_naive();
+    let today_str = today.format("%Y-%m-%d").to_string();
+
+    habits
+        .iter()
+        .map(|habit| build_habit_status(habit, &completion_repo, today, &today_str))
+        .collect()
 }

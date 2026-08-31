@@ -9,7 +9,11 @@ export const Route = createFileRoute("/")({
 			const label = getCurrentWindow().label;
 			if (label.startsWith("overlay-")) {
 				const habitId = label.replace("overlay-", "");
-				throw redirect({ to: "/overlay/$habitId", params: { habitId } });
+				throw redirect({
+					to: "/overlay/$habitId",
+					params: { habitId },
+					search: { triggerDate: "", scheduledTime: "" },
+				});
 			}
 		} catch (error) {
 			if (isRedirect(error)) {

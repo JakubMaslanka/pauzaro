@@ -6,15 +6,16 @@ use crate::models::{Completion, CompletionStatus};
 ///
 /// Counts consecutive completed days backwards from today.
 /// A day is "completed" when ALL scheduled slots for that day have a
-/// completion with status='done'. Days with any 'failed' slot (or missing
-/// completion for a scheduled slot) break the streak. Non-scheduled days
-/// are skipped (don't break or extend streak).
+/// completion with status='done'. Days with any 'failed' slot or fewer
+/// 'done' completions than `slots_per_day` break the streak.
+/// Non-scheduled days are skipped (don't break or extend streak).
 pub fn calculate_streak(
     today: NaiveDate,
     schedule_days: &[u8],
+    slots_per_day: usize,
     completions: &[Completion],
 ) -> u32 {
-    if schedule_days.is_empty() {
+    if schedule_days.is_empty() || slots_per_day == 0 {
         return 0;
     }
 
@@ -58,14 +59,17 @@ pub fn calculate_streak(
                 break;
             }
 
-            // All completions for this day are done
-            let all_done = day_completions
+            // Verify ALL slots are done — count must match expected slots_per_day
+            let done_count = day_completions
                 .iter()
-                .all(|c| c.status == CompletionStatus::Done);
+                .filter(|c| c.status == CompletionStatus::Done)
+                .count();
 
-            if all_done {
+            if done_count >= slots_per_day {
                 streak += 1;
             } else {
+                // Partial completion — if today, skip (slots still pending).
+                // Otherwise, streak is broken.
                 if check_date == today {
                     check_date -= chrono::Duration::days(1);
                     continue;
@@ -99,7 +103,7 @@ mod tests {
     #[test]
     fn zero_completions_returns_zero() {
         let today = NaiveDate::from_ymd_opt(2026, 8, 30).unwrap(); // Sunday
-        let result = calculate_streak(today, &[0, 1, 2, 3, 4, 5, 6], &[]);
+        let result = calculate_streak(today, &[0, 1, 2, 3, 4, 5, 6], 1, &[]);
         assert_eq!(result, 0);
     }
 
@@ -111,8 +115,8 @@ mod tests {
             make_completion("2026-08-29", "10:00", CompletionStatus::Done),
             make_completion("2026-08-28", "10:00", CompletionStatus::Done),
         ];
-        // Schedule: every day
-        let result = calculate_streak(today, &[0, 1, 2, 3, 4, 5, 6], &completions);
+        // Schedule: every day, 1 slot
+        let result = calculate_streak(today, &[0, 1, 2, 3, 4, 5, 6], 1, &completions);
         assert_eq!(result, 3);
     }
 
@@ -124,7 +128,7 @@ mod tests {
             // 2026-08-29 missing
             make_completion("2026-08-28", "10:00", CompletionStatus::Done),
         ];
-        let result = calculate_streak(today, &[0, 1, 2, 3, 4, 5, 6], &completions);
+        let result = calculate_streak(today, &[0, 1, 2, 3, 4, 5, 6], 1, &completions);
         assert_eq!(result, 1); // Only today counts
     }
 
@@ -138,7 +142,7 @@ mod tests {
             make_completion("2026-08-24", "10:00", CompletionStatus::Done), // Mon
         ];
         // Tue/Thu/Sat/Sun not scheduled — should be skipped
-        let result = calculate_streak(today, &[1, 3, 5], &completions);
+        let result = calculate_streak(today, &[1, 3, 5], 1, &completions);
         assert_eq!(result, 3);
     }
 
@@ -150,7 +154,7 @@ mod tests {
             make_completion("2026-08-29", "10:00", CompletionStatus::Failed),
             make_completion("2026-08-28", "10:00", CompletionStatus::Done),
         ];
-        let result = calculate_streak(today, &[0, 1, 2, 3, 4, 5, 6], &completions);
+        let result = calculate_streak(today, &[0, 1, 2, 3, 4, 5, 6], 1, &completions);
         assert_eq!(result, 1); // Only today, yesterday failed
     }
 
@@ -162,14 +166,45 @@ mod tests {
             make_completion("2026-08-29", "10:00", CompletionStatus::Done),
             make_completion("2026-08-28", "10:00", CompletionStatus::Done),
         ];
-        let result = calculate_streak(today, &[0, 1, 2, 3, 4, 5, 6], &completions);
+        let result = calculate_streak(today, &[0, 1, 2, 3, 4, 5, 6], 1, &completions);
         assert_eq!(result, 2); // Yesterday and day before
     }
 
     #[test]
     fn empty_schedule_days_returns_zero() {
         let today = NaiveDate::from_ymd_opt(2026, 8, 30).unwrap();
-        let result = calculate_streak(today, &[], &[]);
+        let result = calculate_streak(today, &[], 1, &[]);
         assert_eq!(result, 0);
+    }
+
+    #[test]
+    fn partial_day_breaks_streak_multi_slot() {
+        // Habit has 2 slots per day (10:00, 14:00)
+        let today = NaiveDate::from_ymd_opt(2026, 8, 30).unwrap();
+        let completions = vec![
+            // Today: both slots done
+            make_completion("2026-08-30", "10:00", CompletionStatus::Done),
+            make_completion("2026-08-30", "14:00", CompletionStatus::Done),
+            // Yesterday: only 1 of 2 slots done — partial
+            make_completion("2026-08-29", "10:00", CompletionStatus::Done),
+            // Day before: both done
+            make_completion("2026-08-28", "10:00", CompletionStatus::Done),
+            make_completion("2026-08-28", "14:00", CompletionStatus::Done),
+        ];
+        let result = calculate_streak(today, &[0, 1, 2, 3, 4, 5, 6], 2, &completions);
+        assert_eq!(result, 1); // Only today — yesterday partial breaks streak
+    }
+
+    #[test]
+    fn multi_slot_all_done_counts() {
+        let today = NaiveDate::from_ymd_opt(2026, 8, 30).unwrap();
+        let completions = vec![
+            make_completion("2026-08-30", "10:00", CompletionStatus::Done),
+            make_completion("2026-08-30", "14:00", CompletionStatus::Done),
+            make_completion("2026-08-29", "10:00", CompletionStatus::Done),
+            make_completion("2026-08-29", "14:00", CompletionStatus::Done),
+        ];
+        let result = calculate_streak(today, &[0, 1, 2, 3, 4, 5, 6], 2, &completions);
+        assert_eq!(result, 2);
     }
 }

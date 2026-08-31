@@ -8,12 +8,14 @@ import { Dashboard } from "./Dashboard";
 const mockGetUserProfile = vi.fn();
 const mockListHabits = vi.fn();
 const mockGetHabitStatus = vi.fn();
+const mockGetAllHabitStatuses = vi.fn();
 const mockMarkDone = vi.fn();
 
 vi.mock("../../lib/invoke", () => ({
 	getUserProfile: (...args: unknown[]) => mockGetUserProfile(...args),
 	listHabits: (...args: unknown[]) => mockListHabits(...args),
 	getHabitStatus: (...args: unknown[]) => mockGetHabitStatus(...args),
+	getAllHabitStatuses: (...args: unknown[]) => mockGetAllHabitStatuses(...args),
 	markDone: (...args: unknown[]) => mockMarkDone(...args),
 }));
 
@@ -57,11 +59,14 @@ describe("Dashboard", () => {
 				schedule_times: [{ start_time: "10:00" }],
 			},
 		]);
-		mockGetHabitStatus.mockResolvedValue({
-			habit_id: "h1",
-			streak: 0,
-			today_slots: [],
-		});
+		mockGetAllHabitStatuses.mockResolvedValue([
+			{
+				habit_id: "h1",
+				streak: 0,
+				today_slots: [],
+				today_date: "2026-08-31",
+			},
+		]);
 
 		render(<Dashboard />, { wrapper: Wrapper });
 
@@ -82,6 +87,7 @@ describe("Dashboard", () => {
 			created_at: "2026-08-27T10:00:00Z",
 		});
 		mockListHabits.mockResolvedValue([]);
+		mockGetAllHabitStatuses.mockResolvedValue([]);
 
 		render(<Dashboard />, { wrapper: Wrapper });
 

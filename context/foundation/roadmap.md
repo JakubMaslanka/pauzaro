@@ -149,6 +149,8 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Cloud sync / multi-device** — Why parked: PRD §Non-Goals. Zero backend, zero network calls.
 - **Community / leaderboard / social** — Why parked: PRD §Non-Goals. Solo app, no social features.
 - **Mascot editor + Lottie animations** — Why parked: shape-notes §Forward: technical-roadmap. Developer tooling for v2; MVP uses static assets per FR-009 resolution.
+- **SchedulePicker ref mutation during render** — Why parked: `slotKeysRef.current` mutated during render (push/slice) is unsafe under React 18+ concurrent mode. Not a bug today (Tauri webview has no concurrent features), but fragile. Fix: move key generation into addTimeSlot/removeTimeSlot callbacks. Source: impl-review F9 (2026-08-31).
+- **Backend time format validation** — Why parked: `CreateHabitInput::validate()` doesn't check `start_time` format (expected "HH:MM"). Invalid string silently never fires in scheduler. Low risk since UI uses `<input type="time">`. Fix: add `NaiveTime::parse_from_str` check. Source: impl-review F10 (2026-08-31).
 
 ## Done
 

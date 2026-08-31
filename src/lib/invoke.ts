@@ -3,6 +3,7 @@ import type {
 	CreateHabitInput,
 	CreateUserProfileInput,
 	Habit,
+	HabitStatus,
 	UserProfile,
 } from "../types";
 
@@ -57,10 +58,10 @@ export async function snoozeHabit(input: SnoozeInput): Promise<SnoozeResult> {
 	return invoke<SnoozeResult>("snooze_habit", { ...input });
 }
 
-export async function getHabitStatus(
-	habitId: string,
-): Promise<import("../types").HabitStatus> {
-	return invoke<import("../types").HabitStatus>("get_habit_status", {
-		habit_id: habitId,
-	});
+export async function getHabitStatus(habitId: string): Promise<HabitStatus> {
+	return invoke<HabitStatus>("get_habit_status", { habit_id: habitId });
+}
+
+export async function getAllHabitStatuses(): Promise<HabitStatus[]> {
+	return invoke<HabitStatus[]>("get_all_habit_statuses");
 }

@@ -1,9 +1,9 @@
 ---
 change_id: overlay-habit-loop
 title: Overlay habit loop
-status: implemented
+status: impl_reviewed
 created: 2026-08-29
-updated: 2026-08-30
+updated: 2026-08-31
 archived_at: null
 ---
 

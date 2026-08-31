@@ -3,6 +3,7 @@ import { listen } from "@tauri-apps/api/event";
 import { motion } from "framer-motion";
 import { useCallback, useEffect, useState } from "react";
 import {
+	getAllHabitStatuses,
 	getHabitStatus,
 	getUserProfile,
 	listHabits,
@@ -23,16 +24,17 @@ export function Dashboard() {
 		Record<string, HabitStatus>
 	>({});
 
-	const fetchStatuses = useCallback(async (habits: Habit[]) => {
-		const statuses: Record<string, HabitStatus> = {};
-		for (const habit of habits) {
-			try {
-				statuses[habit.id] = await getHabitStatus(habit.id);
-			} catch (error) {
-				console.error(`Failed to fetch status for habit ${habit.id}:`, error);
+	const fetchStatuses = useCallback(async () => {
+		try {
+			const all = await getAllHabitStatuses();
+			const statuses: Record<string, HabitStatus> = {};
+			for (const s of all) {
+				statuses[s.habit_id] = s;
 			}
+			setHabitStatuses(statuses);
+		} catch (error) {
+			console.error("Failed to fetch habit statuses:", error);
 		}
-		setHabitStatuses(statuses);
 	}, []);
 
 	useEffect(() => {
@@ -49,7 +51,7 @@ export function Dashboard() {
 				}
 
 				setState({ status: "ready", profile, habits });
-				fetchStatuses(habits);
+				fetchStatuses();
 			} catch (error) {
 				const message = error instanceof Error ? error.message : String(error);
 				console.error("Dashboard load failed:", message);
@@ -62,23 +64,22 @@ export function Dashboard() {
 	// Listen for habit-updated events from overlay interactions
 	useEffect(() => {
 		const unlisten = listen("habit-updated", () => {
-			if (state.status === "ready") {
-				fetchStatuses(state.habits);
-			}
+			fetchStatuses();
 		});
 
 		return () => {
 			unlisten.then((fn) => fn());
 		};
-	}, [state, fetchStatuses]);
+	}, [fetchStatuses]);
 
 	const handleLifebuoy = useCallback(
 		async (habitId: string, scheduledTime: string) => {
-			const today = new Date().toISOString().split("T")[0];
+			const status = habitStatuses[habitId];
+			if (!status) return;
 			try {
 				await markDone({
 					habit_id: habitId,
-					trigger_date: today,
+					trigger_date: status.today_date,
 					scheduled_time: scheduledTime,
 					override_failed: true,
 				});
@@ -89,7 +90,7 @@ export function Dashboard() {
 				console.error("Lifebuoy failed:", error);
 			}
 		},
-		[],
+		[habitStatuses],
 	);
 
 	if (state.status === "loading") {

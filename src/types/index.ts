@@ -60,4 +60,5 @@ export interface HabitStatus {
 	habit_id: string;
 	streak: number;
 	today_slots: SlotStatus[];
+	today_date: string;
 }

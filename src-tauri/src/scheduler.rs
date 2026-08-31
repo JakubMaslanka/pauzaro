@@ -17,6 +17,7 @@ use crate::AppState;
 pub struct NextTrigger {
     pub habit_id: String,
     pub scheduled_time: String,
+    pub trigger_date: String,
     pub fire_at: chrono::DateTime<Local>,
     pub pending_trigger_id: Option<String>,
 }
@@ -120,16 +121,21 @@ impl Scheduler {
                                 let app_upsert = app.clone();
                                 let habit_id = next.habit_id.clone();
                                 let sched_time = next.scheduled_time.clone();
+                                let trigger_date = next.trigger_date.clone();
                                 let now_str = Local::now().naive_local()
                                     .format("%Y-%m-%dT%H:%M:%S").to_string();
-                                let today_str = Local::now().date_naive()
-                                    .format("%Y-%m-%d").to_string();
                                 let _ = tokio::task::spawn_blocking(move || {
                                     let state = app_upsert.state::<AppState>();
-                                    let db = state.db.lock();
-                                    if let Ok(db) = db {
-                                        let repo = PendingTriggerRepository::new(db.connection());
-                                        let _ = repo.upsert(&habit_id, &today_str, &sched_time, &now_str);
+                                    let db = match state.db.lock() {
+                                        Ok(db) => db,
+                                        Err(e) => {
+                                            log::error!("DB lock failed during trigger upsert: {e}");
+                                            return;
+                                        }
+                                    };
+                                    let repo = PendingTriggerRepository::new(db.connection());
+                                    if let Err(e) = repo.upsert(&habit_id, &trigger_date, &sched_time, &now_str) {
+                                        log::error!("Failed to upsert pending trigger: {e}");
                                     }
                                 }).await;
                             }
@@ -141,7 +147,10 @@ impl Scheduler {
                                 continue;
                             }
 
-                            let url = format!("/#/overlay/{}", next.habit_id);
+                            let url = format!(
+                                "/#/overlay/{}?triggerDate={}&scheduledTime={}",
+                                next.habit_id, next.trigger_date, next.scheduled_time
+                            );
                             match WebviewWindowBuilder::new(
                                 &app,
                                 &label,
@@ -195,6 +204,7 @@ pub fn find_next_trigger(
                 let candidate = NextTrigger {
                     habit_id: pt.habit_id.clone(),
                     scheduled_time: pt.scheduled_time.clone(),
+                    trigger_date: pt.trigger_date.clone(),
                     fire_at: fire_at_local,
                     pending_trigger_id: Some(pt.id.clone()),
                 };
@@ -228,6 +238,7 @@ pub fn find_next_trigger(
                             let candidate = NextTrigger {
                                 habit_id: habit.id.clone(),
                                 scheduled_time: slot.start_time.clone(),
+                                trigger_date: today.format("%Y-%m-%d").to_string(),
                                 fire_at: fire_at_local,
                                 pending_trigger_id: None,
                             };
@@ -251,6 +262,7 @@ pub fn find_next_trigger(
                             let candidate = NextTrigger {
                                 habit_id: habit.id.clone(),
                                 scheduled_time: slot.start_time.clone(),
+                                trigger_date: future_date.format("%Y-%m-%d").to_string(),
                                 fire_at: fire_at_local,
                                 pending_trigger_id: None,
                             };

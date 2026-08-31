@@ -23,9 +23,13 @@ export function ScheduleStep({ habitDetails, onBack }: ScheduleStepProps) {
 	const [scheduleTimes, setScheduleTimes] = useState<TimeSlot[]>([
 		{ start_time: "10:00" },
 	]);
-	const [startDate, setStartDate] = useState(
-		new Date().toISOString().split("T")[0],
-	);
+	const [startDate, setStartDate] = useState(() => {
+		const now = new Date();
+		const year = now.getFullYear();
+		const month = String(now.getMonth() + 1).padStart(2, "0");
+		const day = String(now.getDate()).padStart(2, "0");
+		return `${year}-${month}-${day}`;
+	});
 	const [endDate, setEndDate] = useState("");
 	const [error, setError] = useState("");
 	const [submitting, setSubmitting] = useState(false);
