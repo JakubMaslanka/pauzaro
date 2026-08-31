@@ -75,6 +75,27 @@ impl<'a> CompletionRepository<'a> {
         Ok(completions)
     }
 
+    pub fn list_by_habit_in_range(
+        &self,
+        habit_id: &str,
+        from_date: &str,
+        to_date: &str,
+    ) -> Result<Vec<Completion>, AppError> {
+        let mut stmt = self.conn.prepare(
+            "SELECT id, habit_id, trigger_date, scheduled_time, status, completed_at
+             FROM completions WHERE habit_id = ?1 AND trigger_date >= ?2 AND trigger_date <= ?3
+             ORDER BY trigger_date ASC, scheduled_time ASC",
+        )?;
+
+        let completions = stmt
+            .query_map(params![habit_id, from_date, to_date], |row| {
+                Self::row_to_completion(row)
+            })?
+            .collect::<Result<Vec<_>, _>>()?;
+
+        Ok(completions)
+    }
+
     pub fn has_completion_for_slot(
         &self,
         habit_id: &str,

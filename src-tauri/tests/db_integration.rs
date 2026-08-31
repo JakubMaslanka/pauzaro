@@ -1,8 +1,10 @@
+use pauzaro_lib::db::completions::CompletionRepository;
 use pauzaro_lib::db::habits::HabitRepository;
 use pauzaro_lib::db::user_profile::UserProfileRepository;
 use pauzaro_lib::db::Database;
 use pauzaro_lib::models::habit::{CreateHabitInput, TimeSlot};
 use pauzaro_lib::models::user_profile::CreateUserProfileInput;
+use pauzaro_lib::models::CompletionStatus;
 use pauzaro_lib::AppState;
 use std::sync::Mutex;
 use tempfile::NamedTempFile;
@@ -293,4 +295,69 @@ fn create_habit_rejects_empty_schedule_times() {
 
     let result = repo.create(&input);
     assert!(result.is_err());
+}
+
+// --- Completion range query tests ---
+
+#[test]
+fn list_by_habit_in_range_returns_bounded_results() {
+    let (_temp, db) = setup_db();
+    let habit_repo = HabitRepository::new(db.connection());
+    let comp_repo = CompletionRepository::new(db.connection());
+
+    let habit = habit_repo.create(&sample_habit_input()).expect("should create habit");
+
+    comp_repo.insert(&habit.id, "2026-08-01", "10:00", &CompletionStatus::Done).unwrap();
+    comp_repo.insert(&habit.id, "2026-08-15", "10:00", &CompletionStatus::Done).unwrap();
+    comp_repo.insert(&habit.id, "2026-08-20", "10:00", &CompletionStatus::Failed).unwrap();
+    comp_repo.insert(&habit.id, "2026-08-31", "10:00", &CompletionStatus::Done).unwrap();
+    comp_repo.insert(&habit.id, "2026-09-01", "10:00", &CompletionStatus::Done).unwrap();
+
+    let results = comp_repo
+        .list_by_habit_in_range(&habit.id, "2026-08-01", "2026-08-31")
+        .expect("should query range");
+
+    assert_eq!(results.len(), 4, "should include Aug 1, 15, 20, 31 but not Sep 1");
+    assert_eq!(results[0].trigger_date, "2026-08-01");
+    assert_eq!(results[3].trigger_date, "2026-08-31");
+}
+
+#[test]
+fn list_by_habit_in_range_returns_empty_for_no_matches() {
+    let (_temp, db) = setup_db();
+    let habit_repo = HabitRepository::new(db.connection());
+    let comp_repo = CompletionRepository::new(db.connection());
+
+    let habit = habit_repo.create(&sample_habit_input()).expect("should create habit");
+    comp_repo.insert(&habit.id, "2026-08-15", "10:00", &CompletionStatus::Done).unwrap();
+
+    let results = comp_repo
+        .list_by_habit_in_range(&habit.id, "2026-07-01", "2026-07-31")
+        .expect("should query range");
+
+    assert_eq!(results.len(), 0);
+}
+
+#[test]
+fn list_by_habit_in_range_orders_by_date_then_time() {
+    let (_temp, db) = setup_db();
+    let habit_repo = HabitRepository::new(db.connection());
+    let comp_repo = CompletionRepository::new(db.connection());
+
+    let habit = habit_repo.create(&sample_habit_input()).expect("should create habit");
+
+    comp_repo.insert(&habit.id, "2026-08-10", "15:00", &CompletionStatus::Done).unwrap();
+    comp_repo.insert(&habit.id, "2026-08-10", "10:00", &CompletionStatus::Done).unwrap();
+    comp_repo.insert(&habit.id, "2026-08-09", "10:00", &CompletionStatus::Done).unwrap();
+
+    let results = comp_repo
+        .list_by_habit_in_range(&habit.id, "2026-08-09", "2026-08-10")
+        .expect("should query range");
+
+    assert_eq!(results.len(), 3);
+    assert_eq!(results[0].trigger_date, "2026-08-09");
+    assert_eq!(results[1].trigger_date, "2026-08-10");
+    assert_eq!(results[1].scheduled_time, "10:00");
+    assert_eq!(results[2].trigger_date, "2026-08-10");
+    assert_eq!(results[2].scheduled_time, "15:00");
 }

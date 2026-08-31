@@ -107,6 +107,7 @@ pub fn run() {
             commands::habits::list_habits,
             commands::habits::get_habit_status,
             commands::habits::get_all_habit_statuses,
+            commands::habits::get_month_completions,
             commands::overlay::mark_done,
             commands::overlay::snooze_habit,
         ])

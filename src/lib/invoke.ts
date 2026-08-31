@@ -1,5 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
 import type {
+	Completion,
 	CreateHabitInput,
 	CreateUserProfileInput,
 	Habit,
@@ -64,4 +65,16 @@ export async function getHabitStatus(habitId: string): Promise<HabitStatus> {
 
 export async function getAllHabitStatuses(): Promise<HabitStatus[]> {
 	return invoke<HabitStatus[]>("get_all_habit_statuses");
+}
+
+export async function getMonthCompletions(
+	habitId: string,
+	fromDate: string,
+	toDate: string,
+): Promise<Completion[]> {
+	return invoke<Completion[]>("get_month_completions", {
+		habit_id: habitId,
+		from_date: fromDate,
+		to_date: toDate,
+	});
 }

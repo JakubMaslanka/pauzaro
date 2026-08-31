@@ -5,7 +5,7 @@ use tauri::State;
 use crate::db::completions::CompletionRepository;
 use crate::db::habits::HabitRepository;
 use crate::error::AppError;
-use crate::models::habit::{CreateHabitInput, Habit};
+use crate::models::habit::{Completion, CreateHabitInput, Habit};
 use crate::models::CompletionStatus;
 use crate::streak::calculate_streak;
 use crate::AppState;
@@ -150,4 +150,18 @@ pub fn get_all_habit_statuses(
         .iter()
         .map(|habit| build_habit_status(habit, &completion_repo, today, &today_str))
         .collect()
+}
+
+#[tauri::command(rename_all = "snake_case")]
+pub fn get_month_completions(
+    state: State<'_, AppState>,
+    habit_id: String,
+    from_date: String,
+    to_date: String,
+) -> Result<Vec<Completion>, AppError> {
+    let db = state.db.lock().map_err(|e| {
+        AppError::Database(format!("Failed to acquire database lock: {e}"))
+    })?;
+    let repo = CompletionRepository::new(db.connection());
+    repo.list_by_habit_in_range(&habit_id, &from_date, &to_date)
 }
