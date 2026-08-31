@@ -419,10 +419,10 @@ Layout order: `StreakHero` → `MonthStats` → `MonthCalendar`. Wrapped in `Con
 
 #### Automated
 
-- [x] 3.1 All tests pass (`pnpm test`)
-- [x] 3.2 TypeScript type-check passes (`tsc --noEmit`)
-- [x] 3.3 Lint passes (`pnpm lint`)
-- [x] 3.4 Rust tests still pass (`cargo test`)
+- [x] 3.1 All tests pass (`pnpm test`) — 1f57973
+- [x] 3.2 TypeScript type-check passes (`tsc --noEmit`) — 1f57973
+- [x] 3.3 Lint passes (`pnpm lint`) — 1f57973
+- [x] 3.4 Rust tests still pass (`cargo test`) — 1f57973
 
 #### Manual
 
