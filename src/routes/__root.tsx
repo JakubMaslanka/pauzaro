@@ -6,7 +6,12 @@ import "@fontsource/nunito/800.css";
 import "../styles/global.css";
 
 import { AppShell, MantineProvider } from "@mantine/core";
-import { createRootRoute, Outlet, useNavigate } from "@tanstack/react-router";
+import {
+	createRootRoute,
+	Outlet,
+	useLocation,
+	useNavigate,
+} from "@tanstack/react-router";
 import { listen } from "@tauri-apps/api/event";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { useCallback, useEffect, useState } from "react";
@@ -58,9 +63,14 @@ function RootLayout() {
 
 function AppShellLayout() {
 	const navigate = useNavigate();
+	const location = useLocation();
 	const habits = useDashboardStore((s) => s.habits);
 	const activeHabitId = useDashboardStore((s) => s.activeHabitId);
 	const setHabits = useDashboardStore((s) => s.setHabits);
+
+	// Only show active habit highlight on dashboard route
+	const isDashboard = location.pathname === "/dashboard";
+	const visibleActiveId = isDashboard ? activeHabitId : null;
 
 	const loadHabits = useCallback(async () => {
 		try {
@@ -124,7 +134,7 @@ function AppShellLayout() {
 			>
 				<AppNavbar
 					habits={habits}
-					activeHabitId={activeHabitId}
+					activeHabitId={visibleActiveId}
 					onSelectHabit={handleSelectHabit}
 					onCreateHabit={handleCreateHabit}
 					onOpenSettings={handleOpenSettings}

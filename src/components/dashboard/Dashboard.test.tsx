@@ -89,7 +89,9 @@ describe("Dashboard", () => {
 		render(<Dashboard />, { wrapper: Wrapper });
 
 		await waitFor(() => {
-			expect(screen.getByText("Stretch Break")).toBeInTheDocument();
+			expect(
+				screen.getAllByText("Stretch Break").length,
+			).toBeGreaterThanOrEqual(1);
 		});
 		// Greeting with user name
 		expect(screen.getByText(/Jacob/)).toBeInTheDocument();
@@ -148,7 +150,9 @@ describe("Dashboard", () => {
 		render(<Dashboard />, { wrapper: Wrapper });
 
 		await waitFor(() => {
-			expect(screen.getByText("Stretch Break")).toBeInTheDocument();
+			expect(
+				screen.getAllByText("Stretch Break").length,
+			).toBeGreaterThanOrEqual(1);
 		});
 		const badge = screen.getByText(/KEEP GOING|NO DATA/);
 		expect(badge).toBeInTheDocument();

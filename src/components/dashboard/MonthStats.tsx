@@ -1,10 +1,11 @@
-import { Badge, Card, Group, Stack, Text } from "@mantine/core";
-import { CircleCheck, Flame } from "lucide-react";
+import { Badge, Card, SimpleGrid, Stack, Text } from "@mantine/core";
+import { Calendar, CircleCheck, Flame } from "lucide-react";
 
 interface MonthStatsProps {
 	daysPracticed: number;
 	totalScheduledDays: number;
 	streak: number;
+	endDate?: string | null;
 }
 
 function getPerformanceBadge(
@@ -20,19 +21,38 @@ function getPerformanceBadge(
 	return { label: "KEEP GOING", color: "gray" };
 }
 
+function computeDaysLeft(endDate: string): number | null {
+	const now = new Date();
+	const todayStr = `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, "0")}-${String(now.getUTCDate()).padStart(2, "0")}`;
+	if (endDate <= todayStr) return 0;
+
+	const [ey, em, ed] = endDate.split("-").map(Number);
+	const [ty, tm, td] = todayStr.split("-").map(Number);
+	const endMs = Date.UTC(ey, em - 1, ed);
+	const todayMs = Date.UTC(ty, tm - 1, td);
+	return Math.ceil((endMs - todayMs) / (1000 * 60 * 60 * 24));
+}
+
 export function MonthStats({
 	daysPracticed,
 	totalScheduledDays,
 	streak,
+	endDate,
 }: MonthStatsProps) {
 	const badge = getPerformanceBadge(daysPracticed, totalScheduledDays);
+	const daysLeft = endDate ? computeDaysLeft(endDate) : null;
+	const showEndDate = daysLeft !== null;
 
 	return (
 		<Stack gap="xs" align="center">
 			<Badge variant="light" color={badge.color} size="lg" radius="xl">
 				{badge.label}
 			</Badge>
-			<Group gap="sm" grow style={{ width: "100%" }}>
+			<SimpleGrid
+				cols={showEndDate ? 1 : 2}
+				spacing="sm"
+				style={{ width: "100%" }}
+			>
 				<Card shadow="xs" padding="md" radius="md" withBorder>
 					<Stack align="center" gap={4}>
 						<CircleCheck size={24} color="#0d9488" />
@@ -55,7 +75,20 @@ export function MonthStats({
 						</Text>
 					</Stack>
 				</Card>
-			</Group>
+				{showEndDate ? (
+					<Card shadow="xs" padding="md" radius="md" withBorder>
+						<Stack align="center" gap={4}>
+							<Calendar size={24} color="#0d9488" />
+							<Text fw={700} size="xl" lh={1}>
+								{daysLeft}
+							</Text>
+							<Text size="xs" c="dimmed">
+								Days left
+							</Text>
+						</Stack>
+					</Card>
+				) : null}
+			</SimpleGrid>
 		</Stack>
 	);
 }

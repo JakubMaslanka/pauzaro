@@ -121,6 +121,7 @@ interface DerivedDay {
 	isToday: boolean;
 	isCurrentMonth: boolean;
 	partialLabel?: string;
+	tooltipLabel?: string;
 }
 
 function deriveDayStatus(
@@ -203,6 +204,7 @@ function deriveDayStatus(
 			status: "done",
 			isToday,
 			isCurrentMonth: true,
+			tooltipLabel: `${doneCount}/${slotsPerDay} completed ✅`,
 		};
 	}
 
@@ -214,6 +216,7 @@ function deriveDayStatus(
 			isToday,
 			isCurrentMonth: true,
 			partialLabel: `${doneCount}/${slotsPerDay}`,
+			tooltipLabel: `${doneCount}/${slotsPerDay} completed`,
 		};
 	}
 
@@ -225,6 +228,7 @@ function deriveDayStatus(
 			status: "failed",
 			isToday,
 			isCurrentMonth: true,
+			tooltipLabel: `0/${slotsPerDay} completed`,
 		};
 	}
 
@@ -374,6 +378,7 @@ export function MonthCalendar({
 							isToday={day.isToday}
 							isCurrentMonth={day.isCurrentMonth}
 							partialLabel={day.partialLabel}
+							tooltipLabel={day.tooltipLabel}
 						/>
 					</Box>
 				))}

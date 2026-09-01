@@ -1,4 +1,4 @@
-import { Box, Text } from "@mantine/core";
+import { Box, Text, Tooltip } from "@mantine/core";
 import { AlertCircle, CircleCheck, CircleX } from "lucide-react";
 
 type DayCellStatus =
@@ -15,6 +15,7 @@ interface DayCellProps {
 	isToday: boolean;
 	isCurrentMonth: boolean;
 	partialLabel?: string;
+	tooltipLabel?: string;
 }
 
 const STATUS_CONFIG: Record<
@@ -39,6 +40,7 @@ export function DayCell({
 	isToday,
 	isCurrentMonth,
 	partialLabel,
+	tooltipLabel,
 }: DayCellProps) {
 	if (!isCurrentMonth) {
 		return (
@@ -61,8 +63,11 @@ export function DayCell({
 	const config = STATUS_CONFIG[status];
 	const hasIcon = config.icon !== null;
 	const IconComponent = config.icon;
+	const showTooltip =
+		tooltipLabel &&
+		(status === "done" || status === "failed" || status === "partial");
 
-	return (
+	const cell = (
 		<Box
 			style={{
 				width: 40,
@@ -72,6 +77,7 @@ export function DayCell({
 				alignItems: "center",
 				justifyContent: "center",
 				position: "relative",
+				cursor: showTooltip ? "default" : undefined,
 			}}
 		>
 			{hasIcon && IconComponent ? (
@@ -126,4 +132,19 @@ export function DayCell({
 			) : null}
 		</Box>
 	);
+
+	if (showTooltip) {
+		return (
+			<Tooltip
+				label={tooltipLabel}
+				position="top"
+				withArrow
+				transitionProps={{ duration: 150 }}
+			>
+				{cell}
+			</Tooltip>
+		);
+	}
+
+	return cell;
 }

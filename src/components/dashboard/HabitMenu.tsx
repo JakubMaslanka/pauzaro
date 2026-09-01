@@ -28,7 +28,7 @@ export function HabitMenu({
 					size="sm"
 					radius="xl"
 					className="habit-menu-trigger"
-					style={{ opacity: 0, transition: "opacity 150ms ease" }}
+					style={{ opacity: 0.12, transition: "opacity 150ms ease" }}
 				>
 					<MoreVertical size={16} />
 				</ActionIcon>

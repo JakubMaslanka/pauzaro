@@ -35,7 +35,7 @@ export function AppNavbar({
 					display: "flex",
 					justifyContent: "center",
 					paddingTop: 16,
-					paddingBottom: 8,
+					paddingBottom: 16,
 				}}
 			>
 				<Tooltip label="Pauzaro" position="right" withArrow>

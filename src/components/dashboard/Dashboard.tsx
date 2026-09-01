@@ -263,9 +263,12 @@ export function Dashboard() {
 
 	return (
 		<Container size="lg" py="xl" px="xl">
+			<style>
+				{`@media (min-width: 62em) { .dashboard-right-col { padding-top: 60px; } }`}
+			</style>
 			<Grid gap="xl">
 				{/* Left column: greeting + habit info + calendar */}
-				<Grid.Col span={8}>
+				<Grid.Col span={{ base: 12, md: 8 }}>
 					<Stack gap="md">
 						<motion.div
 							initial={{ opacity: 0, y: -10 }}
@@ -276,13 +279,25 @@ export function Dashboard() {
 								{greeting}
 								{userName ? `, ${userName}` : ""}! 👋
 							</Title>
+							<Text size="sm" c="dimmed">
+								Working on{" "}
+								<Text span fw={600} c="teal">
+									{activeHabit.name}
+								</Text>{" "}
+								💪
+							</Text>
 						</motion.div>
 
-						<Box className="habit-header" style={{ position: "relative" }}>
+						<Box>
 							<style>
 								{`.habit-header:hover .habit-menu-trigger { opacity: 1 !important; }`}
 							</style>
-							<Group gap="xs" align="center">
+							<Group
+								gap="xs"
+								align="center"
+								className="habit-header"
+								style={{ width: "fit-content" }}
+							>
 								<Title order={3} fw={700}>
 									{activeHabit.name}
 								</Title>
@@ -314,13 +329,14 @@ export function Dashboard() {
 				</Grid.Col>
 
 				{/* Right column: streak hero + stats */}
-				<Grid.Col span={4}>
-					<Stack gap="md" pt={60}>
+				<Grid.Col span={{ base: 12, md: 4 }}>
+					<Stack gap="md" className="dashboard-right-col">
 						<StreakHero streak={streak} />
 						<MonthStats
 							daysPracticed={daysPracticed}
 							totalScheduledDays={totalScheduledDays}
 							streak={streak}
+							endDate={activeHabit.end_date}
 						/>
 					</Stack>
 				</Grid.Col>
