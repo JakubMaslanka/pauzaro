@@ -641,9 +641,9 @@ Build standalone create-habit page (reusing onboarding HabitDetailsStep + Schedu
 
 #### Automated
 
-- [x] 5.1 All tests pass (`pnpm test`)
-- [x] 5.2 TypeScript type-check passes (`tsc --noEmit`)
-- [x] 5.3 Lint passes (`pnpm lint`)
+- [x] 5.1 All tests pass (`pnpm test`) — 4729f84
+- [x] 5.2 TypeScript type-check passes (`tsc --noEmit`) — 4729f84
+- [x] 5.3 Lint passes (`pnpm lint`) — 4729f84
 
 #### Manual
 
@@ -657,8 +657,8 @@ Build standalone create-habit page (reusing onboarding HabitDetailsStep + Schedu
 
 #### Automated
 
-- [ ] 6.1 TypeScript type-check passes (`tsc --noEmit`)
-- [ ] 6.2 Lint passes (`pnpm lint`)
+- [x] 6.1 TypeScript type-check passes (`tsc --noEmit`)
+- [x] 6.2 Lint passes (`pnpm lint`)
 
 #### Manual
 
