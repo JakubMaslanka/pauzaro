@@ -207,4 +207,66 @@ mod tests {
         let result = calculate_streak(today, &[0, 1, 2, 3, 4, 5, 6], 2, &completions);
         assert_eq!(result, 2);
     }
+
+    #[test]
+    fn mixed_done_and_failed_same_day_breaks_streak() {
+        // 2 slots per day. Yesterday: slot 1 Done, slot 2 Failed.
+        // Failed takes precedence — yesterday breaks the streak.
+        let today = NaiveDate::from_ymd_opt(2026, 8, 30).unwrap();
+        let completions = vec![
+            make_completion("2026-08-30", "10:00", CompletionStatus::Done),
+            make_completion("2026-08-30", "14:00", CompletionStatus::Done),
+            make_completion("2026-08-29", "10:00", CompletionStatus::Done),
+            make_completion("2026-08-29", "14:00", CompletionStatus::Failed),
+            make_completion("2026-08-28", "10:00", CompletionStatus::Done),
+            make_completion("2026-08-28", "14:00", CompletionStatus::Done),
+        ];
+        let result = calculate_streak(today, &[0, 1, 2, 3, 4, 5, 6], 2, &completions);
+        assert_eq!(result, 1); // Only today — yesterday has a Failed slot
+    }
+
+    #[test]
+    fn year_boundary_streak() {
+        // Streak spanning Dec 31 → Jan 1 across year boundary.
+        let today = NaiveDate::from_ymd_opt(2027, 1, 2).unwrap(); // Friday = 5
+        let completions = vec![
+            make_completion("2027-01-02", "10:00", CompletionStatus::Done),
+            make_completion("2027-01-01", "10:00", CompletionStatus::Done),
+            make_completion("2026-12-31", "10:00", CompletionStatus::Done),
+            make_completion("2026-12-30", "10:00", CompletionStatus::Done),
+        ];
+        let result = calculate_streak(today, &[0, 1, 2, 3, 4, 5, 6], 1, &completions);
+        assert_eq!(result, 4);
+    }
+
+    #[test]
+    fn completions_on_non_scheduled_days_ignored() {
+        // Schedule: Mon=1, Wed=3, Fri=5. Noise completions on Tue/Thu.
+        let today = NaiveDate::from_ymd_opt(2026, 8, 28).unwrap(); // Friday = 5
+        let completions = vec![
+            make_completion("2026-08-28", "10:00", CompletionStatus::Done), // Fri (scheduled)
+            make_completion("2026-08-27", "10:00", CompletionStatus::Done), // Thu (noise)
+            make_completion("2026-08-26", "10:00", CompletionStatus::Done), // Wed (scheduled)
+            make_completion("2026-08-25", "10:00", CompletionStatus::Failed), // Tue (noise)
+            make_completion("2026-08-24", "10:00", CompletionStatus::Done), // Mon (scheduled)
+        ];
+        // Tue/Thu not in schedule — their completions (even Failed!) are invisible.
+        let result = calculate_streak(today, &[1, 3, 5], 1, &completions);
+        assert_eq!(result, 3); // Fri + Wed + Mon, noise days skipped
+    }
+
+    #[test]
+    fn long_streak_thirty_days() {
+        // 30 consecutive days, all done. Verifies lookback handles longer streaks.
+        let today = NaiveDate::from_ymd_opt(2026, 8, 30).unwrap();
+        let completions: Vec<_> = (0..30)
+            .map(|i| {
+                let date = today - chrono::Duration::days(i);
+                let date_str = date.format("%Y-%m-%d").to_string();
+                make_completion(&date_str, "10:00", CompletionStatus::Done)
+            })
+            .collect();
+        let result = calculate_streak(today, &[0, 1, 2, 3, 4, 5, 6], 1, &completions);
+        assert_eq!(result, 30);
+    }
 }
