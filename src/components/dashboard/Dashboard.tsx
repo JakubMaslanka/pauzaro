@@ -1,17 +1,32 @@
-import { Alert, Container, Loader, Stack, Text } from "@mantine/core";
-import { listen } from "@tauri-apps/api/event";
+import {
+	Alert,
+	Box,
+	Container,
+	Grid,
+	Group,
+	Loader,
+	Stack,
+	Text,
+	Title,
+} from "@mantine/core";
+import { emit, listen } from "@tauri-apps/api/event";
 import { motion } from "framer-motion";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
 	getAllHabitStatuses,
+	getLatestCompletion,
 	getMonthCompletions,
+	getUserProfile,
 	listHabits,
+	markDone,
 } from "../../lib/invoke";
 import { useDashboardStore } from "../../stores/dashboard";
 import type { Completion, Habit, HabitStatus } from "../../types";
-import { HabitCard } from "./HabitCard";
+import { DeleteHabitModal } from "./DeleteHabitModal";
+import { HabitMenu } from "./HabitMenu";
 import { MonthCalendar } from "./MonthCalendar";
 import { MonthStats } from "./MonthStats";
+import { RenameHabitModal } from "./RenameHabitModal";
 import { StreakHero } from "./StreakHero";
 
 type DashboardState =
@@ -72,16 +87,31 @@ function countDaysPracticed(
 	return count;
 }
 
+function getGreeting(): string {
+	const hour = new Date().getUTCHours();
+	if (hour >= 5 && hour < 12) return "Good morning";
+	if (hour >= 12 && hour < 17) return "Good afternoon";
+	if (hour >= 17 && hour < 21) return "Good evening";
+	return "Good night";
+}
+
 export function Dashboard() {
 	const [state, setState] = useState<DashboardState>({ status: "loading" });
 	const [currentMonth, setCurrentMonth] = useState(getCurrentUTCMonth);
 	const [completions, setCompletions] = useState<Completion[]>([]);
+	const [userName, setUserName] = useState<string>("");
+	const [latestCompletion, setLatestCompletion] = useState<Completion | null>(
+		null,
+	);
+	const [renameOpen, setRenameOpen] = useState(false);
+	const [deleteOpen, setDeleteOpen] = useState(false);
 
 	const loadData = useCallback(async () => {
 		try {
-			const [habits, allStatuses] = await Promise.all([
+			const [habits, allStatuses, profile] = await Promise.all([
 				listHabits(),
 				getAllHabitStatuses(),
+				getUserProfile(),
 			]);
 
 			const statuses: Record<string, HabitStatus> = {};
@@ -89,6 +119,7 @@ export function Dashboard() {
 				statuses[s.habit_id] = s;
 			}
 
+			setUserName(profile?.name ?? "");
 			setState({ status: "ready", habits, habitStatuses: statuses });
 		} catch (error) {
 			const message = error instanceof Error ? error.message : String(error);
@@ -122,10 +153,13 @@ export function Dashboard() {
 		return state.habits.find((h) => h.id === activeHabitId) ?? null;
 	}, [state, activeHabitId]);
 
-	// Load completions when active habit or month changes
+	// Load completions + latest completion when active habit or month changes
 	useEffect(() => {
 		if (!activeHabit) return;
 		loadCompletions(activeHabit.id, currentMonth.year, currentMonth.month);
+		getLatestCompletion(activeHabit.id)
+			.then(setLatestCompletion)
+			.catch(() => setLatestCompletion(null));
 	}, [activeHabit, currentMonth, loadCompletions]);
 
 	// Listen for habit-updated events from overlay interactions
@@ -147,9 +181,38 @@ export function Dashboard() {
 		setCurrentMonth({ year, month });
 	}, []);
 
+	const handleRenamed = useCallback(() => {
+		loadData();
+		emit("habit-updated");
+	}, [loadData]);
+
+	const handleDeleted = useCallback(() => {
+		loadData();
+		emit("habit-updated");
+	}, [loadData]);
+
+	const handleMarkDone = useCallback(async () => {
+		if (!latestCompletion || latestCompletion.status === "done") return;
+		try {
+			await markDone({
+				habit_id: latestCompletion.habit_id,
+				trigger_date: latestCompletion.trigger_date,
+				scheduled_time: latestCompletion.scheduled_time,
+				override_failed: true,
+			});
+			loadData();
+			const currentActiveId = useDashboardStore.getState().activeHabitId;
+			if (currentActiveId) {
+				loadCompletions(currentActiveId, currentMonth.year, currentMonth.month);
+			}
+		} catch (error) {
+			console.error("Failed to mark as done:", error);
+		}
+	}, [latestCompletion, loadData, loadCompletions, currentMonth]);
+
 	if (state.status === "loading") {
 		return (
-			<Container size="sm" py="xl">
+			<Container size="lg" py="xl">
 				<Stack align="center" gap="md" py={80}>
 					<Loader size="lg" color="teal" />
 					<Text c="dimmed">Loading your habits...</Text>
@@ -160,7 +223,7 @@ export function Dashboard() {
 
 	if (state.status === "error") {
 		return (
-			<Container size="sm" py="xl">
+			<Container size="lg" py="xl">
 				<Alert color="red" title="Oops! Something went wrong 😵">
 					{state.error}
 				</Alert>
@@ -172,7 +235,7 @@ export function Dashboard() {
 
 	if (!activeHabit) {
 		return (
-			<Container size="sm" py="xl">
+			<Container size="lg" py="xl">
 				<motion.div
 					initial={{ opacity: 0, y: -10 }}
 					animate={{ opacity: 1, y: 0 }}
@@ -196,27 +259,85 @@ export function Dashboard() {
 		activeHabit.start_date,
 	);
 	const daysPracticed = countDaysPracticed(completions, slotsPerDay);
+	const greeting = getGreeting();
 
 	return (
-		<Container size="sm" py="xl">
-			<Stack gap="md">
-				<HabitCard habit={activeHabit} />
-				<StreakHero streak={streak} />
-				<MonthStats
-					daysPracticed={daysPracticed}
-					totalScheduledDays={totalScheduledDays}
-					streak={streak}
-				/>
-				<MonthCalendar
-					year={currentMonth.year}
-					month={currentMonth.month}
-					completions={completions}
-					scheduleDays={activeHabit.schedule_days}
-					slotsPerDay={slotsPerDay}
-					habitStartDate={activeHabit.start_date}
-					onMonthChange={handleMonthChange}
-				/>
-			</Stack>
+		<Container size="lg" py="xl" px="xl">
+			<Grid gap="xl">
+				{/* Left column: greeting + habit info + calendar */}
+				<Grid.Col span={8}>
+					<Stack gap="md">
+						<motion.div
+							initial={{ opacity: 0, y: -10 }}
+							animate={{ opacity: 1, y: 0 }}
+							transition={{ duration: 0.4 }}
+						>
+							<Title order={2} fw={800} size="h2">
+								{greeting}
+								{userName ? `, ${userName}` : ""}! 👋
+							</Title>
+						</motion.div>
+
+						<Box className="habit-header" style={{ position: "relative" }}>
+							<style>
+								{`.habit-header:hover .habit-menu-trigger { opacity: 1 !important; }`}
+							</style>
+							<Group gap="xs" align="center">
+								<Title order={3} fw={700}>
+									{activeHabit.name}
+								</Title>
+								<HabitMenu
+									habit={activeHabit}
+									latestCompletion={latestCompletion}
+									onRename={() => setRenameOpen(true)}
+									onDelete={() => setDeleteOpen(true)}
+									onMarkDone={handleMarkDone}
+								/>
+							</Group>
+							{activeHabit.description ? (
+								<Text size="sm" c="dimmed" mt={2}>
+									{activeHabit.description}
+								</Text>
+							) : null}
+						</Box>
+
+						<MonthCalendar
+							year={currentMonth.year}
+							month={currentMonth.month}
+							completions={completions}
+							scheduleDays={activeHabit.schedule_days}
+							slotsPerDay={slotsPerDay}
+							habitStartDate={activeHabit.start_date}
+							onMonthChange={handleMonthChange}
+						/>
+					</Stack>
+				</Grid.Col>
+
+				{/* Right column: streak hero + stats */}
+				<Grid.Col span={4}>
+					<Stack gap="md" pt={60}>
+						<StreakHero streak={streak} />
+						<MonthStats
+							daysPracticed={daysPracticed}
+							totalScheduledDays={totalScheduledDays}
+							streak={streak}
+						/>
+					</Stack>
+				</Grid.Col>
+			</Grid>
+
+			<RenameHabitModal
+				habit={activeHabit}
+				opened={renameOpen}
+				onClose={() => setRenameOpen(false)}
+				onRenamed={handleRenamed}
+			/>
+			<DeleteHabitModal
+				habit={activeHabit}
+				opened={deleteOpen}
+				onClose={() => setDeleteOpen(false)}
+				onDeleted={handleDeleted}
+			/>
 		</Container>
 	);
 }

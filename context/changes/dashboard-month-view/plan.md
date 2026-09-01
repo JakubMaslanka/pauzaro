@@ -626,9 +626,9 @@ Build standalone create-habit page (reusing onboarding HabitDetailsStep + Schedu
 
 #### Automated
 
-- [x] 4.1 Rust tests pass (`cargo test`)
-- [x] 4.2 TypeScript type-check passes (`tsc --noEmit`)
-- [x] 4.3 Lint passes (`pnpm lint`)
+- [x] 4.1 Rust tests pass (`cargo test`) — 807d977
+- [x] 4.2 TypeScript type-check passes (`tsc --noEmit`) — 807d977
+- [x] 4.3 Lint passes (`pnpm lint`) — 807d977
 
 #### Manual
 
@@ -641,9 +641,9 @@ Build standalone create-habit page (reusing onboarding HabitDetailsStep + Schedu
 
 #### Automated
 
-- [ ] 5.1 All tests pass (`pnpm test`)
-- [ ] 5.2 TypeScript type-check passes (`tsc --noEmit`)
-- [ ] 5.3 Lint passes (`pnpm lint`)
+- [x] 5.1 All tests pass (`pnpm test`)
+- [x] 5.2 TypeScript type-check passes (`tsc --noEmit`)
+- [x] 5.3 Lint passes (`pnpm lint`)
 
 #### Manual
 
