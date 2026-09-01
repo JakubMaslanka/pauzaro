@@ -292,7 +292,10 @@ export function Dashboard() {
 								style={{ width: "fit-content" }}
 							>
 								<Title order={3} fw={700}>
-									Your progress on {activeHabit.name}
+									Your progress on{" "}
+									<Text span inherit c="teal">
+										{activeHabit.name}
+									</Text>
 								</Title>
 								<HabitMenu
 									habit={activeHabit}
