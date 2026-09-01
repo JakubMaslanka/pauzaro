@@ -165,3 +165,41 @@ pub fn get_month_completions(
     let repo = CompletionRepository::new(db.connection());
     repo.list_by_habit_in_range(&habit_id, &from_date, &to_date)
 }
+
+#[tauri::command(rename_all = "snake_case")]
+pub fn update_habit(
+    state: State<'_, AppState>,
+    id: String,
+    name: String,
+    description: String,
+) -> Result<Habit, AppError> {
+    let db = state.db.lock().map_err(|e| {
+        AppError::Database(format!("Failed to acquire database lock: {e}"))
+    })?;
+    let repo = HabitRepository::new(db.connection());
+    repo.update(&id, &name, &description)
+}
+
+#[tauri::command(rename_all = "snake_case")]
+pub fn delete_habit(
+    state: State<'_, AppState>,
+    id: String,
+) -> Result<bool, AppError> {
+    let db = state.db.lock().map_err(|e| {
+        AppError::Database(format!("Failed to acquire database lock: {e}"))
+    })?;
+    let repo = HabitRepository::new(db.connection());
+    repo.delete(&id)
+}
+
+#[tauri::command(rename_all = "snake_case")]
+pub fn get_latest_completion(
+    state: State<'_, AppState>,
+    habit_id: String,
+) -> Result<Option<Completion>, AppError> {
+    let db = state.db.lock().map_err(|e| {
+        AppError::Database(format!("Failed to acquire database lock: {e}"))
+    })?;
+    let repo = CompletionRepository::new(db.connection());
+    repo.get_latest_by_habit(&habit_id)
+}

@@ -198,6 +198,37 @@ impl<'a> HabitRepository<'a> {
         Ok(habits)
     }
 
+    pub fn update(
+        &self,
+        id: &str,
+        name: &str,
+        description: &str,
+    ) -> Result<Habit, AppError> {
+        let trimmed = name.trim();
+        if trimmed.is_empty() {
+            return Err(AppError::Validation("Habit name cannot be empty".into()));
+        }
+
+        let rows = self.conn.execute(
+            "UPDATE habits SET name = ?1, description = ?2 WHERE id = ?3",
+            params![trimmed, description, id],
+        )?;
+
+        if rows == 0 {
+            return Err(AppError::NotFound(format!("Habit not found: {id}")));
+        }
+
+        self.get(id)
+    }
+
+    pub fn delete(&self, id: &str) -> Result<bool, AppError> {
+        let rows = self.conn.execute(
+            "DELETE FROM habits WHERE id = ?1",
+            params![id],
+        )?;
+        Ok(rows > 0)
+    }
+
     fn get_schedule_days(&self, habit_id: &str) -> Result<Vec<u8>, AppError> {
         let mut stmt = self.conn.prepare(
             "SELECT day_of_week FROM habit_schedule_days WHERE habit_id = ?1 ORDER BY day_of_week",

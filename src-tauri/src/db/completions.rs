@@ -111,6 +111,26 @@ impl<'a> CompletionRepository<'a> {
         Ok(count > 0)
     }
 
+    pub fn get_latest_by_habit(
+        &self,
+        habit_id: &str,
+    ) -> Result<Option<Completion>, AppError> {
+        let mut stmt = self.conn.prepare(
+            "SELECT id, habit_id, trigger_date, scheduled_time, status, completed_at
+             FROM completions WHERE habit_id = ?1
+             ORDER BY completed_at DESC LIMIT 1",
+        )?;
+
+        let mut rows = stmt
+            .query_map(params![habit_id], |row| Self::row_to_completion(row))?;
+
+        match rows.next() {
+            Some(Ok(completion)) => Ok(Some(completion)),
+            Some(Err(e)) => Err(AppError::from(e)),
+            None => Ok(None),
+        }
+    }
+
     pub fn delete_by_slot(
         &self,
         habit_id: &str,

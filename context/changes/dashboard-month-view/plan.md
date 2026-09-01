@@ -368,6 +368,195 @@ Layout order: `StreakHero` → `MonthStats` → `MonthCalendar`. Wrapped in `Con
 6. Complete a habit via overlay, return to dashboard, verify calendar updated
 7. Check partial completion days show orange with fraction
 
+---
+
+## Phase 4: Backend — Habit Management Commands + App Shell + Navbar
+
+> **Added post-P3**: scope expansion to make dashboard feel complete with proper navigation, multi-habit support, and habit management.
+
+### Overview
+
+Add backend commands for habit update/delete, wrap the app in Mantine AppShell with a narrow icon-only navbar (Mantine navbar-minimal pattern). Navbar shows habit icons with tooltips, "+" to create, gear for settings, debug icon in dev mode. Restructure routing to support new views.
+
+### Changes Required:
+
+#### 1. Backend — update_habit command
+
+**File**: `src-tauri/src/db/habits.rs` + `src-tauri/src/commands/habits.rs` + `src-tauri/src/lib.rs`
+
+**Intent**: Allow renaming and updating description of a habit from the dashboard.
+
+**Contract**: `HabitRepository::update(&self, id: &str, name: &str, description: &str) -> Result<Habit, AppError>`. Tauri command `update_habit(state, id, name, description)`. Register in handler. Add TS wrapper `updateHabit(id, name, description)`.
+
+#### 2. Backend — delete_habit command
+
+**File**: `src-tauri/src/db/habits.rs` + `src-tauri/src/commands/habits.rs` + `src-tauri/src/lib.rs`
+
+**Intent**: Allow removing a habit and all its completions/pending triggers from the dashboard.
+
+**Contract**: `HabitRepository::delete(&self, id: &str) -> Result<bool, AppError>` — deletes habit row; completions and pending triggers cascade via FK. Tauri command `delete_habit(state, id)`. Register in handler. Add TS wrapper `deleteHabit(id)`.
+
+#### 3. Backend — get_latest_completion command
+
+**File**: `src-tauri/src/db/completions.rs` + `src-tauri/src/commands/habits.rs` + `src-tauri/src/lib.rs`
+
+**Intent**: Get latest completion for a habit to enable "mark latest as done" from dashboard menu.
+
+**Contract**: `CompletionRepository::get_latest_by_habit(&self, habit_id: &str) -> Result<Option<Completion>, AppError>`. Tauri command `get_latest_completion(state, habit_id)`. TS wrapper `getLatestCompletion(habitId)`.
+
+#### 4. AppShell layout + Navbar component
+
+**File**: `src/components/layout/AppNavbar.tsx` + `src/routes/__root.tsx`
+
+**Intent**: Mantine navbar-minimal — narrow vertical icon bar. Logo placeholder at top, scrollable habit icons section (each wrapped in Tooltip showing habit name), "+" icon at end of list to create new habit, gear icon and debug icon (dev-only) at bottom.
+
+**Contract**: `AppNavbar` receives `habits: Habit[]`, `activeHabitId: string | null`, `onSelectHabit`, `onCreateHabit`, `onOpenSettings`, `onOpenDebug`. Icons rendered monochrome (teal) regardless of habit icon_color. Active habit has subtle highlight. Section scrollable via `AppShell.Section grow component={ScrollArea}`.
+
+#### 5. Root layout restructure
+
+**File**: `src/routes/__root.tsx`
+
+**Intent**: Wrap non-overlay routes in AppShell with navbar. Overlay routes bypass AppShell entirely. Dashboard route becomes the main shell content area.
+
+**Contract**: Root layout checks window label — overlay windows render `<Outlet />` without AppShell. Main window renders `<AppShell navbar={...}><AppShell.Navbar>...</AppShell.Navbar><AppShell.Main><Outlet/></AppShell.Main></AppShell>`.
+
+#### 6. New route files
+
+**Files**: `src/routes/settings.tsx`, `src/routes/debug.tsx`, `src/routes/create-habit.tsx`
+
+**Intent**: Stub routes for settings (placeholder), debug (dev-only), and create-habit views.
+
+### Success Criteria:
+
+#### Automated
+
+- [ ] 4.1 Rust tests pass (`cargo test`)
+- [ ] 4.2 TypeScript type-check passes (`tsc --noEmit`)
+- [ ] 4.3 Lint passes (`pnpm lint`)
+
+#### Manual
+
+- [ ] 4.4 Navbar renders with habit icons, tooltips, and navigation
+- [ ] 4.5 Active habit highlighted in navbar
+- [ ] 4.6 Settings and debug icons work
+- [ ] 4.7 Scrollable habit section doesn't break with many items
+
+---
+
+## Phase 5: Dashboard Layout — Two-Column + Habit Menu
+
+### Overview
+
+Rework dashboard from single-column to two-column layout matching the mockup. Left: greeting + habit name + calendar. Right: streak hero + stats cards. Add 3-dot context menu on habit name with rename/delete/mark-done actions and their modals.
+
+### Changes Required:
+
+#### 1. Dashboard layout rework
+
+**File**: `src/components/dashboard/Dashboard.tsx`
+
+**Intent**: Two-column layout. Left column: dynamic greeting ("Good morning/afternoon/evening, Name!"), habit name (bold) with 3-dot menu, habit description (grey), MonthCalendar. Right column: StreakHero, MonthStats cards. Remove HabitCard import — navbar now handles habit display.
+
+**Contract**: Uses CSS Grid or Mantine `Grid` for two-column layout. Greeting time-aware (UTC hours: 5-11 morning, 12-16 afternoon, 17-20 evening, else night). Receives `activeHabitId` from parent/route state to determine which habit to show.
+
+#### 2. Habit context menu (3-dot)
+
+**File**: `src/components/dashboard/HabitMenu.tsx`
+
+**Intent**: Nearly invisible `MoreVertical` Lucide icon next to habit name, fully visible on hover over habit name area. Mantine `Menu` component with: Rename, Delete, Mark latest as done.
+
+**Contract**: Props: `habit: Habit`, `latestCompletion: Completion | null`, `onRename`, `onDelete`, `onMarkDone`. "Mark latest as done" disabled if latest completion is already "done" or null. Menu items have appropriate icons (Pencil, Trash2, CircleCheck).
+
+#### 3. Rename habit modal
+
+**File**: `src/components/dashboard/RenameHabitModal.tsx`
+
+**Intent**: Modal with form to update habit name and description. Neither can be null/empty for name.
+
+**Contract**: Mantine `Modal` with `TextInput` for name + `Textarea` for description. Calls `updateHabit()`. Validates name non-empty.
+
+#### 4. Delete habit modal
+
+**File**: `src/components/dashboard/DeleteHabitModal.tsx`
+
+**Intent**: Confirmation modal warning user their progress on `<habit name>` will be erased.
+
+**Contract**: Mantine `Modal` with warning text including habit name. "Delete" button (red). Calls `deleteHabit()`, then navigates to next habit or empty state.
+
+#### 5. MonthStats enhancement — optional end date display
+
+**File**: `src/components/dashboard/MonthStats.tsx`
+
+**Intent**: Add end date display card if habit has `end_date` set.
+
+**Contract**: If `endDate` prop is non-null, show a third card with Calendar icon + end date. Cards use `SimpleGrid cols={endDate ? 3 : 2}` or stay in 2x2 grid.
+
+### Success Criteria:
+
+#### Automated
+
+- [ ] 5.1 All tests pass (`pnpm test`)
+- [ ] 5.2 TypeScript type-check passes (`tsc --noEmit`)
+- [ ] 5.3 Lint passes (`pnpm lint`)
+
+#### Manual
+
+- [ ] 5.4 Two-column layout matches mockup
+- [ ] 5.5 Dynamic greeting changes by time of day
+- [ ] 5.6 3-dot menu appears on hover, works for rename/delete/mark-done
+- [ ] 5.7 Rename modal validates and updates habit
+- [ ] 5.8 Delete modal removes habit and data
+
+---
+
+## Phase 6: Create Habit + Settings + Debug Views
+
+### Overview
+
+Build standalone create-habit page (reusing onboarding HabitDetailsStep + ScheduleStep components), settings placeholder, and debug view with overlay trigger button.
+
+### Changes Required:
+
+#### 1. Create habit view
+
+**File**: `src/components/habits/CreateHabitView.tsx` + `src/routes/create-habit.tsx`
+
+**Intent**: Full habit creation flow outside onboarding. Reuses `HabitDetailsStep` and `ScheduleStep` but without onboarding wrapper/welcome step. On success, navigates to dashboard with new habit selected.
+
+**Contract**: Two-step wizard: details → schedule → create. Does NOT call `completeOnboarding()`. Calls `createHabit()` directly. Navigates to `/dashboard` on success.
+
+#### 2. Settings placeholder
+
+**File**: `src/components/settings/SettingsView.tsx` + `src/routes/settings.tsx`
+
+**Intent**: Placeholder page showing "Settings — coming soon".
+
+**Contract**: Simple centered text with gear icon. No functionality.
+
+#### 3. Debug view (dev only)
+
+**File**: `src/components/debug/DebugView.tsx` + `src/routes/debug.tsx`
+
+**Intent**: Developer tools page, hidden in production. First button: trigger overlay window for a sample/existing habit.
+
+**Contract**: Raw button grid. "Show Overlay Window" button creates a Tauri WebviewWindow mimicking the overlay. Button clicks log to Tauri console, don't affect real data. Route guard: only accessible when `import.meta.env.DEV` is true.
+
+### Success Criteria:
+
+#### Automated
+
+- [ ] 6.1 TypeScript type-check passes (`tsc --noEmit`)
+- [ ] 6.2 Lint passes (`pnpm lint`)
+
+#### Manual
+
+- [ ] 6.3 "+" in navbar opens create habit flow
+- [ ] 6.4 New habit appears in navbar after creation
+- [ ] 6.5 Settings shows placeholder
+- [ ] 6.6 Debug view visible only in dev, overlay trigger works
+
+---
+
 ## Performance Considerations
 
 - `getMonthCompletions` fetches max ~31 days of data — small query, no pagination needed
@@ -432,3 +621,48 @@ Layout order: `StreakHero` → `MonthStats` → `MonthCalendar`. Wrapped in `Con
 - [ ] 3.8 Stats and performance badge display correctly
 - [ ] 3.9 Today cell highlighted, Lucide icons throughout
 - [ ] 3.10 Overlay done/snooze refreshes calendar via event
+
+### Phase 4: Backend — Habit Management Commands + App Shell + Navbar
+
+#### Automated
+
+- [x] 4.1 Rust tests pass (`cargo test`)
+- [x] 4.2 TypeScript type-check passes (`tsc --noEmit`)
+- [x] 4.3 Lint passes (`pnpm lint`)
+
+#### Manual
+
+- [ ] 4.4 Navbar renders with habit icons, tooltips, and navigation
+- [ ] 4.5 Active habit highlighted in navbar
+- [ ] 4.6 Settings and debug icons work
+- [ ] 4.7 Scrollable habit section doesn't break with many items
+
+### Phase 5: Dashboard Layout — Two-Column + Habit Menu
+
+#### Automated
+
+- [ ] 5.1 All tests pass (`pnpm test`)
+- [ ] 5.2 TypeScript type-check passes (`tsc --noEmit`)
+- [ ] 5.3 Lint passes (`pnpm lint`)
+
+#### Manual
+
+- [ ] 5.4 Two-column layout matches mockup
+- [ ] 5.5 Dynamic greeting changes by time of day
+- [ ] 5.6 3-dot menu appears on hover, works for rename/delete/mark-done
+- [ ] 5.7 Rename modal validates and updates habit
+- [ ] 5.8 Delete modal removes habit and data
+
+### Phase 6: Create Habit + Settings + Debug Views
+
+#### Automated
+
+- [ ] 6.1 TypeScript type-check passes (`tsc --noEmit`)
+- [ ] 6.2 Lint passes (`pnpm lint`)
+
+#### Manual
+
+- [ ] 6.3 "+" in navbar opens create habit flow
+- [ ] 6.4 New habit appears in navbar after creation
+- [ ] 6.5 Settings shows placeholder
+- [ ] 6.6 Debug view visible only in dev, overlay trigger works

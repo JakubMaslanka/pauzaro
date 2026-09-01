@@ -5,9 +5,14 @@ import "@fontsource/nunito/700.css";
 import "@fontsource/nunito/800.css";
 import "../styles/global.css";
 
-import { MantineProvider } from "@mantine/core";
-import { createRootRoute, Outlet } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { AppShell, MantineProvider } from "@mantine/core";
+import { createRootRoute, Outlet, useNavigate } from "@tanstack/react-router";
+import { listen } from "@tauri-apps/api/event";
+import { getCurrentWindow } from "@tauri-apps/api/window";
+import { useCallback, useEffect, useState } from "react";
+import { AppNavbar } from "../components/layout/AppNavbar";
+import { listHabits } from "../lib/invoke";
+import { useDashboardStore } from "../stores/dashboard";
 import { theme } from "../theme";
 
 export const Route = createRootRoute({
@@ -21,11 +26,114 @@ function RootLayout() {
 		return () => document.removeEventListener("contextmenu", handler);
 	}, []);
 
+	const [isOverlay, setIsOverlay] = useState<boolean | null>(null);
+
+	useEffect(() => {
+		try {
+			const label = getCurrentWindow().label;
+			setIsOverlay(label.startsWith("overlay-"));
+		} catch {
+			setIsOverlay(false);
+		}
+	}, []);
+
+	if (isOverlay === null) return null;
+
+	if (isOverlay) {
+		return (
+			<MantineProvider theme={theme}>
+				<div className="app-root">
+					<Outlet />
+				</div>
+			</MantineProvider>
+		);
+	}
+
 	return (
 		<MantineProvider theme={theme}>
-			<div className="app-root">
-				<Outlet />
-			</div>
+			<AppShellLayout />
 		</MantineProvider>
+	);
+}
+
+function AppShellLayout() {
+	const navigate = useNavigate();
+	const habits = useDashboardStore((s) => s.habits);
+	const activeHabitId = useDashboardStore((s) => s.activeHabitId);
+	const setHabits = useDashboardStore((s) => s.setHabits);
+
+	const loadHabits = useCallback(async () => {
+		try {
+			const loaded = await listHabits();
+			setHabits(loaded);
+		} catch (error) {
+			console.error("Failed to load habits:", error);
+		}
+	}, [setHabits]);
+
+	useEffect(() => {
+		loadHabits();
+	}, [loadHabits]);
+
+	useEffect(() => {
+		const unlisten = listen("habit-updated", () => {
+			loadHabits();
+		});
+		return () => {
+			unlisten.then((fn) => fn());
+		};
+	}, [loadHabits]);
+
+	const handleSelectHabit = useCallback(
+		(id: string) => {
+			useDashboardStore.getState().setActiveHabitId(id);
+			navigate({ to: "/dashboard" });
+		},
+		[navigate],
+	);
+
+	const handleCreateHabit = useCallback(() => {
+		navigate({ to: "/create-habit" });
+	}, [navigate]);
+
+	const handleOpenSettings = useCallback(() => {
+		navigate({ to: "/settings" });
+	}, [navigate]);
+
+	const handleOpenDebug = useCallback(() => {
+		navigate({ to: "/debug" });
+	}, [navigate]);
+
+	return (
+		<AppShell
+			navbar={{ width: 64, breakpoint: 0 }}
+			padding={0}
+			styles={{
+				main: {
+					backgroundColor: "#F7F5F0",
+					height: "100vh",
+					overflow: "auto",
+				},
+			}}
+		>
+			<AppShell.Navbar
+				style={{
+					backgroundColor: "white",
+					borderRight: "1px solid var(--mantine-color-gray-2)",
+				}}
+			>
+				<AppNavbar
+					habits={habits}
+					activeHabitId={activeHabitId}
+					onSelectHabit={handleSelectHabit}
+					onCreateHabit={handleCreateHabit}
+					onOpenSettings={handleOpenSettings}
+					onOpenDebug={handleOpenDebug}
+				/>
+			</AppShell.Navbar>
+			<AppShell.Main>
+				<Outlet />
+			</AppShell.Main>
+		</AppShell>
 	);
 }

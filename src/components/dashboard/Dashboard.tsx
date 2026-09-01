@@ -1,12 +1,13 @@
 import { Alert, Container, Loader, Stack, Text } from "@mantine/core";
 import { listen } from "@tauri-apps/api/event";
 import { motion } from "framer-motion";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
 	getAllHabitStatuses,
 	getMonthCompletions,
 	listHabits,
 } from "../../lib/invoke";
+import { useDashboardStore } from "../../stores/dashboard";
 import type { Completion, Habit, HabitStatus } from "../../types";
 import { HabitCard } from "./HabitCard";
 import { MonthCalendar } from "./MonthCalendar";
@@ -114,30 +115,33 @@ export function Dashboard() {
 		loadData();
 	}, [loadData]);
 
-	// Load completions when habit or month changes
+	const activeHabitId = useDashboardStore((s) => s.activeHabitId);
+
+	const activeHabit = useMemo(() => {
+		if (state.status !== "ready") return null;
+		return state.habits.find((h) => h.id === activeHabitId) ?? null;
+	}, [state, activeHabitId]);
+
+	// Load completions when active habit or month changes
 	useEffect(() => {
-		if (state.status !== "ready" || state.habits.length === 0) return;
-		const habit = state.habits[0];
-		loadCompletions(habit.id, currentMonth.year, currentMonth.month);
-	}, [state, currentMonth, loadCompletions]);
+		if (!activeHabit) return;
+		loadCompletions(activeHabit.id, currentMonth.year, currentMonth.month);
+	}, [activeHabit, currentMonth, loadCompletions]);
 
 	// Listen for habit-updated events from overlay interactions
 	useEffect(() => {
 		const unlisten = listen("habit-updated", () => {
 			loadData();
-			if (state.status === "ready" && state.habits.length > 0) {
-				loadCompletions(
-					state.habits[0].id,
-					currentMonth.year,
-					currentMonth.month,
-				);
+			const currentActiveId = useDashboardStore.getState().activeHabitId;
+			if (currentActiveId) {
+				loadCompletions(currentActiveId, currentMonth.year, currentMonth.month);
 			}
 		});
 
 		return () => {
 			unlisten.then((fn) => fn());
 		};
-	}, [loadData, loadCompletions, state, currentMonth]);
+	}, [loadData, loadCompletions, currentMonth]);
 
 	const handleMonthChange = useCallback((year: number, month: number) => {
 		setCurrentMonth({ year, month });
@@ -164,9 +168,9 @@ export function Dashboard() {
 		);
 	}
 
-	const { habits, habitStatuses } = state;
+	const { habitStatuses } = state;
 
-	if (habits.length === 0) {
+	if (!activeHabit) {
 		return (
 			<Container size="sm" py="xl">
 				<motion.div
@@ -182,22 +186,21 @@ export function Dashboard() {
 		);
 	}
 
-	const habit = habits[0];
-	const status = habitStatuses[habit.id];
+	const status = habitStatuses[activeHabit.id];
 	const streak = status?.streak ?? 0;
-	const slotsPerDay = habit.schedule_times.length;
+	const slotsPerDay = activeHabit.schedule_times.length;
 	const totalScheduledDays = countScheduledDaysInMonth(
 		currentMonth.year,
 		currentMonth.month,
-		habit.schedule_days,
-		habit.start_date,
+		activeHabit.schedule_days,
+		activeHabit.start_date,
 	);
 	const daysPracticed = countDaysPracticed(completions, slotsPerDay);
 
 	return (
 		<Container size="sm" py="xl">
 			<Stack gap="md">
-				<HabitCard habit={habit} />
+				<HabitCard habit={activeHabit} />
 				<StreakHero streak={streak} />
 				<MonthStats
 					daysPracticed={daysPracticed}
@@ -208,9 +211,9 @@ export function Dashboard() {
 					year={currentMonth.year}
 					month={currentMonth.month}
 					completions={completions}
-					scheduleDays={habit.schedule_days}
+					scheduleDays={activeHabit.schedule_days}
 					slotsPerDay={slotsPerDay}
-					habitStartDate={habit.start_date}
+					habitStartDate={activeHabit.start_date}
 					onMonthChange={handleMonthChange}
 				/>
 			</Stack>

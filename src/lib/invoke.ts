@@ -78,3 +78,23 @@ export async function getMonthCompletions(
 		to_date: toDate,
 	});
 }
+
+export async function updateHabit(
+	id: string,
+	name: string,
+	description: string,
+): Promise<Habit> {
+	return invoke<Habit>("update_habit", { id, name, description });
+}
+
+export async function deleteHabit(id: string): Promise<boolean> {
+	return invoke<boolean>("delete_habit", { id });
+}
+
+export async function getLatestCompletion(
+	habitId: string,
+): Promise<Completion | null> {
+	return invoke<Completion | null>("get_latest_completion", {
+		habit_id: habitId,
+	});
+}

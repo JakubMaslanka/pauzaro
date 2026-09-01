@@ -1,7 +1,8 @@
 import { MantineProvider } from "@mantine/core";
 import { render, screen, waitFor } from "@testing-library/react";
 import type { ReactNode } from "react";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { useDashboardStore } from "../../stores/dashboard";
 import { theme } from "../../theme";
 import { Dashboard } from "./Dashboard";
 
@@ -21,6 +22,10 @@ vi.mock("../../lib/invoke", () => ({
 vi.mock("@tauri-apps/api/event", () => ({
 	listen: vi.fn(() => Promise.resolve(() => {})),
 }));
+
+afterEach(() => {
+	useDashboardStore.setState({ habits: [], activeHabitId: null });
+});
 
 function Wrapper({ children }: { children: ReactNode }) {
 	return <MantineProvider theme={theme}>{children}</MantineProvider>;
@@ -61,6 +66,7 @@ describe("Dashboard", () => {
 			},
 		]);
 		mockGetMonthCompletions.mockResolvedValue([]);
+		useDashboardStore.getState().setHabits([MOCK_HABIT]);
 
 		render(<Dashboard />, { wrapper: Wrapper });
 
@@ -114,6 +120,7 @@ describe("Dashboard", () => {
 			},
 		]);
 		mockGetMonthCompletions.mockResolvedValue([]);
+		useDashboardStore.getState().setHabits([MOCK_HABIT]);
 
 		render(<Dashboard />, { wrapper: Wrapper });
 

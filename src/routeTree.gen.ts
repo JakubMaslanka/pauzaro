@@ -10,8 +10,11 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CreateHabitRouteImport } from './routes/create-habit'
 import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as DebugRouteImport } from './routes/debug'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
+import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as OverlayHabitIdRouteImport } from './routes/overlay.$habitId'
 
 const IndexRoute = IndexRouteImport.update({
@@ -19,14 +22,29 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CreateHabitRoute = CreateHabitRouteImport.update({
+  id: '/create-habit',
+  path: '/create-habit',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DashboardRoute = DashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DebugRoute = DebugRouteImport.update({
+  id: '/debug',
+  path: '/debug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const OnboardingRoute = OnboardingRouteImport.update({
   id: '/onboarding',
   path: '/onboarding',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OverlayHabitIdRoute = OverlayHabitIdRouteImport.update({
@@ -37,35 +55,69 @@ const OverlayHabitIdRoute = OverlayHabitIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/create-habit': typeof CreateHabitRoute
   '/dashboard': typeof DashboardRoute
+  '/debug': typeof DebugRoute
   '/onboarding': typeof OnboardingRoute
+  '/settings': typeof SettingsRoute
   '/overlay/$habitId': typeof OverlayHabitIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/create-habit': typeof CreateHabitRoute
   '/dashboard': typeof DashboardRoute
+  '/debug': typeof DebugRoute
   '/onboarding': typeof OnboardingRoute
+  '/settings': typeof SettingsRoute
   '/overlay/$habitId': typeof OverlayHabitIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/create-habit': typeof CreateHabitRoute
   '/dashboard': typeof DashboardRoute
+  '/debug': typeof DebugRoute
   '/onboarding': typeof OnboardingRoute
+  '/settings': typeof SettingsRoute
   '/overlay/$habitId': typeof OverlayHabitIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/dashboard' | '/onboarding' | '/overlay/$habitId'
+  fullPaths:
+    | '/'
+    | '/create-habit'
+    | '/dashboard'
+    | '/debug'
+    | '/onboarding'
+    | '/settings'
+    | '/overlay/$habitId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/dashboard' | '/onboarding' | '/overlay/$habitId'
-  id: '__root__' | '/' | '/dashboard' | '/onboarding' | '/overlay/$habitId'
+  to:
+    | '/'
+    | '/create-habit'
+    | '/dashboard'
+    | '/debug'
+    | '/onboarding'
+    | '/settings'
+    | '/overlay/$habitId'
+  id:
+    | '__root__'
+    | '/'
+    | '/create-habit'
+    | '/dashboard'
+    | '/debug'
+    | '/onboarding'
+    | '/settings'
+    | '/overlay/$habitId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CreateHabitRoute: typeof CreateHabitRoute
   DashboardRoute: typeof DashboardRoute
+  DebugRoute: typeof DebugRoute
   OnboardingRoute: typeof OnboardingRoute
+  SettingsRoute: typeof SettingsRoute
   OverlayHabitIdRoute: typeof OverlayHabitIdRoute
 }
 
@@ -78,6 +130,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/create-habit': {
+      id: '/create-habit'
+      path: '/create-habit'
+      fullPath: '/create-habit'
+      preLoaderRoute: typeof CreateHabitRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/dashboard': {
       id: '/dashboard'
       path: '/dashboard'
@@ -85,11 +144,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/debug': {
+      id: '/debug'
+      path: '/debug'
+      fullPath: '/debug'
+      preLoaderRoute: typeof DebugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/onboarding': {
       id: '/onboarding'
       path: '/onboarding'
       fullPath: '/onboarding'
       preLoaderRoute: typeof OnboardingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/overlay/$habitId': {
@@ -104,8 +177,11 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CreateHabitRoute: CreateHabitRoute,
   DashboardRoute: DashboardRoute,
+  DebugRoute: DebugRoute,
   OnboardingRoute: OnboardingRoute,
+  SettingsRoute: SettingsRoute,
   OverlayHabitIdRoute: OverlayHabitIdRoute,
 }
 export const routeTree = rootRouteImport

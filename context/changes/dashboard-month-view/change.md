@@ -1,8 +1,8 @@
 ---
 id: dashboard-month-view
-status: implemented
+status: implementing
 created: 2026-08-31
-updated: 2026-08-31
+updated: 2026-09-01
 ---
 
 # Dashboard Month View
