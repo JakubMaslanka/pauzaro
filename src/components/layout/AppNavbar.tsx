@@ -35,19 +35,18 @@ export function AppNavbar({
 					display: "flex",
 					justifyContent: "center",
 					paddingTop: 16,
-					paddingBottom: 16,
+					paddingBottom: 24,
+					borderBottom: "1px solid var(--mantine-color-gray-2)",
 				}}
 			>
-				<Tooltip label="Pauzaro" position="right" withArrow>
-					<ActionIcon
-						variant="transparent"
-						size={40}
-						radius="md"
-						style={{ cursor: "default" }}
-					>
-						<span style={{ fontSize: 24 }}>🦕</span>
-					</ActionIcon>
-				</Tooltip>
+				<ActionIcon
+					variant="transparent"
+					size={40}
+					radius="md"
+					style={{ cursor: "default" }}
+				>
+					<span style={{ fontSize: 24 }}>🦕</span>
+				</ActionIcon>
 			</AppShell.Section>
 
 			<AppShell.Section grow component={ScrollArea} scrollbarSize={4}>

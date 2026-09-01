@@ -1,5 +1,5 @@
 import { Box, Text, Tooltip } from "@mantine/core";
-import { AlertCircle, CircleCheck, CircleX } from "lucide-react";
+import { CircleCheck, CircleX } from "lucide-react";
 
 type DayCellStatus =
 	| "done"
@@ -28,7 +28,7 @@ const STATUS_CONFIG: Record<
 > = {
 	done: { bg: "#0d9488", icon: CircleCheck },
 	failed: { bg: "#e03131", icon: CircleX },
-	partial: { bg: "#E28743", icon: AlertCircle },
+	partial: { bg: "#E28743", icon: null },
 	"not-scheduled": { bg: "transparent", icon: null },
 	future: { bg: "transparent", icon: null, outline: true },
 	"today-pending": { bg: "transparent", icon: null, outline: true },
@@ -63,9 +63,12 @@ export function DayCell({
 	const config = STATUS_CONFIG[status];
 	const hasIcon = config.icon !== null;
 	const IconComponent = config.icon;
+	const isPartial = status === "partial";
 	const showTooltip =
-		tooltipLabel &&
-		(status === "done" || status === "failed" || status === "partial");
+		tooltipLabel && (status === "done" || status === "failed" || isPartial);
+
+	const todayBorder = isToday ? "2px solid #0d9488" : "none";
+	const todayShadow = isToday ? "0 0 0 2px rgba(13,148,136,0.25)" : "none";
 
 	const cell = (
 		<Box
@@ -90,11 +93,29 @@ export function DayCell({
 						display: "flex",
 						alignItems: "center",
 						justifyContent: "center",
-						border: isToday ? "2px solid #0d9488" : "none",
-						boxShadow: isToday ? "0 0 0 2px rgba(13,148,136,0.25)" : "none",
+						border: todayBorder,
+						boxShadow: todayShadow,
 					}}
 				>
 					<IconComponent size={18} color="white" />
+				</Box>
+			) : isPartial ? (
+				<Box
+					style={{
+						width: 32,
+						height: 32,
+						borderRadius: "50%",
+						backgroundColor: config.bg,
+						display: "flex",
+						alignItems: "center",
+						justifyContent: "center",
+						border: todayBorder,
+						boxShadow: todayShadow,
+					}}
+				>
+					<Text size="xs" fw={700} c="white" lh={1}>
+						{partialLabel}
+					</Text>
 				</Box>
 			) : (
 				<Box
@@ -120,16 +141,6 @@ export function DayCell({
 					</Text>
 				</Box>
 			)}
-			{status === "partial" && partialLabel ? (
-				<Text
-					size="xs"
-					c="dimmed"
-					lh={1}
-					style={{ position: "absolute", bottom: 0 }}
-				>
-					{partialLabel}
-				</Text>
-			) : null}
 		</Box>
 	);
 
