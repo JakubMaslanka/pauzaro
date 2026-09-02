@@ -1,7 +1,7 @@
 ---
 change_id: testing-scheduler-overlay
 title: Testing scheduler overlay
-status: implementing
+status: implemented
 created: 2026-09-02
 updated: 2026-09-02
 archived_at: null

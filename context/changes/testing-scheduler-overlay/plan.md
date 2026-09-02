@@ -363,9 +363,9 @@ Tests:
 
 #### Automated
 
-- [x] 4.1 All 4 new OverlayPanel tests pass
-- [x] 4.2 All existing frontend tests pass
-- [x] 4.3 Type checking passes (tsc --noEmit)
+- [x] 4.1 All 4 new OverlayPanel tests pass — 7d5a86e
+- [x] 4.2 All existing frontend tests pass — 7d5a86e
+- [x] 4.3 Type checking passes (tsc --noEmit) — 7d5a86e
 
 #### Manual
 
