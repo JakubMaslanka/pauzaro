@@ -177,25 +177,25 @@ All tests are fast — pure unit tests have zero I/O, integration tests use in-m
 
 #### Automated
 
-- [x] 1.1 All 12 streak tests pass: `cd src-tauri && cargo test streak -- --nocapture`
-- [x] 1.2 Type check passes: `cd src-tauri && cargo check`
-- [x] 1.3 No warnings in streak tests
+- [x] 1.1 All 12 streak tests pass: `cd src-tauri && cargo test streak -- --nocapture` — b80eb1c
+- [x] 1.2 Type check passes: `cd src-tauri && cargo check` — b80eb1c
+- [x] 1.3 No warnings in streak tests — b80eb1c
 
 #### Manual
 
-- [x] 1.4 Test names are descriptive and follow existing naming convention
-- [x] 1.5 Each test exercises a genuinely distinct edge case
+- [x] 1.4 Test names are descriptive and follow existing naming convention — b80eb1c
+- [x] 1.5 Each test exercises a genuinely distinct edge case — b80eb1c
 
 ### Phase 2: Overlay integration tests
 
 #### Automated
 
-- [ ] 2.1 All overlay integration tests pass: `cd src-tauri && cargo test --test overlay_integration`
-- [ ] 2.2 Full test suite still passes: `cd src-tauri && cargo test`
-- [ ] 2.3 Type check passes: `cd src-tauri && cargo check`
+- [x] 2.1 All overlay integration tests pass: `cd src-tauri && cargo test --test overlay_integration`
+- [x] 2.2 Full test suite still passes: `cd src-tauri && cargo test`
+- [x] 2.3 Type check passes: `cd src-tauri && cargo check`
 
 #### Manual
 
-- [ ] 2.4 Snooze auto-fail test replicates exact operation sequence from overlay.rs
-- [ ] 2.5 Test data uses UTC-formatted date strings consistently
-- [ ] 2.6 No test depends on system clock or execution timing
+- [x] 2.4 Snooze auto-fail test replicates exact operation sequence from overlay.rs
+- [x] 2.5 Test data uses UTC-formatted date strings consistently
+- [x] 2.6 No test depends on system clock or execution timing
