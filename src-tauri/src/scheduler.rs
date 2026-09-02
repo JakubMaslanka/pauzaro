@@ -1,16 +1,74 @@
-use std::sync::Arc;
+use std::sync::{Arc, Mutex};
 
 use chrono::{Datelike, Local, NaiveTime, TimeZone};
 use tokio::sync::Notify;
 
-use tauri::Manager;
-use tauri::webview::WebviewWindowBuilder;
-
 use crate::db::completions::CompletionRepository;
 use crate::db::habits::HabitRepository;
 use crate::db::pending_triggers::PendingTriggerRepository;
+use crate::db::Database;
 use crate::models::{Completion, Habit, PendingTrigger};
-use crate::AppState;
+
+/// Abstraction over overlay window creation for testability.
+pub trait OverlaySpawner: Send + Sync {
+    /// Create and show an overlay window for the given habit trigger.
+    fn spawn_overlay(
+        &self,
+        habit_id: &str,
+        trigger_date: &str,
+        scheduled_time: &str,
+    ) -> Result<(), String>;
+
+    /// Check if an overlay window is already open for this habit.
+    fn is_overlay_open(&self, habit_id: &str) -> bool;
+}
+
+/// Production implementation using Tauri's WebviewWindowBuilder.
+pub struct TauriOverlaySpawner {
+    app: tauri::AppHandle,
+}
+
+impl TauriOverlaySpawner {
+    pub fn new(app: tauri::AppHandle) -> Self {
+        Self { app }
+    }
+}
+
+impl OverlaySpawner for TauriOverlaySpawner {
+    fn spawn_overlay(
+        &self,
+        habit_id: &str,
+        trigger_date: &str,
+        scheduled_time: &str,
+    ) -> Result<(), String> {
+        use tauri::webview::WebviewWindowBuilder;
+
+        let label = format!("overlay-{habit_id}");
+        let url = format!(
+            "/#/overlay/{habit_id}?triggerDate={trigger_date}&scheduledTime={scheduled_time}"
+        );
+        WebviewWindowBuilder::new(
+            &self.app,
+            &label,
+            tauri::WebviewUrl::App(url.into()),
+        )
+        .title("Pauzaro")
+        .inner_size(420.0, 380.0)
+        .always_on_top(true)
+        .decorations(false)
+        .center()
+        .focused(true)
+        .build()
+        .map(|_| ())
+        .map_err(|e| format!("Failed to create overlay: {e}"))
+    }
+
+    fn is_overlay_open(&self, habit_id: &str) -> bool {
+        use tauri::Manager;
+        let label = format!("overlay-{habit_id}");
+        self.app.get_webview_window(&label).is_some()
+    }
+}
 
 /// Computed next trigger to fire.
 #[derive(Debug, Clone)]
@@ -39,148 +97,146 @@ impl Scheduler {
     }
 
     /// Main scheduler loop. Runs forever, sleeping between triggers.
-    pub async fn run(&self, app: tauri::AppHandle) {
+    pub async fn run(&self, db: Arc<Mutex<Database>>, spawner: Arc<dyn OverlaySpawner>) {
         log::info!("Scheduler started");
 
         loop {
-            let app_clone = app.clone();
-            let query_result = tokio::task::spawn_blocking(move || {
-                let state = app_clone.state::<AppState>();
-                let db = state.db.lock().map_err(|e| format!("DB lock failed: {e}"))?;
-                let conn = db.connection();
-
-                let habit_repo = HabitRepository::new(conn);
-                let completion_repo = CompletionRepository::new(conn);
-                let pending_repo = PendingTriggerRepository::new(conn);
-
-                let habits = habit_repo
-                    .list_active_with_schedules()
-                    .map_err(|e| format!("Failed to list habits: {e}"))?;
-
-                let pending = pending_repo
-                    .list_active()
-                    .map_err(|e| format!("Failed to list pending triggers: {e}"))?;
-
-                let now = Local::now();
-                let today = now.date_naive();
-                let today_str = today.format("%Y-%m-%d").to_string();
-
-                let mut all_completions = Vec::new();
-                for habit in &habits {
-                    let completions = completion_repo
-                        .get_by_habit_and_date(&habit.id, &today_str)
-                        .map_err(|e| format!("Failed to get completions: {e}"))?;
-                    all_completions.extend(completions);
-                }
-
-                Ok::<_, String>((habits, pending, all_completions))
-            })
-            .await;
-
-            let (habits, pending, completions_today) = match query_result {
-                Ok(Ok(data)) => data,
-                Ok(Err(e)) => {
-                    log::error!("Scheduler query error: {e}");
-                    tokio::time::sleep(std::time::Duration::from_secs(30)).await;
-                    continue;
-                }
+            match self.run_iteration(&db, &*spawner).await {
+                Ok(()) => {}
                 Err(e) => {
-                    log::error!("Scheduler spawn_blocking panic: {e}");
+                    log::error!("Scheduler iteration error: {e}");
                     tokio::time::sleep(std::time::Duration::from_secs(30)).await;
-                    continue;
-                }
-            };
-
-            let now = Local::now();
-            match find_next_trigger(now, &habits, &pending, &completions_today) {
-                Some(next) => {
-                    let delay = next.fire_at.signed_duration_since(now);
-                    let sleep_duration = if delay.num_milliseconds() <= 0 {
-                        std::time::Duration::from_millis(0)
-                    } else {
-                        std::time::Duration::from_millis(delay.num_milliseconds() as u64)
-                    };
-
-                    log::info!(
-                        "Next trigger: habit={} time={} in {:?}",
-                        next.habit_id,
-                        next.scheduled_time,
-                        sleep_duration
-                    );
-
-                    tokio::select! {
-                        _ = tokio::time::sleep(sleep_duration) => {
-                            log::info!(
-                                "TRIGGER FIRED: habit={} scheduled_time={}",
-                                next.habit_id,
-                                next.scheduled_time
-                            );
-
-                            // Upsert pending trigger if not already pending
-                            if next.pending_trigger_id.is_none() {
-                                let app_upsert = app.clone();
-                                let habit_id = next.habit_id.clone();
-                                let sched_time = next.scheduled_time.clone();
-                                let trigger_date = next.trigger_date.clone();
-                                let now_str = Local::now().naive_local()
-                                    .format("%Y-%m-%dT%H:%M:%S").to_string();
-                                let _ = tokio::task::spawn_blocking(move || {
-                                    let state = app_upsert.state::<AppState>();
-                                    let db = match state.db.lock() {
-                                        Ok(db) => db,
-                                        Err(e) => {
-                                            log::error!("DB lock failed during trigger upsert: {e}");
-                                            return;
-                                        }
-                                    };
-                                    let repo = PendingTriggerRepository::new(db.connection());
-                                    if let Err(e) = repo.upsert(&habit_id, &trigger_date, &sched_time, &now_str) {
-                                        log::error!("Failed to upsert pending trigger: {e}");
-                                    }
-                                }).await;
-                            }
-
-                            // Create overlay window
-                            let label = format!("overlay-{}", next.habit_id);
-                            if app.get_webview_window(&label).is_some() {
-                                log::info!("Overlay already open for {}", next.habit_id);
-                                continue;
-                            }
-
-                            let url = format!(
-                                "/#/overlay/{}?triggerDate={}&scheduledTime={}",
-                                next.habit_id, next.trigger_date, next.scheduled_time
-                            );
-                            match WebviewWindowBuilder::new(
-                                &app,
-                                &label,
-                                tauri::WebviewUrl::App(url.into()),
-                            )
-                            .title("Pauzaro")
-                            .inner_size(420.0, 380.0)
-                            .always_on_top(true)
-                            .decorations(false)
-                            .center()
-                            .focused(true)
-                            .build()
-                            {
-                                Ok(_) => log::info!("Overlay window created: {label}"),
-                                Err(e) => log::error!("Failed to create overlay: {e}"),
-                            }
-                        }
-                        _ = self.notify.notified() => {
-                            log::info!("Scheduler woken — re-evaluating");
-                            continue;
-                        }
-                    }
-                }
-                None => {
-                    log::info!("No triggers scheduled — waiting for wake signal");
-                    self.notify.notified().await;
-                    log::info!("Scheduler woken — re-evaluating");
                 }
             }
         }
+    }
+
+    /// Execute one scheduler cycle: query DB, find next trigger, sleep until
+    /// fire time (or wake), then fire overlay if timer expires.
+    ///
+    /// Returns `Ok(())` after one complete cycle. Errors bubble up for the
+    /// caller to decide retry strategy.
+    pub async fn run_iteration(
+        &self,
+        db: &Arc<Mutex<Database>>,
+        spawner: &dyn OverlaySpawner,
+    ) -> Result<(), String> {
+        // Query all data needed for trigger evaluation
+        let db_clone = Arc::clone(db);
+        let query_result = tokio::task::spawn_blocking(move || {
+            let db = db_clone.lock().map_err(|e| format!("DB lock failed: {e}"))?;
+            let conn = db.connection();
+
+            let habit_repo = HabitRepository::new(conn);
+            let completion_repo = CompletionRepository::new(conn);
+            let pending_repo = PendingTriggerRepository::new(conn);
+
+            let habits = habit_repo
+                .list_active_with_schedules()
+                .map_err(|e| format!("Failed to list habits: {e}"))?;
+
+            let pending = pending_repo
+                .list_active()
+                .map_err(|e| format!("Failed to list pending triggers: {e}"))?;
+
+            let now = Local::now();
+            let today = now.date_naive();
+            let today_str = today.format("%Y-%m-%d").to_string();
+
+            let mut all_completions = Vec::new();
+            for habit in &habits {
+                let completions = completion_repo
+                    .get_by_habit_and_date(&habit.id, &today_str)
+                    .map_err(|e| format!("Failed to get completions: {e}"))?;
+                all_completions.extend(completions);
+            }
+
+            Ok::<_, String>((habits, pending, all_completions))
+        })
+        .await;
+
+        let (habits, pending, completions_today) = match query_result {
+            Ok(Ok(data)) => data,
+            Ok(Err(e)) => return Err(e),
+            Err(e) => return Err(format!("spawn_blocking panic: {e}")),
+        };
+
+        let now = Local::now();
+        match find_next_trigger(now, &habits, &pending, &completions_today) {
+            Some(next) => {
+                let delay = next.fire_at.signed_duration_since(now);
+                let sleep_duration = if delay.num_milliseconds() <= 0 {
+                    std::time::Duration::from_millis(0)
+                } else {
+                    std::time::Duration::from_millis(delay.num_milliseconds() as u64)
+                };
+
+                log::info!(
+                    "Next trigger: habit={} time={} in {:?}",
+                    next.habit_id,
+                    next.scheduled_time,
+                    sleep_duration
+                );
+
+                tokio::select! {
+                    _ = tokio::time::sleep(sleep_duration) => {
+                        log::info!(
+                            "TRIGGER FIRED: habit={} scheduled_time={}",
+                            next.habit_id,
+                            next.scheduled_time
+                        );
+
+                        // Upsert pending trigger if not already pending
+                        if next.pending_trigger_id.is_none() {
+                            let habit_id = next.habit_id.clone();
+                            let sched_time = next.scheduled_time.clone();
+                            let trigger_date = next.trigger_date.clone();
+                            let now_str = Local::now().naive_local()
+                                .format("%Y-%m-%dT%H:%M:%S").to_string();
+                            let db_clone2 = Arc::clone(db);
+                            let _ = tokio::task::spawn_blocking(move || {
+                                let db = match db_clone2.lock() {
+                                    Ok(db) => db,
+                                    Err(e) => {
+                                        log::error!("DB lock failed during trigger upsert: {e}");
+                                        return;
+                                    }
+                                };
+                                let repo = PendingTriggerRepository::new(db.connection());
+                                if let Err(e) = repo.upsert(&habit_id, &trigger_date, &sched_time, &now_str) {
+                                    log::error!("Failed to upsert pending trigger: {e}");
+                                }
+                            }).await;
+                        }
+
+                        // Create overlay window
+                        if spawner.is_overlay_open(&next.habit_id) {
+                            log::info!("Overlay already open for {}", next.habit_id);
+                            return Ok(());
+                        }
+
+                        match spawner.spawn_overlay(
+                            &next.habit_id,
+                            &next.trigger_date,
+                            &next.scheduled_time,
+                        ) {
+                            Ok(()) => log::info!("Overlay window created for habit={}", next.habit_id),
+                            Err(e) => log::error!("{e}"),
+                        }
+                    }
+                    _ = self.notify.notified() => {
+                        log::info!("Scheduler woken — re-evaluating");
+                    }
+                }
+            }
+            None => {
+                log::info!("No triggers scheduled — waiting for wake signal");
+                self.notify.notified().await;
+                log::info!("Scheduler woken — re-evaluating");
+            }
+        }
+
+        Ok(())
     }
 }
 

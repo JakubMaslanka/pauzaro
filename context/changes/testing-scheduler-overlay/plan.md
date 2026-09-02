@@ -326,8 +326,8 @@ Tests:
 
 #### Automated
 
-- [x] 1.1 All existing Rust tests pass after helper extraction
-- [x] 1.2 No duplicate setup_db or sample_habit_input in individual test files
+- [x] 1.1 All existing Rust tests pass after helper extraction — 9c67f77
+- [x] 1.2 No duplicate setup_db or sample_habit_input in individual test files — 9c67f77
 
 #### Manual
 
@@ -337,10 +337,10 @@ Tests:
 
 #### Automated
 
-- [ ] 2.1 All existing Rust tests pass after refactor
-- [ ] 2.2 cargo check passes with no warnings
-- [ ] 2.3 No WebviewWindowBuilder in Scheduler::run() or run_iteration()
-- [ ] 2.4 No AppHandle parameter in Scheduler::run()
+- [x] 2.1 All existing Rust tests pass after refactor
+- [x] 2.2 cargo check passes with no warnings
+- [x] 2.3 No WebviewWindowBuilder in Scheduler::run() or run_iteration()
+- [x] 2.4 No AppHandle parameter in Scheduler::run()
 
 #### Manual
 

@@ -9,7 +9,7 @@ use pauzaro_lib::models::habit::{CreateHabitInput, TimeSlot};
 use pauzaro_lib::models::user_profile::CreateUserProfileInput;
 use pauzaro_lib::models::CompletionStatus;
 use pauzaro_lib::AppState;
-use std::sync::Mutex;
+use std::sync::{Arc, Mutex};
 use tempfile::NamedTempFile;
 
 // --- Schema / migration tests ---
@@ -52,7 +52,7 @@ fn app_state_wraps_database_in_mutex() {
     let (_temp, db) = setup_db();
 
     let state = AppState {
-        db: Mutex::new(db),
+        db: Arc::new(Mutex::new(db)),
     };
 
     let locked = state.db.lock().expect("mutex should not be poisoned");

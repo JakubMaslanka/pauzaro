@@ -5,7 +5,7 @@ pub mod models;
 pub mod scheduler;
 pub mod streak;
 
-use std::sync::Mutex;
+use std::sync::{Arc, Mutex};
 
 use tauri::Manager;
 use tauri::tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent};
@@ -13,7 +13,7 @@ use tauri::tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent}
 use db::Database;
 
 pub struct AppState {
-    pub db: Mutex<Database>,
+    pub db: Arc<Mutex<Database>>,
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -34,17 +34,21 @@ pub fn run() {
             let db = Database::open(&db_path)
                 .map_err(|e| format!("failed to open database: {e}"))?;
 
+            let db_arc = Arc::new(Mutex::new(db));
+
             app.manage(AppState {
-                db: Mutex::new(db),
+                db: Arc::clone(&db_arc),
             });
 
             let sched = std::sync::Arc::new(scheduler::Scheduler::new());
             app.manage(sched.clone());
 
-            let app_handle = app.handle().clone();
+            let spawner: Arc<dyn scheduler::OverlaySpawner> =
+                Arc::new(scheduler::TauriOverlaySpawner::new(app.handle().clone()));
+
             let sched_run = sched.clone();
             tauri::async_runtime::spawn(async move {
-                sched_run.run(app_handle).await;
+                sched_run.run(db_arc, spawner).await;
             });
 
             // System tray — keeps app alive when main window is closed
