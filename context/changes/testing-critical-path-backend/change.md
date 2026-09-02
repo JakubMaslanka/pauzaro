@@ -1,9 +1,9 @@
 ---
 change_id: testing-critical-path-backend
 title: Testing critical path backend
-status: implementing
+status: implemented
 created: 2026-09-01
-updated: 2026-09-01
+updated: 2026-09-02
 archived_at: null
 ---
 

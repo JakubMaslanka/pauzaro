@@ -190,12 +190,12 @@ All tests are fast — pure unit tests have zero I/O, integration tests use in-m
 
 #### Automated
 
-- [x] 2.1 All overlay integration tests pass: `cd src-tauri && cargo test --test overlay_integration`
-- [x] 2.2 Full test suite still passes: `cd src-tauri && cargo test`
-- [x] 2.3 Type check passes: `cd src-tauri && cargo check`
+- [x] 2.1 All overlay integration tests pass: `cd src-tauri && cargo test --test overlay_integration` — 0355a97
+- [x] 2.2 Full test suite still passes: `cd src-tauri && cargo test` — 0355a97
+- [x] 2.3 Type check passes: `cd src-tauri && cargo check` — 0355a97
 
 #### Manual
 
-- [x] 2.4 Snooze auto-fail test replicates exact operation sequence from overlay.rs
-- [x] 2.5 Test data uses UTC-formatted date strings consistently
-- [x] 2.6 No test depends on system clock or execution timing
+- [x] 2.4 Snooze auto-fail test replicates exact operation sequence from overlay.rs — 0355a97
+- [x] 2.5 Test data uses UTC-formatted date strings consistently — 0355a97
+- [x] 2.6 No test depends on system clock or execution timing — 0355a97
