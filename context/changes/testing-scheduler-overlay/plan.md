@@ -351,9 +351,9 @@ Tests:
 
 #### Automated
 
-- [x] 3.1 All 4 new scheduler tests pass
-- [x] 3.2 All existing tests still pass
-- [x] 3.3 No flaky failures on 3 consecutive runs
+- [x] 3.1 All 4 new scheduler tests pass — c6d4d03
+- [x] 3.2 All existing tests still pass — c6d4d03
+- [x] 3.3 No flaky failures on 3 consecutive runs — c6d4d03
 
 #### Manual
 
@@ -363,9 +363,9 @@ Tests:
 
 #### Automated
 
-- [ ] 4.1 All 4 new OverlayPanel tests pass
-- [ ] 4.2 All existing frontend tests pass
-- [ ] 4.3 Type checking passes (tsc --noEmit)
+- [x] 4.1 All 4 new OverlayPanel tests pass
+- [x] 4.2 All existing frontend tests pass
+- [x] 4.3 Type checking passes (tsc --noEmit)
 
 #### Manual
 
