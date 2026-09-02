@@ -337,10 +337,10 @@ Tests:
 
 #### Automated
 
-- [x] 2.1 All existing Rust tests pass after refactor
-- [x] 2.2 cargo check passes with no warnings
-- [x] 2.3 No WebviewWindowBuilder in Scheduler::run() or run_iteration()
-- [x] 2.4 No AppHandle parameter in Scheduler::run()
+- [x] 2.1 All existing Rust tests pass after refactor — 26e8385
+- [x] 2.2 cargo check passes with no warnings — 26e8385
+- [x] 2.3 No WebviewWindowBuilder in Scheduler::run() or run_iteration() — 26e8385
+- [x] 2.4 No AppHandle parameter in Scheduler::run() — 26e8385
 
 #### Manual
 
@@ -351,9 +351,9 @@ Tests:
 
 #### Automated
 
-- [ ] 3.1 All 4 new scheduler tests pass
-- [ ] 3.2 All existing tests still pass
-- [ ] 3.3 No flaky failures on 3 consecutive runs
+- [x] 3.1 All 4 new scheduler tests pass
+- [x] 3.2 All existing tests still pass
+- [x] 3.3 No flaky failures on 3 consecutive runs
 
 #### Manual
 
