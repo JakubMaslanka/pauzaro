@@ -27,22 +27,22 @@ Three load-bearing principles — every rollout phase obeys these.
 | # | Risk (failure scenario) | Impact | Likelihood | Source(s) — evidence, not anchors |
 |---|---|---|---|---|
 | 1 | Overlay doesn't fire at scheduled time — user misses break, product worthless | High | High | Interview Q1 (top worry), Q3 (low-confidence area); PRD guardrail "powiadomienia muszą działać niezawodnie"; hot-spot dir `src-tauri/src/` 20 changes/30d |
-| 2 | UTC/local timezone confusion — scheduler fires at wrong time or streak day boundaries shift by timezone offset | High | High | Interview Q2 (burned before on timezone bugs); CLAUDE.md rule "always use UTC dates"; hot-spot dir `src-tauri/src/` |
-| 3 | Streak calculation silently wrong — user sees 14-day streak but reality is 10 | High | Medium | Interview Q4 (zero tests, scariest gap); PRD business logic section; hot-spot dir `src-tauri/src/commands/` 11 changes/30d |
-| 4 | Snooze counter doesn't enforce 3x auto-fail — user snoozes forever, never gets "failed" state | High | Medium | PRD FR-007 "3x snooze = nawyk automatycznie oznaczony jako niewykonany"; US-02 AC |
-| 5 | Dashboard shows stale state after overlay action — user marks done via overlay, dashboard still shows pending | Medium | Medium | Two-window architecture (overlay + main); hot-spot dir `src/components/dashboard/` 39 changes/30d |
-| 6 | Cross-platform overlay divergence — overlay works on macOS but breaks on Windows (or vice versa) | Medium | Medium | Interview Q2 (burned on Tauri cross-platform); PRD NFR "macOS i Windows"; roadmap S-02 unknowns |
+| 2 | Streak calculation silently wrong — user sees 14-day streak but reality is 10 | High | Medium | Interview Q4 (zero tests, scariest gap); PRD business logic section; hot-spot dir `src-tauri/src/commands/` 11 changes/30d |
+| 3 | Snooze counter doesn't enforce 3x auto-fail — user snoozes forever, never gets "failed" state | High | Medium | PRD FR-007 "3x snooze = nawyk automatycznie oznaczony jako niewykonany"; US-02 AC |
+| 4 | Dashboard shows stale state after overlay action — user marks done via overlay, dashboard still shows pending | Medium | Medium | Two-window architecture (overlay + main); hot-spot dir `src/components/dashboard/` 39 changes/30d |
+| 5 | Cross-platform overlay divergence — overlay works on macOS but breaks on Windows (or vice versa) | Medium | Medium | Interview Q2 (burned on Tauri cross-platform); PRD NFR "macOS i Windows"; roadmap S-02 unknowns |
+
+> **Retired:** Former risk #2 (UTC/local timezone confusion) removed — design decision 2026-09-02: app uses local time everywhere, no server/sync. UTC risk eliminated by architecture.
 
 ### Risk Response Guidance
 
 | Risk # | What would prove protection | Must challenge | Context needed | Likely cheapest layer | Anti-pattern to avoid |
 |---|---|---|---|---|---|
 | 1 | Overlay window created and shown at exact scheduled time; missed schedule detected | "Timer set = overlay will fire" — timers can drift, sleep/wake can skip intervals | Entry point for schedule evaluation, timer mechanism, overlay creation path | Integration test (Rust: scheduler + mock clock) | Testing timer *setup* instead of timer *firing*; asserting "no error" instead of "overlay shown" |
-| 2 | Dates stored as UTC in DB; streak boundaries use UTC midnight, not local midnight; schedule comparisons use UTC | "We use UTC everywhere" — one `new Date()` or `Local::now()` in the chain breaks it | All date creation/comparison paths in Rust + JS; DB schema date columns | Unit test (pure date logic in Rust) | Using production clock in test; asserting stored date format without checking calculation correctness |
-| 3 | Given known completion pattern (done/missed/done/done/missed), streak count matches hand-computed expected value | "Streak = consecutive days" — day boundaries, partial days, multiple time slots per day complicate this | Streak calculation function, completion record shape, what constitutes "day completed" | Unit test (pure function, known inputs/outputs) | Oracle from implementation: copying the streak formula into the test instead of hand-computing expected values |
-| 4 | After 3 snoozes on same overlay trigger, habit auto-marked as failed; no 4th snooze possible | "Counter increments on snooze" — counter could reset on window close/reopen, process restart | Snooze state storage (memory vs DB), overlay lifecycle, what triggers counter increment vs reset | Unit test (counter logic) + integration (overlay→counter→fail transition) | Testing counter increment in isolation without testing the "3 reached → mark failed" transition |
-| 5 | After overlay "done" action, dashboard reflects completion within 1 render cycle without manual refresh | "Write to DB = UI updates" — Zustand store may not re-fetch after Tauri command completes | Tauri command → DB write → event/callback → Zustand invalidation → re-render chain | Integration test (Tauri command + store update) | Mocking the entire Tauri layer and testing only Zustand — misses the actual sync gap |
-| 6 | Overlay window appears as always-on-top, captures focus, and accepts click on both macOS and Windows | "It works on my machine" — Tauri window flags may behave differently per OS | Tauri window configuration, OS-specific always-on-top behavior, focus-stealing policies | Manual smoke test + documented checklist | Writing an automated e2e for window focus behavior that only runs in CI on one OS |
+| 2 | Given known completion pattern (done/missed/done/done/missed), streak count matches hand-computed expected value | "Streak = consecutive days" — day boundaries, partial days, multiple time slots per day complicate this | Streak calculation function, completion record shape, what constitutes "day completed" | Unit test (pure function, known inputs/outputs) | Oracle from implementation: copying the streak formula into the test instead of hand-computing expected values |
+| 3 | After 3 snoozes on same overlay trigger, habit auto-marked as failed; no 4th snooze possible | "Counter increments on snooze" — counter could reset on window close/reopen, process restart | Snooze state storage (memory vs DB), overlay lifecycle, what triggers counter increment vs reset | Unit test (counter logic) + integration (overlay→counter→fail transition) | Testing counter increment in isolation without testing the "3 reached → mark failed" transition |
+| 4 | After overlay "done" action, dashboard reflects completion within 1 render cycle without manual refresh | "Write to DB = UI updates" — Zustand store may not re-fetch after Tauri command completes | Tauri command → DB write → event/callback → Zustand invalidation → re-render chain | Integration test (Tauri command + store update) | Mocking the entire Tauri layer and testing only Zustand — misses the actual sync gap |
+| 5 | Overlay window appears as always-on-top, captures focus, and accepts click on both macOS and Windows | "It works on my machine" — Tauri window flags may behave differently per OS | Tauri window configuration, OS-specific always-on-top behavior, focus-stealing policies | Manual smoke test + documented checklist | Writing an automated e2e for window focus behavior that only runs in CI on one OS |
 
 ### Abuse/Security Assessment
 
@@ -52,9 +52,9 @@ No auth, no payments, no network calls, no server. User input (habit names, desc
 
 | # | Phase name | Goal | Risks covered | Test types | Status | Change folder | Linear |
 |---|---|---|---|---|---|---|---|
-| 1 | Critical-path backend logic | Prove streak calculation, snooze 3x auto-fail rule, and UTC date handling are correct via pure Rust unit tests — cheapest layer for densest untested business logic | #2, #3, #4 | Rust unit tests | change opened | context/changes/testing-critical-path-backend/ | [JAC-13](https://linear.app/jacobs-agents-playground/issue/JAC-13/t-01-critical-path-backend-logic-tests) |
-| 2 | Scheduler + overlay reliability | Prove scheduler fires correctly at configured times, handles timezone correctly, and overlay→completion→dashboard path works end-to-end | #1, #2, #5 | Rust integration tests, Tauri command round-trip tests | not started | — | [JAC-14](https://linear.app/jacobs-agents-playground/issue/JAC-14/t-02-scheduler-overlay-reliability-tests) |
-| 3 | Cross-platform smoke + quality gates | Prove overlay behavior on both platforms; wire `cargo test` + `pnpm test` into pre-commit or CI when available | #6 | Manual smoke checklist, optional CI configuration | not started | — | [JAC-15](https://linear.app/jacobs-agents-playground/issue/JAC-15/t-03-cross-platform-smoke-quality-gates) |
+| 1 | Critical-path backend logic | Prove streak calculation and snooze 3x auto-fail rule are correct via pure Rust unit tests — cheapest layer for densest untested business logic | #2, #3 | Rust unit tests | complete | context/changes/testing-critical-path-backend/ | [JAC-13](https://linear.app/jacobs-agents-playground/issue/JAC-13/t-01-critical-path-backend-logic-tests) |
+| 2 | Scheduler + overlay reliability | Prove scheduler fires correctly at configured times and overlay→completion→dashboard path works end-to-end | #1, #4 | Rust integration tests, Tauri command round-trip tests | not started | — | [JAC-14](https://linear.app/jacobs-agents-playground/issue/JAC-14/t-02-scheduler-overlay-reliability-tests) |
+| 3 | Cross-platform smoke + quality gates | Prove overlay behavior on both platforms; wire `cargo test` + `pnpm test` into pre-commit or CI when available | #5 | Manual smoke checklist, optional CI configuration | not started | — | [JAC-15](https://linear.app/jacobs-agents-playground/issue/JAC-15/t-03-cross-platform-smoke-quality-gates) |
 
 ## §4 Stack
 
@@ -82,13 +82,13 @@ What is explicitly NOT tested and why:
 
 ### Phase 1: Critical-path backend logic
 
-**Patterns shipped:** (TBD — see §3 Phase 1 for streak calculation correctness, snooze 3x auto-fail enforcement, UTC date boundary verification patterns)
+**Patterns shipped:** (TBD — see §3 Phase 1 for streak calculation correctness, snooze 3x auto-fail enforcement patterns)
 **Location:** (TBD — change folder path)
 **How to add a test in this area:** (TBD — recipe added by `/10x-implement`)
 
 ### Phase 2: Scheduler + overlay reliability
 
-**Patterns shipped:** (TBD — see §3 Phase 2 for scheduler timing verification, timezone handling, overlay→completion→dashboard sync patterns)
+**Patterns shipped:** (TBD — see §3 Phase 2 for scheduler timing verification, overlay→completion→dashboard sync patterns)
 **Location:** (TBD — change folder path)
 **How to add a test in this area:** (TBD — recipe added by `/10x-implement`)
 

@@ -38,14 +38,14 @@ type DashboardState =
 			habitStatuses: Record<string, HabitStatus>;
 	  };
 
-function getCurrentUTCMonth(): { year: number; month: number } {
+function getCurrentMonth(): { year: number; month: number } {
 	const now = new Date();
-	return { year: now.getUTCFullYear(), month: now.getUTCMonth() };
+	return { year: now.getFullYear(), month: now.getMonth() };
 }
 
 function getMonthDateRange(year: number, month: number) {
 	const fromDate = `${year}-${String(month + 1).padStart(2, "0")}-01`;
-	const lastDay = new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
+	const lastDay = new Date(year, month + 1, 0).getDate();
 	const toDate = `${year}-${String(month + 1).padStart(2, "0")}-${String(lastDay).padStart(2, "0")}`;
 	return { fromDate, toDate };
 }
@@ -56,15 +56,15 @@ function countScheduledDaysInMonth(
 	scheduleDays: number[],
 	habitStartDate: string,
 ): number {
-	const lastDay = new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
+	const lastDay = new Date(year, month + 1, 0).getDate();
 	const now = new Date();
-	const todayStr = `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, "0")}-${String(now.getUTCDate()).padStart(2, "0")}`;
+	const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
 	let count = 0;
 	for (let d = 1; d <= lastDay; d++) {
 		const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
 		if (dateStr < habitStartDate || dateStr > todayStr) continue;
-		const dateObj = new Date(Date.UTC(year, month, d));
-		const dow = dateObj.getUTCDay();
+		const dateObj = new Date(year, month, d);
+		const dow = dateObj.getDay();
 		if (scheduleDays.includes(dow)) count++;
 	}
 	return count;
@@ -88,7 +88,7 @@ function countDaysPracticed(
 }
 
 function getGreeting(): string {
-	const hour = new Date().getUTCHours();
+	const hour = new Date().getHours();
 	if (hour >= 5 && hour < 12) return "Good morning";
 	if (hour >= 12 && hour < 17) return "Good afternoon";
 	if (hour >= 17 && hour < 21) return "Good evening";
@@ -97,7 +97,7 @@ function getGreeting(): string {
 
 export function Dashboard() {
 	const [state, setState] = useState<DashboardState>({ status: "loading" });
-	const [currentMonth, setCurrentMonth] = useState(getCurrentUTCMonth);
+	const [currentMonth, setCurrentMonth] = useState(getCurrentMonth);
 	const [completions, setCompletions] = useState<Completion[]>([]);
 	const [userName, setUserName] = useState<string>("");
 	const [latestCompletion, setLatestCompletion] = useState<Completion | null>(

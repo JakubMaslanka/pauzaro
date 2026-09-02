@@ -300,3 +300,4 @@ mod tests {
 - All input types derive `Deserialize` and have `validate()` method
 - Mutations (create/update/delete) return affected entity, not just status
 - Database path from `app.path().app_data_dir()` — never hardcode paths
+- Use local time (`chrono::Local::now()`) — never `chrono::Utc::now()`. App runs locally on one device; no server, no timezone sync. Date strings use `YYYY-MM-DD` format in local time

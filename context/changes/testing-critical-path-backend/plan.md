@@ -2,7 +2,7 @@
 
 ## Overview
 
-Write Rust tests proving streak calculation, snooze 3x auto-fail rule, and UTC date handling are correct. Covers test-plan Phase 1 (T-01) risks #2, #3, #4. Two test layers: pure unit tests for streak edge cases, DB integration tests for snooze/mark_done flows. All tests use UTC-formatted date strings as the contract — when the separate UTC migration change lands, these tests serve as the safety net.
+Write Rust tests proving streak calculation and snooze 3x auto-fail rule are correct. Covers test-plan Phase 1 (T-01) risks #2, #3. Two test layers: pure unit tests for streak edge cases, DB integration tests for snooze/mark_done flows. Tests use `YYYY-MM-DD` date strings matching the local-time convention adopted project-wide (design decision 2026-09-02: local time everywhere, no UTC).
 
 ## Current State Analysis
 
@@ -14,16 +14,16 @@ Write Rust tests proving streak calculation, snooze 3x auto-fail rule, and UTC d
 - `db/pending_triggers.rs` — `PendingTriggerRepository` has 5 methods, zero tests. `increment_snooze()` uses `SET snooze_count = snooze_count + 1` in SQL — testing through the DB catches SQL-level bugs that unit tests on extracted logic would miss
 - `tests/db_integration.rs:12` — Established integration test pattern: `setup_db()` creates `NamedTempFile` + `Database`, each test gets isolated SQLite. `sample_habit_input()` builds reusable fixture
 - All date fields (`trigger_date`, `scheduled_time`, `next_fire_at`, `completed_at`, `created_at`) are `String` — no typed date values at the DB layer. Dates are compared as strings, which works for `YYYY-MM-DD` format regardless of timezone semantics
-- Backend currently uses `chrono::Local` everywhere — UTC migration is a separate change. Tests define the UTC contract by using UTC-formatted strings
+- Backend uses `chrono::Local` everywhere — local time is the project convention (design decision 2026-09-02). Tests use `YYYY-MM-DD` formatted strings matching this convention
 
 ## Desired End State
 
 After this plan:
 - `streak.rs` has 12 unit tests (4 new) covering all meaningful edge cases
 - `src-tauri/tests/overlay_integration.rs` exists with ~8 integration tests covering snooze 3x auto-fail flow, mark_done happy path, mark_done override_failed, and PendingTriggerRepository operations
-- All tests use UTC-formatted date strings as inputs, defining the contract for the upcoming UTC migration
+- All tests use `YYYY-MM-DD` local-time date strings as inputs
 - `cargo test` passes with all new tests green
-- Test-plan Phase 1 risks #2, #3, #4 have test coverage
+- Test-plan Phase 1 risks #2, #3 have test coverage
 
 ### Verification:
 
@@ -35,7 +35,6 @@ cd src-tauri && cargo test overlay      # overlay integration tests
 
 ## What We're NOT Doing
 
-- **UTC migration** — separate change; this plan writes tests assuming UTC, migration makes them true in production
 - **Scheduler tests** — Phase 2 (T-02), requires mock clock / Tauri test harness
 - **Overlay window behavior tests** — Phase 2 territory
 - **Frontend tests** — out of scope for backend testing phase
@@ -87,7 +86,7 @@ Add 4 targeted unit tests to `streak.rs` covering edge cases the existing 8 test
 
 ### Overview
 
-Create `src-tauri/tests/overlay_integration.rs` testing the full DB-level flows for snooze auto-fail and mark_done, including the PendingTriggerRepository operations that are currently untested. Tests use UTC-formatted date strings.
+Create `src-tauri/tests/overlay_integration.rs` testing the full DB-level flows for snooze auto-fail and mark_done, including the PendingTriggerRepository operations that are currently untested.
 
 ### Changes Required:
 
@@ -121,7 +120,7 @@ Tests to include:
 #### Manual Verification:
 
 - Review that snooze auto-fail test replicates the exact operation sequence from `commands/overlay.rs:88-123`
-- Verify test data uses UTC-formatted date strings consistently
+- Verify test data uses `YYYY-MM-DD` date strings consistently
 - Confirm no test depends on system clock or execution timing
 
 **Implementation Note**: After completing this phase and all automated verification passes, pause here for manual confirmation from the human that the manual testing was successful before proceeding.
@@ -148,9 +147,8 @@ Tests to include:
 
 | Risk | What test proves | Test location |
 |------|-----------------|---------------|
-| #2 (UTC dates) | Tests use UTC-formatted date strings; streak/completion logic processes them correctly | All tests — input data format |
-| #3 (Streak wrong) | Hand-computed expected values for 12 distinct scenarios including multi-slot and boundary cases | `streak.rs` unit tests |
-| #4 (Snooze 3x) | After exactly 3 snooze increments: pending trigger deleted, Failed completion exists, no 4th snooze possible | `overlay_integration.rs` test 4-5 |
+| #2 (Streak wrong) | Hand-computed expected values for 12 distinct scenarios including multi-slot and boundary cases | `streak.rs` unit tests |
+| #3 (Snooze 3x) | After exactly 3 snooze increments: pending trigger deleted, Failed completion exists, no 4th snooze possible | `overlay_integration.rs` test 4-5 |
 
 ## Performance Considerations
 
@@ -158,7 +156,7 @@ All tests are fast — pure unit tests have zero I/O, integration tests use in-m
 
 ## References
 
-- Test plan: `context/foundation/test-plan.md` — Phase 1, risks #2, #3, #4
+- Test plan: `context/foundation/test-plan.md` — Phase 1, risks #2, #3
 - Risk response guidance: test-plan §2 Risk Response Guidance table
 - Existing integration tests: `src-tauri/tests/db_integration.rs`
 - Existing streak tests: `src-tauri/src/streak.rs:87-210`
@@ -197,5 +195,5 @@ All tests are fast — pure unit tests have zero I/O, integration tests use in-m
 #### Manual
 
 - [x] 2.4 Snooze auto-fail test replicates exact operation sequence from overlay.rs — 0355a97
-- [x] 2.5 Test data uses UTC-formatted date strings consistently — 0355a97
+- [x] 2.5 Test data uses YYYY-MM-DD date strings consistently — 0355a97
 - [x] 2.6 No test depends on system clock or execution timing — 0355a97

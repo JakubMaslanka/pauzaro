@@ -6,7 +6,7 @@ Pauzaro is a desktop habit-tracking app (Tauri 2 + React 19 + TypeScript + Rust)
 
 ## Data handling
 
-- always use UTC dates, not local JS time new Date()
+- Use local time everywhere — `new Date()` in JS, `Local::now()` in Rust. App runs locally on one device; no server, no timezone sync needed. Never use `getUTC*()` or `Date.UTC()` in frontend, never use `chrono::Utc` in Rust.
 
 ## Architecture Decisions
 

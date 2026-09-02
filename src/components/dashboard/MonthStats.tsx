@@ -23,13 +23,13 @@ function getPerformanceBadge(
 
 function computeDaysLeft(endDate: string): number | null {
 	const now = new Date();
-	const todayStr = `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, "0")}-${String(now.getUTCDate()).padStart(2, "0")}`;
+	const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
 	if (endDate <= todayStr) return 0;
 
 	const [ey, em, ed] = endDate.split("-").map(Number);
 	const [ty, tm, td] = todayStr.split("-").map(Number);
-	const endMs = Date.UTC(ey, em - 1, ed);
-	const todayMs = Date.UTC(ty, tm - 1, td);
+	const endMs = new Date(ey, em - 1, ed).getTime();
+	const todayMs = new Date(ty, tm - 1, td).getTime();
 	return Math.ceil((endMs - todayMs) / (1000 * 60 * 60 * 24));
 }
 

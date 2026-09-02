@@ -36,8 +36,8 @@ A developer in deep focus loses track of time — forgets breaks, movement, and 
 | S-03 | dashboard-month-view        | view full month calendar with per-day completion status and streak history                   | S-02          | US-02, FR-008                         | done |
 | S-04 | streak-freeze               | freeze streak for up to 2 days to protect series from missed days                           | S-02          | FR-012                                | proposed |
 | S-05 | dinosaur-mascot             | see dinosaur mascot reacting to current streak status (happy/neutral/sad)                    | S-02          | FR-009                                | proposed |
-| T-01 | testing-critical-path-backend | (testing) streak calc, snooze rules, UTC date handling proven correct via Rust unit tests  | S-02          | test-plan §3 Phase 1                  | in-progress |
-| T-02 | testing-scheduler-overlay   | (testing) scheduler fires correctly, timezone handled, overlay→dashboard sync works          | T-01          | test-plan §3 Phase 2                  | backlog |
+| T-01 | testing-critical-path-backend | (testing) streak calc and snooze rules proven correct via Rust unit tests                  | S-02          | test-plan §3 Phase 1                  | done |
+| T-02 | testing-scheduler-overlay   | (testing) scheduler fires correctly, overlay→dashboard sync works                            | T-01          | test-plan §3 Phase 2                  | backlog |
 | T-03 | testing-cross-platform-gates | (testing) cross-platform overlay smoke + test runner wired into CI/pre-commit               | T-02          | test-plan §3 Phase 3                  | backlog |
 
 ## Streams
@@ -143,22 +143,22 @@ Foundations below assume these are present and do NOT re-scaffold them.
 
 ### T-01: Critical-path backend logic tests
 
-- **Outcome:** (testing) streak calculation, snooze 3x auto-fail rule, and UTC date handling proven correct via pure Rust unit tests
+- **Outcome:** (testing) streak calculation and snooze 3x auto-fail rule proven correct via pure Rust unit tests
 - **Change ID:** testing-critical-path-backend
-- **PRD refs:** test-plan §3 Phase 1 — risks #2, #3, #4
+- **PRD refs:** test-plan §3 Phase 1 — risks #2, #3
 - **Prerequisites:** S-02
 - **Parallel with:** S-04, S-05
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** Low — pure unit tests on existing logic, no I/O dependencies.
-- **Status:** in-progress
+- **Status:** done
 - **Linear:** [JAC-13](https://linear.app/jacobs-agents-playground/issue/JAC-13/t-01-critical-path-backend-logic-tests)
 
 ### T-02: Scheduler + overlay reliability tests
 
-- **Outcome:** (testing) scheduler fires correctly at configured times, handles timezone, overlay→completion→dashboard path works end-to-end
+- **Outcome:** (testing) scheduler fires correctly at configured times, overlay→completion→dashboard path works end-to-end
 - **Change ID:** testing-scheduler-overlay
-- **PRD refs:** test-plan §3 Phase 2 — risks #1, #2, #5
+- **PRD refs:** test-plan §3 Phase 2 — risks #1, #4
 - **Prerequisites:** T-01
 - **Parallel with:** —
 - **Blockers:** —

@@ -40,18 +40,18 @@ interface CalendarDay {
 function buildCalendarGrid(year: number, month: number): CalendarDay[] {
 	const days: CalendarDay[] = [];
 
-	// First day of month (UTC)
-	const firstOfMonth = new Date(Date.UTC(year, month, 1));
-	const startDow = firstOfMonth.getUTCDay();
+	// First day of month (local)
+	const firstOfMonth = new Date(year, month, 1);
+	const startDow = firstOfMonth.getDay();
 
 	// Last day of month
-	const lastOfMonth = new Date(Date.UTC(year, month + 1, 0));
-	const daysInMonth = lastOfMonth.getUTCDate();
+	const lastOfMonth = new Date(year, month + 1, 0);
+	const daysInMonth = lastOfMonth.getDate();
 
 	// Previous month fill
 	if (startDow > 0) {
-		const prevLast = new Date(Date.UTC(year, month, 0));
-		const prevDaysInMonth = prevLast.getUTCDate();
+		const prevLast = new Date(year, month, 0);
+		const prevDaysInMonth = prevLast.getDate();
 		for (let i = startDow - 1; i >= 0; i--) {
 			const d = prevDaysInMonth - i;
 			const prevMonth = month === 0 ? 11 : month - 1;
@@ -99,11 +99,7 @@ function formatDateString(year: number, month: number, day: number): string {
 
 function getTodayString(): string {
 	const now = new Date();
-	return formatDateString(
-		now.getUTCFullYear(),
-		now.getUTCMonth(),
-		now.getUTCDate(),
-	);
+	return formatDateString(now.getFullYear(), now.getMonth(), now.getDate());
 }
 
 type DayCellStatus =
@@ -157,10 +153,10 @@ function deriveDayStatus(
 		};
 	}
 
-	// Determine day-of-week from date string (UTC)
+	// Determine day-of-week from date string (local)
 	const [y, m, d] = dateStr.split("-").map(Number);
-	const dateObj = new Date(Date.UTC(y, m - 1, d));
-	const dow = dateObj.getUTCDay();
+	const dateObj = new Date(y, m - 1, d);
+	const dow = dateObj.getDay();
 
 	if (!scheduleDays.includes(dow)) {
 		return {
@@ -292,8 +288,8 @@ export function MonthCalendar({
 
 	// Navigation bounds
 	const now = new Date();
-	const currentYear = now.getUTCFullYear();
-	const currentMonth = now.getUTCMonth();
+	const currentYear = now.getFullYear();
+	const currentMonth = now.getMonth();
 	const isCurrentMonth = year === currentYear && month === currentMonth;
 
 	const [startY, startM] = habitStartDate.split("-").map(Number);

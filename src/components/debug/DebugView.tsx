@@ -18,7 +18,7 @@ export function DebugView() {
 
 			const habit = habits[0];
 			const now = new Date();
-			const triggerDate = `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, "0")}-${String(now.getUTCDate()).padStart(2, "0")}`;
+			const triggerDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
 			const scheduledTime = habit.schedule_times[0]?.start_time ?? "10:00";
 			const label = `overlay-${habit.id}`;
 
