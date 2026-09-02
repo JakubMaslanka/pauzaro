@@ -1,3 +1,6 @@
+mod common;
+
+use common::{sample_habit_input, setup_db};
 use pauzaro_lib::db::completions::CompletionRepository;
 use pauzaro_lib::db::habits::HabitRepository;
 use pauzaro_lib::db::user_profile::UserProfileRepository;
@@ -8,12 +11,6 @@ use pauzaro_lib::models::CompletionStatus;
 use pauzaro_lib::AppState;
 use std::sync::Mutex;
 use tempfile::NamedTempFile;
-
-fn setup_db() -> (NamedTempFile, Database) {
-    let temp = NamedTempFile::new().expect("failed to create temp file");
-    let db = Database::open(temp.path()).expect("failed to open database");
-    (temp, db)
-}
 
 // --- Schema / migration tests ---
 
@@ -129,27 +126,6 @@ fn create_profile_rejects_empty_name() {
 }
 
 // --- Habit tests ---
-
-fn sample_habit_input() -> CreateHabitInput {
-    CreateHabitInput {
-        name: "Take a break".into(),
-        description: Some("Stand up and stretch".into()),
-        icon: "Coffee".into(),
-        icon_color: Some("#FF5733".into()),
-        icon_stroke_width: Some(1.5),
-        schedule_days: vec![1, 3, 5],
-        schedule_times: vec![
-            TimeSlot {
-                start_time: "10:00".into(),
-            },
-            TimeSlot {
-                start_time: "15:00".into(),
-            },
-        ],
-        start_date: "2026-08-27".into(),
-        end_date: None,
-    }
-}
 
 #[test]
 fn create_habit_with_schedule_and_retrieve() {
