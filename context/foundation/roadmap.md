@@ -3,7 +3,7 @@ project: "Pauzaro"
 version: 1
 status: draft
 created: 2026-08-25
-updated: 2026-09-01
+updated: 2026-09-03
 
 prd_version: 1
 main_goal: learn
@@ -36,8 +36,9 @@ A developer in deep focus loses track of time — forgets breaks, movement, and 
 | S-03 | dashboard-month-view        | view full month calendar with per-day completion status and streak history                   | S-02          | US-02, FR-008                         | done |
 | S-04 | streak-freeze               | freeze streak for up to 2 days to protect series from missed days                           | S-02          | FR-012                                | proposed |
 | S-05 | dinosaur-mascot             | see dinosaur mascot reacting to current streak status (happy/neutral/sad)                    | S-02          | FR-009                                | proposed |
+| S-06 | missed-repetition-recovery  | on launch, see missed repetitions while app was closed and recover/dismiss them               | S-02          | US-02, FR-007 (streak integrity)      | proposed |
 | T-01 | testing-critical-path-backend | (testing) streak calc and snooze rules proven correct via Rust unit tests                  | S-02          | test-plan §3 Phase 1                  | done |
-| T-02 | testing-scheduler-overlay   | (testing) scheduler fires correctly, overlay→dashboard sync works                            | T-01          | test-plan §3 Phase 2                  | backlog |
+| T-02 | testing-scheduler-overlay   | (testing) scheduler fires correctly, overlay→dashboard sync works                            | T-01          | test-plan §3 Phase 2                  | done |
 | T-03 | testing-cross-platform-gates | (testing) cross-platform overlay smoke + test runner wired into CI/pre-commit               | T-02          | test-plan §3 Phase 3                  | backlog |
 
 ## Streams
@@ -46,7 +47,7 @@ Navigation aid — groups items that share a Prerequisites chain. Canonical orde
 
 | Stream | Theme               | Chain                              | Note                                                               |
 | ------ | ------------------- | ---------------------------------- | ------------------------------------------------------------------ |
-| A      | Core loop           | `F-01` → `S-01` → `S-02` → `S-03` | Main learning path — Tauri overlay, Rust scheduling, SQLite.       |
+| A      | Core loop           | `F-01` → `S-01` → `S-02` → `S-03` / `S-06` | Main learning path — Tauri overlay, Rust scheduling, SQLite. S-06 branches from S-02 (missed-rep recovery on launch). |
 | B      | Gamification extras | `S-04` / `S-05`                    | Both join Stream A at `S-02`. Parallel with `S-03` and each other. |
 | C      | Test coverage       | `T-01` → `T-02` → `T-03`          | Sequential rollout from `context/foundation/test-plan.md`. T-01 depends on S-02 (tests existing backend logic). Linear: JAC-13 → JAC-14 → JAC-15. |
 
@@ -141,6 +142,22 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Risk:** Needs static dinosaur assets (2-3 states). If no suitable assets are available, creating them is a design task outside code. PRD accepts relaxed visual polish for MVP — simple SVGs or placeholder images suffice.
 - **Status:** proposed
 
+### S-06: Missed-repetition recovery on launch
+
+- **Outcome:** on app launch, user sees which habit repetitions were missed while the app was closed and can mark them completed retroactively, dismiss them, or catch up now
+- **Change ID:** missed-repetition-recovery
+- **PRD refs:** US-02 (streak continuity), FR-007 (streak integrity when app not running)
+- **Prerequisites:** S-02
+- **Parallel with:** S-03, S-04, S-05
+- **Blockers:** —
+- **Unknowns:** —
+- **Recovery window:** 30 days max. If last activity > 30 days ago, streak resets to 0 and all intermediate days marked as failed — no recovery prompt shown (user lost interest). Recovery modal only appears for gaps ≤ 30 days.
+- **Risk:** Touches streak calculation — must ensure retroactive "mark done" inserts completions with correct historical timestamps without corrupting existing streak data. Multi-habit listing adds moderate frontend scope. Edge cases: app closed mid-day (partial day), overlapping snooze state from S-02, gap exactly at 30-day boundary.
+- **Scope:**
+  - **Backend (Rust):** On startup, query each active habit's schedule against `completions` table. Compare last app-open timestamp against current date. If gap > 30 days: reset streak to 0, bulk-insert failed/missed status for all intermediate scheduled days, skip recovery prompt. If gap ≤ 30 days: for each scheduled time with no matching completion, emit a missed-repetition record. Store "last seen" timestamp (update on each app close / periodic heartbeat).
+  - **Frontend (React):** Recovery modal/dialog on dashboard mount when missed list is non-empty. Shows grouped-by-habit list: "Habit Name — X missed repetitions". Three actions per habit: **"Done anyway"** (backfill completions, preserve streak), **"Dismiss"** (acknowledge, streak breaks as expected), **"Catch up now"** (trigger overlay immediately). Modal blocks dashboard until all habits addressed. If streak was auto-reset (>30 days), show brief toast: "Welcome back! Your streak was reset after 30 days of inactivity."
+- **Status:** proposed
+
 ### T-01: Critical-path backend logic tests
 
 - **Outcome:** (testing) streak calculation and snooze 3x auto-fail rule proven correct via pure Rust unit tests
@@ -164,7 +181,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** Medium — integration tests require mock clock / Tauri test harness; patterns may need research.
-- **Status:** backlog
+- **Status:** done
 - **Linear:** [JAC-14](https://linear.app/jacobs-agents-playground/issue/JAC-14/t-02-scheduler-overlay-reliability-tests)
 
 ### T-03: Cross-platform smoke + quality gates

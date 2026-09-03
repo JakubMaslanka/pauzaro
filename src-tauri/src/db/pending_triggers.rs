@@ -57,7 +57,7 @@ impl<'a> PendingTriggerRepository<'a> {
         let mut stmt = self.conn.prepare(
             "SELECT id, habit_id, trigger_date, scheduled_time, snooze_count, next_fire_at, created_at
              FROM pending_triggers
-             WHERE trigger_date >= date('now', '-1 day')
+             WHERE trigger_date >= date('now', 'localtime', '-1 day')
              ORDER BY next_fire_at ASC",
         )?;
 
