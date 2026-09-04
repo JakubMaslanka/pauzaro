@@ -522,30 +522,30 @@ Full-stack test coverage: Rust unit tests for gap detection pure logic, integrat
 
 #### Automated
 
-- [x] 3.1 Type checking passes: `tsc --noEmit`
-- [x] 3.2 Lint passes: `pnpm lint`
-- [x] 3.3 Rust check: `cd src-tauri && cargo check`
-- [x] 3.4 Existing tests still pass: `pnpm test` and `cd src-tauri && cargo test`
+- [x] 3.1 Type checking passes: `tsc --noEmit` — cc5ff8f
+- [x] 3.2 Lint passes: `pnpm lint` — cc5ff8f
+- [x] 3.3 Rust check: `cd src-tauri && cargo check` — cc5ff8f
+- [x] 3.4 Existing tests still pass: `pnpm test` and `cd src-tauri && cargo test` — cc5ff8f
 
 #### Manual
 
-- [x] 3.5 Recovery modals appear sequentially per habit after gap
-- [x] 3.6 "Done anyway" backfills completions and recovers streak
-- [x] 3.7 "Dismiss" marks slots as failed
-- [x] 3.8 30+ day gap shows Notification toast, no recovery modal
-- [x] 3.9 No recovery modal when no missed reps
-- [x] 3.10 Window hide (close button) → reopen → no recovery modal
+- [x] 3.5 Recovery modals appear sequentially per habit after gap — cc5ff8f
+- [x] 3.6 "Done anyway" backfills completions and recovers streak — cc5ff8f
+- [x] 3.7 "Dismiss" marks slots as failed — cc5ff8f
+- [x] 3.8 30+ day gap shows Notification toast, no recovery modal — cc5ff8f
+- [x] 3.9 No recovery modal when no missed reps — cc5ff8f
+- [x] 3.10 Window hide (close button) → reopen → no recovery modal — cc5ff8f
 
 ### Phase 4: Testing
 
 #### Automated
 
-- [ ] 4.1 All Rust tests pass: `cd src-tauri && cargo test`
-- [ ] 4.2 All frontend tests pass: `pnpm test`
-- [ ] 4.3 Type checking: `tsc --noEmit`
-- [ ] 4.4 Lint: `pnpm lint`
+- [x] 4.1 All Rust tests pass: `cd src-tauri && cargo test`
+- [x] 4.2 All frontend tests pass: `pnpm test`
+- [x] 4.3 Type checking: `tsc --noEmit`
+- [x] 4.4 Lint: `pnpm lint`
 
 #### Manual
 
-- [ ] 4.5 Full test suite runs without flaky tests
-- [ ] 4.6 Edge case coverage verified: partial day, 30-day boundary, multi-habit
+- [x] 4.5 Full test suite runs without flaky tests
+- [x] 4.6 Edge case coverage verified: partial day, 30-day boundary, multi-habit

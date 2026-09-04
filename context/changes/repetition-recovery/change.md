@@ -1,7 +1,7 @@
 ---
 change_id: repetition-recovery
 title: Repetition recovery
-status: implementing
+status: implemented
 created: 2026-09-03
 updated: 2026-09-04
 archived_at: null
