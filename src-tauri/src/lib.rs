@@ -77,6 +77,8 @@ pub fn run() {
                 // Compute missed repetitions
                 last_seen_str.and_then(|ts| {
                     let last_seen = chrono::NaiveDateTime::parse_from_str(&ts, "%Y-%m-%dT%H:%M:%S")
+                        .or_else(|_| chrono::NaiveDateTime::parse_from_str(&ts, "%Y-%m-%d %H:%M:%S"))
+                        .map_err(|e| error!("Failed to parse last_seen_at '{ts}': {e}"))
                         .ok()?;
                     let now = Local::now().naive_local();
 

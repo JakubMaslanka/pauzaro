@@ -70,7 +70,7 @@ const MIGRATIONS: &[&str] = &[
         id INTEGER PRIMARY KEY CHECK (id = 1),
         last_seen_at TEXT NOT NULL
     );
-    INSERT OR IGNORE INTO app_state (id, last_seen_at) VALUES (1, datetime('now', 'localtime'));",
+    INSERT OR IGNORE INTO app_state (id, last_seen_at) VALUES (1, strftime('%Y-%m-%dT%H:%M:%S', 'now', 'localtime'));",
 ];
 
 /// Applies pending migrations tracked by `schema_version`.

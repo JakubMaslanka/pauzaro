@@ -39,30 +39,44 @@ impl<'a> AppStateRepository<'a> {
 ///
 /// For each stale trigger: insert a `Failed` completion preserving original
 /// `trigger_date` and `scheduled_time`, then delete the trigger.
-/// Returns count of cleaned-up triggers.
+/// Wrapped in a transaction for atomicity. Returns count of cleaned-up triggers.
 pub fn cleanup_stale_triggers(conn: &Connection, today: &str) -> Result<usize, AppError> {
     let trigger_repo = PendingTriggerRepository::new(conn);
-    let completion_repo = CompletionRepository::new(conn);
-
     let stale = trigger_repo.list_stale(today)?;
     let count = stale.len();
 
-    for trigger in &stale {
-        // Skip if completion already exists for this slot
-        if !completion_repo.has_completion_for_slot(
-            &trigger.habit_id,
-            &trigger.trigger_date,
-            &trigger.scheduled_time,
-        )? {
-            completion_repo.insert(
+    if count == 0 {
+        return Ok(0);
+    }
+
+    let tx = conn
+        .unchecked_transaction()
+        .map_err(|e| AppError::Database(e.to_string()))?;
+
+    {
+        let completion_repo = CompletionRepository::new(&tx);
+        let trigger_repo_tx = PendingTriggerRepository::new(&tx);
+
+        for trigger in &stale {
+            // Skip if completion already exists for this slot
+            if !completion_repo.has_completion_for_slot(
                 &trigger.habit_id,
                 &trigger.trigger_date,
                 &trigger.scheduled_time,
-                &CompletionStatus::Failed,
-            )?;
+            )? {
+                completion_repo.insert(
+                    &trigger.habit_id,
+                    &trigger.trigger_date,
+                    &trigger.scheduled_time,
+                    &CompletionStatus::Failed,
+                )?;
+            }
+            trigger_repo_tx.delete(&trigger.id)?;
         }
-        trigger_repo.delete(&trigger.id)?;
     }
+
+    tx.commit()
+        .map_err(|e| AppError::Database(e.to_string()))?;
 
     Ok(count)
 }

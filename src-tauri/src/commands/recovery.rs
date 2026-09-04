@@ -1,3 +1,4 @@
+use chrono::NaiveDate;
 use serde::Deserialize;
 use tauri::{AppHandle, Emitter, Manager, State};
 
@@ -12,6 +13,30 @@ use crate::RecoveryState;
 pub struct SlotInput {
     pub trigger_date: String,
     pub scheduled_time: String,
+}
+
+impl SlotInput {
+    pub fn validate(&self) -> Result<(), AppError> {
+        NaiveDate::parse_from_str(&self.trigger_date, "%Y-%m-%d").map_err(|_| {
+            AppError::Validation(format!(
+                "Invalid trigger_date format: '{}'",
+                self.trigger_date
+            ))
+        })?;
+
+        let parts: Vec<&str> = self.scheduled_time.split(':').collect();
+        if parts.len() != 2
+            || parts[0].parse::<u8>().map_or(true, |h| h > 23)
+            || parts[1].parse::<u8>().map_or(true, |m| m > 59)
+        {
+            return Err(AppError::Validation(format!(
+                "Invalid scheduled_time format: '{}'",
+                self.scheduled_time
+            )));
+        }
+
+        Ok(())
+    }
 }
 
 /// Return missed repetitions computed at startup. Consumed on first call —
@@ -31,10 +56,13 @@ pub async fn get_missed_repetitions(
 #[tauri::command(rename_all = "snake_case")]
 pub async fn recover_habit_done(
     app: AppHandle,
-    state: State<'_, AppState>,
     habit_id: String,
     slots: Vec<SlotInput>,
 ) -> Result<(), AppError> {
+    for slot in &slots {
+        slot.validate()?;
+    }
+
     let app_clone = app.clone();
 
     tokio::task::spawn_blocking(move || {
@@ -65,8 +93,6 @@ pub async fn recover_habit_done(
     .await
     .map_err(|e| AppError::Database(format!("spawn_blocking failed: {e}")))??;
 
-    // Drop unused state reference
-    drop(state);
     let _ = app.emit("habit-updated", ());
 
     Ok(())
@@ -76,10 +102,13 @@ pub async fn recover_habit_done(
 #[tauri::command(rename_all = "snake_case")]
 pub async fn recover_habit_dismiss(
     app: AppHandle,
-    state: State<'_, AppState>,
     habit_id: String,
     slots: Vec<SlotInput>,
 ) -> Result<(), AppError> {
+    for slot in &slots {
+        slot.validate()?;
+    }
+
     let app_clone = app.clone();
 
     tokio::task::spawn_blocking(move || {
@@ -114,7 +143,6 @@ pub async fn recover_habit_dismiss(
     .await
     .map_err(|e| AppError::Database(format!("spawn_blocking failed: {e}")))??;
 
-    drop(state);
     let _ = app.emit("habit-updated", ());
 
     Ok(())
