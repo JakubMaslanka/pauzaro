@@ -7,10 +7,13 @@ pub mod streak;
 
 use std::sync::{Arc, Mutex};
 
+use chrono::Local;
+use log::{error, info};
 use tauri::Manager;
 use tauri::tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent};
 
 use db::Database;
+use db::app_state::{AppStateRepository, cleanup_stale_triggers};
 
 pub struct AppState {
     pub db: Arc<Mutex<Database>>,
@@ -33,6 +36,29 @@ pub fn run() {
 
             let db = Database::open(&db_path)
                 .map_err(|e| format!("failed to open database: {e}"))?;
+
+            // Startup: read last_seen_at, update to now, cleanup stale triggers
+            {
+                let conn = db.connection();
+                let app_state_repo = AppStateRepository::new(conn);
+                let today = Local::now().format("%Y-%m-%d").to_string();
+
+                match app_state_repo.get_last_seen() {
+                    Ok(last_seen) => info!("Previous last_seen_at: {last_seen}"),
+                    Err(e) => error!("Failed to read last_seen_at: {e}"),
+                }
+
+                let now_ts = Local::now().format("%Y-%m-%dT%H:%M:%S").to_string();
+                if let Err(e) = app_state_repo.update_last_seen(&now_ts) {
+                    error!("Failed to update last_seen_at: {e}");
+                }
+
+                match cleanup_stale_triggers(conn, &today) {
+                    Ok(count) if count > 0 => info!("Auto-failed {count} stale pending triggers"),
+                    Ok(_) => {}
+                    Err(e) => error!("Failed to cleanup stale triggers: {e}"),
+                }
+            }
 
             let db_arc = Arc::new(Mutex::new(db));
 
@@ -133,6 +159,19 @@ pub fn run() {
                 #[cfg(target_os = "macos")]
                 tauri::RunEvent::Reopen { .. } => {
                     show_main_window(app);
+                }
+                tauri::RunEvent::Exit => {
+                    // Write last_seen_at on actual process exit (tray Quit or OS shutdown).
+                    // Errors logged but don't block exit.
+                    if let Some(state) = app.try_state::<AppState>() {
+                        if let Ok(db) = state.db.lock() {
+                            let repo = AppStateRepository::new(db.connection());
+                            let now_ts = Local::now().format("%Y-%m-%dT%H:%M:%S").to_string();
+                            if let Err(e) = repo.update_last_seen(&now_ts) {
+                                error!("Failed to write last_seen_at on exit: {e}");
+                            }
+                        }
+                    }
                 }
                 _ => {}
             }

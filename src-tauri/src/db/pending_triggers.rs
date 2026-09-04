@@ -68,6 +68,23 @@ impl<'a> PendingTriggerRepository<'a> {
         Ok(triggers)
     }
 
+    /// Return all pending triggers with `trigger_date` strictly before `today`.
+    /// Used at startup to find stale triggers from before an app-quit gap.
+    pub fn list_stale(&self, today: &str) -> Result<Vec<PendingTrigger>, AppError> {
+        let mut stmt = self.conn.prepare(
+            "SELECT id, habit_id, trigger_date, scheduled_time, snooze_count, next_fire_at, created_at
+             FROM pending_triggers
+             WHERE trigger_date < ?1
+             ORDER BY trigger_date ASC, scheduled_time ASC",
+        )?;
+
+        let triggers = stmt
+            .query_map(params![today], |row| Self::row_to_pending_trigger(row))?
+            .collect::<Result<Vec<_>, _>>()?;
+
+        Ok(triggers)
+    }
+
     pub fn delete(&self, id: &str) -> Result<bool, AppError> {
         let rows = self.conn.execute(
             "DELETE FROM pending_triggers WHERE id = ?1",

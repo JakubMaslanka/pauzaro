@@ -65,6 +65,12 @@ const MIGRATIONS: &[&str] = &[
     );
 
     ALTER TABLE habit_schedule_times DROP COLUMN end_time;",
+    // Migration 3: app_state table for last_seen_at tracking (recovery)
+    "CREATE TABLE IF NOT EXISTS app_state (
+        id INTEGER PRIMARY KEY CHECK (id = 1),
+        last_seen_at TEXT NOT NULL
+    );
+    INSERT OR IGNORE INTO app_state (id, last_seen_at) VALUES (1, datetime('now', 'localtime'));",
 ];
 
 /// Applies pending migrations tracked by `schema_version`.

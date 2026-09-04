@@ -1,3 +1,4 @@
+pub mod app_state;
 pub mod completions;
 pub mod habits;
 pub mod migrations;

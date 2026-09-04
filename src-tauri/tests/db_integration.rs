@@ -1,8 +1,10 @@
 mod common;
 
 use common::{sample_habit_input, setup_db};
+use pauzaro_lib::db::app_state::{cleanup_stale_triggers, AppStateRepository};
 use pauzaro_lib::db::completions::CompletionRepository;
 use pauzaro_lib::db::habits::HabitRepository;
+use pauzaro_lib::db::pending_triggers::PendingTriggerRepository;
 use pauzaro_lib::db::user_profile::UserProfileRepository;
 use pauzaro_lib::db::Database;
 use pauzaro_lib::models::habit::{CreateHabitInput, TimeSlot};
@@ -25,7 +27,7 @@ fn migration_runner_creates_schema_version_table() {
         })
         .expect("schema_version table should exist");
 
-    assert_eq!(version, 3, "version should be 3 after three migrations");
+    assert_eq!(version, 4, "version should be 4 after four migrations");
 }
 
 #[test]
@@ -44,7 +46,7 @@ fn database_open_is_idempotent() {
         })
         .expect("schema_version table should exist after second open");
 
-    assert_eq!(version, 3, "version should remain 3");
+    assert_eq!(version, 4, "version should remain 4");
 }
 
 #[test]
@@ -63,7 +65,45 @@ fn app_state_wraps_database_in_mutex() {
         })
         .expect("should query through AppState");
 
-    assert_eq!(version, 3);
+    assert_eq!(version, 4);
+}
+
+// --- App state / last_seen_at tests ---
+
+#[test]
+fn migration_seeds_last_seen_at_on_fresh_db() {
+    let (_temp, db) = setup_db();
+    let conn = db.connection();
+    let repo = AppStateRepository::new(conn);
+
+    let last_seen = repo.get_last_seen().expect("should read seeded last_seen_at");
+    assert!(!last_seen.is_empty(), "last_seen_at should be non-empty after migration");
+}
+
+#[test]
+fn update_last_seen_persists_timestamp() {
+    let (_temp, db) = setup_db();
+    let conn = db.connection();
+    let repo = AppStateRepository::new(conn);
+
+    let ts = "2026-09-03T18:30:00";
+    repo.update_last_seen(ts).expect("should update last_seen_at");
+
+    let stored = repo.get_last_seen().expect("should read back last_seen_at");
+    assert_eq!(stored, ts);
+}
+
+#[test]
+fn update_last_seen_overwrites_previous_value() {
+    let (_temp, db) = setup_db();
+    let conn = db.connection();
+    let repo = AppStateRepository::new(conn);
+
+    repo.update_last_seen("2026-09-01T10:00:00").unwrap();
+    repo.update_last_seen("2026-09-03T18:00:00").unwrap();
+
+    let stored = repo.get_last_seen().unwrap();
+    assert_eq!(stored, "2026-09-03T18:00:00");
 }
 
 // --- User profile tests ---
@@ -336,4 +376,122 @@ fn list_by_habit_in_range_orders_by_date_then_time() {
     assert_eq!(results[1].scheduled_time, "10:00");
     assert_eq!(results[2].trigger_date, "2026-08-10");
     assert_eq!(results[2].scheduled_time, "15:00");
+}
+
+// --- Stale pending trigger tests ---
+
+#[test]
+fn list_stale_returns_triggers_before_today() {
+    let (_temp, db) = setup_db();
+    let conn = db.connection();
+
+    let habit_repo = HabitRepository::new(conn);
+    let habit = habit_repo
+        .create(&sample_habit_input())
+        .expect("should create habit");
+
+    let trigger_repo = PendingTriggerRepository::new(conn);
+
+    // Stale trigger from 3 days ago
+    trigger_repo
+        .upsert(&habit.id, "2026-09-01", "10:00", "2026-09-01T10:00:00")
+        .unwrap();
+    // Today's trigger — not stale
+    trigger_repo
+        .upsert(&habit.id, "2026-09-04", "10:00", "2026-09-04T10:00:00")
+        .unwrap();
+
+    let stale = trigger_repo
+        .list_stale("2026-09-04")
+        .expect("should list stale triggers");
+
+    assert_eq!(stale.len(), 1);
+    assert_eq!(stale[0].trigger_date, "2026-09-01");
+}
+
+#[test]
+fn list_stale_returns_empty_when_no_stale_triggers() {
+    let (_temp, db) = setup_db();
+    let conn = db.connection();
+
+    let habit_repo = HabitRepository::new(conn);
+    let habit = habit_repo
+        .create(&sample_habit_input())
+        .expect("should create habit");
+
+    let trigger_repo = PendingTriggerRepository::new(conn);
+
+    // Only today's trigger
+    trigger_repo
+        .upsert(&habit.id, "2026-09-04", "15:00", "2026-09-04T15:00:00")
+        .unwrap();
+
+    let stale = trigger_repo.list_stale("2026-09-04").unwrap();
+    assert!(stale.is_empty());
+}
+
+// --- Stale trigger cleanup tests ---
+
+#[test]
+fn cleanup_stale_triggers_inserts_failed_completions_and_deletes_triggers() {
+    let (_temp, db) = setup_db();
+    let conn = db.connection();
+
+    let habit_repo = HabitRepository::new(conn);
+    let habit = habit_repo.create(&sample_habit_input()).unwrap();
+
+    let trigger_repo = PendingTriggerRepository::new(conn);
+    // Two stale triggers from different days
+    trigger_repo
+        .upsert(&habit.id, "2026-09-01", "10:00", "2026-09-01T10:00:00")
+        .unwrap();
+    trigger_repo
+        .upsert(&habit.id, "2026-09-02", "15:00", "2026-09-02T15:00:00")
+        .unwrap();
+
+    let cleaned = cleanup_stale_triggers(conn, "2026-09-04").unwrap();
+    assert_eq!(cleaned, 2);
+
+    // Triggers should be gone
+    let remaining = trigger_repo.list_stale("2026-09-04").unwrap();
+    assert!(remaining.is_empty());
+
+    // Failed completions should exist
+    let comp_repo = CompletionRepository::new(conn);
+    let comps1 = comp_repo.get_by_habit_and_date(&habit.id, "2026-09-01").unwrap();
+    assert_eq!(comps1.len(), 1);
+    assert_eq!(comps1[0].status, CompletionStatus::Failed);
+    assert_eq!(comps1[0].scheduled_time, "10:00");
+
+    let comps2 = comp_repo.get_by_habit_and_date(&habit.id, "2026-09-02").unwrap();
+    assert_eq!(comps2.len(), 1);
+    assert_eq!(comps2[0].status, CompletionStatus::Failed);
+}
+
+#[test]
+fn cleanup_stale_triggers_skips_slots_with_existing_completion() {
+    let (_temp, db) = setup_db();
+    let conn = db.connection();
+
+    let habit_repo = HabitRepository::new(conn);
+    let habit = habit_repo.create(&sample_habit_input()).unwrap();
+
+    let comp_repo = CompletionRepository::new(conn);
+    // Pre-existing done completion for this slot
+    comp_repo
+        .insert(&habit.id, "2026-09-01", "10:00", &CompletionStatus::Done)
+        .unwrap();
+
+    let trigger_repo = PendingTriggerRepository::new(conn);
+    trigger_repo
+        .upsert(&habit.id, "2026-09-01", "10:00", "2026-09-01T10:00:00")
+        .unwrap();
+
+    let cleaned = cleanup_stale_triggers(conn, "2026-09-04").unwrap();
+    assert_eq!(cleaned, 1); // trigger still deleted
+
+    // Original done completion preserved — no duplicate inserted
+    let comps = comp_repo.get_by_habit_and_date(&habit.id, "2026-09-01").unwrap();
+    assert_eq!(comps.len(), 1);
+    assert_eq!(comps[0].status, CompletionStatus::Done);
 }
