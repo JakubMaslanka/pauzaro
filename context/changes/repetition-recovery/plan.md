@@ -540,12 +540,12 @@ Full-stack test coverage: Rust unit tests for gap detection pure logic, integrat
 
 #### Automated
 
-- [x] 4.1 All Rust tests pass: `cd src-tauri && cargo test`
-- [x] 4.2 All frontend tests pass: `pnpm test`
-- [x] 4.3 Type checking: `tsc --noEmit`
-- [x] 4.4 Lint: `pnpm lint`
+- [x] 4.1 All Rust tests pass: `cd src-tauri && cargo test` — 5847708
+- [x] 4.2 All frontend tests pass: `pnpm test` — 5847708
+- [x] 4.3 Type checking: `tsc --noEmit` — 5847708
+- [x] 4.4 Lint: `pnpm lint` — 5847708
 
 #### Manual
 
-- [x] 4.5 Full test suite runs without flaky tests
-- [x] 4.6 Edge case coverage verified: partial day, 30-day boundary, multi-habit
+- [x] 4.5 Full test suite runs without flaky tests — 5847708
+- [x] 4.6 Edge case coverage verified: partial day, 30-day boundary, multi-habit — 5847708

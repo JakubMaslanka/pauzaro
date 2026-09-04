@@ -3,7 +3,7 @@ project: "Pauzaro"
 version: 1
 status: draft
 created: 2026-08-25
-updated: 2026-09-03
+updated: 2026-09-04
 
 prd_version: 1
 main_goal: learn
@@ -36,7 +36,7 @@ A developer in deep focus loses track of time — forgets breaks, movement, and 
 | S-03 | dashboard-month-view        | view full month calendar with per-day completion status and streak history                   | S-02          | US-02, FR-008                         | done |
 | S-04 | streak-freeze               | freeze streak for up to 2 days to protect series from missed days                           | S-02          | FR-012                                | proposed |
 | S-05 | dinosaur-mascot             | see dinosaur mascot reacting to current streak status (happy/neutral/sad)                    | S-02          | FR-009                                | proposed |
-| S-06 | missed-repetition-recovery  | on launch, see missed repetitions while app was closed and recover/dismiss them               | S-02          | US-02, FR-007 (streak integrity)      | proposed |
+| S-06 | missed-repetition-recovery  | on launch, see missed repetitions while app was closed and recover/dismiss them               | S-02          | US-02, FR-007 (streak integrity)      | done |
 | T-01 | testing-critical-path-backend | (testing) streak calc and snooze rules proven correct via Rust unit tests                  | S-02          | test-plan §3 Phase 1                  | done |
 | T-02 | testing-scheduler-overlay   | (testing) scheduler fires correctly, overlay→dashboard sync works                            | T-01          | test-plan §3 Phase 2                  | done |
 | T-03 | testing-cross-platform-gates | (testing) cross-platform overlay smoke + test runner wired into CI/pre-commit               | T-02          | test-plan §3 Phase 3                  | backlog |
@@ -156,7 +156,8 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Scope:**
   - **Backend (Rust):** On startup, query each active habit's schedule against `completions` table. Compare last app-open timestamp against current date. If gap > 30 days: reset streak to 0, bulk-insert failed/missed status for all intermediate scheduled days, skip recovery prompt. If gap ≤ 30 days: for each scheduled time with no matching completion, emit a missed-repetition record. Store "last seen" timestamp (update on each app close / periodic heartbeat).
   - **Frontend (React):** Recovery modal/dialog on dashboard mount when missed list is non-empty. Shows grouped-by-habit list: "Habit Name — X missed repetitions". Three actions per habit: **"Done anyway"** (backfill completions, preserve streak), **"Dismiss"** (acknowledge, streak breaks as expected), **"Catch up now"** (trigger overlay immediately). Modal blocks dashboard until all habits addressed. If streak was auto-reset (>30 days), show brief toast: "Welcome back! Your streak was reset after 30 days of inactivity."
-- **Status:** proposed
+- **Status:** done
+- **Linear:** [JAC-16](https://linear.app/jacobs-agents-playground/issue/JAC-16/s-06-missed-repetition-recovery-on-launch)
 
 ### T-01: Critical-path backend logic tests
 
