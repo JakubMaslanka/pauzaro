@@ -15,22 +15,30 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import {
 	getAllHabitStatuses,
 	getLatestCompletion,
+	getMissedRepetitions,
 	getMonthCompletions,
 	getUserProfile,
 	listHabits,
 	markDone,
 } from "../../lib/invoke";
 import { useDashboardStore } from "../../stores/dashboard";
-import type { Completion, Habit, HabitStatus } from "../../types";
+import type {
+	Completion,
+	Habit,
+	HabitStatus,
+	RecoveryResult,
+} from "../../types";
 import { DeleteHabitModal } from "./DeleteHabitModal";
 import { HabitMenu } from "./HabitMenu";
 import { MonthCalendar } from "./MonthCalendar";
 import { MonthStats } from "./MonthStats";
+import { RecoveryFlow } from "./RecoveryFlow";
 import { RenameHabitModal } from "./RenameHabitModal";
 import { StreakHero } from "./StreakHero";
 
 type DashboardState =
 	| { status: "loading" }
+	| { status: "recovering"; recoveryResult: RecoveryResult }
 	| { status: "error"; error: string }
 	| {
 			status: "ready";
@@ -106,8 +114,20 @@ export function Dashboard() {
 	const [renameOpen, setRenameOpen] = useState(false);
 	const [deleteOpen, setDeleteOpen] = useState(false);
 
+	const [recoveryChecked, setRecoveryChecked] = useState(false);
+
 	const loadData = useCallback(async () => {
 		try {
+			// Check for missed repetitions on first load
+			if (!recoveryChecked) {
+				setRecoveryChecked(true);
+				const recovery = await getMissedRepetitions();
+				if (recovery.habits.length > 0) {
+					setState({ status: "recovering", recoveryResult: recovery });
+					return;
+				}
+			}
+
 			const [habits, allStatuses, profile] = await Promise.all([
 				listHabits(),
 				getAllHabitStatuses(),
@@ -126,7 +146,7 @@ export function Dashboard() {
 			console.error("Dashboard load failed:", message);
 			setState({ status: "error", error: message });
 		}
-	}, []);
+	}, [recoveryChecked]);
 
 	const loadCompletions = useCallback(
 		async (habitId: string, year: number, month: number) => {
@@ -210,6 +230,11 @@ export function Dashboard() {
 		}
 	}, [latestCompletion, loadData, loadCompletions, currentMonth]);
 
+	const handleRecoveryComplete = useCallback(() => {
+		setState({ status: "loading" });
+		loadData();
+	}, [loadData]);
+
 	if (state.status === "loading") {
 		return (
 			<Container size="lg" py="xl">
@@ -218,6 +243,15 @@ export function Dashboard() {
 					<Text c="dimmed">Loading your habits...</Text>
 				</Stack>
 			</Container>
+		);
+	}
+
+	if (state.status === "recovering") {
+		return (
+			<RecoveryFlow
+				recoveryResult={state.recoveryResult}
+				onComplete={handleRecoveryComplete}
+			/>
 		);
 	}
 

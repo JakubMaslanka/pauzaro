@@ -11,6 +11,7 @@ const mockGetAllHabitStatuses = vi.fn();
 const mockGetMonthCompletions = vi.fn();
 const mockGetUserProfile = vi.fn();
 const mockGetLatestCompletion = vi.fn();
+const mockGetMissedRepetitions = vi.fn();
 
 vi.mock("../../lib/invoke", () => ({
 	getUserProfile: (...args: unknown[]) => mockGetUserProfile(...args),
@@ -19,6 +20,8 @@ vi.mock("../../lib/invoke", () => ({
 	getAllHabitStatuses: (...args: unknown[]) => mockGetAllHabitStatuses(...args),
 	getMonthCompletions: (...args: unknown[]) => mockGetMonthCompletions(...args),
 	getLatestCompletion: (...args: unknown[]) => mockGetLatestCompletion(...args),
+	getMissedRepetitions: (...args: unknown[]) =>
+		mockGetMissedRepetitions(...args),
 	markDone: vi.fn(),
 	updateHabit: vi.fn(),
 	deleteHabit: vi.fn(),
@@ -53,6 +56,7 @@ const MOCK_HABIT = {
 };
 
 function setupMocks() {
+	mockGetMissedRepetitions.mockResolvedValue({ habits: [] });
 	mockGetUserProfile.mockResolvedValue({
 		id: "u1",
 		name: "Jacob",
@@ -64,6 +68,7 @@ function setupMocks() {
 
 describe("Dashboard", () => {
 	it("shows loading state initially", () => {
+		mockGetMissedRepetitions.mockReturnValue(new Promise(() => {}));
 		mockListHabits.mockReturnValue(new Promise(() => {}));
 		mockGetAllHabitStatuses.mockReturnValue(new Promise(() => {}));
 		mockGetUserProfile.mockReturnValue(new Promise(() => {}));
@@ -120,6 +125,7 @@ describe("Dashboard", () => {
 	});
 
 	it("shows error state on failure", async () => {
+		mockGetMissedRepetitions.mockResolvedValue({ habits: [] });
 		mockListHabits.mockRejectedValue(new Error("DB connection failed"));
 		mockGetAllHabitStatuses.mockResolvedValue([]);
 		mockGetUserProfile.mockResolvedValue(null);

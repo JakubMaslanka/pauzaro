@@ -507,34 +507,34 @@ Full-stack test coverage: Rust unit tests for gap detection pure logic, integrat
 
 #### Automated
 
-- [x] 2.1 Rust check: `cd src-tauri && cargo check`
-- [x] 2.2 Unit tests for `compute_missed_repetitions`: `cd src-tauri && cargo test recovery`
-- [x] 2.3 Type checking passes: `tsc --noEmit`
-- [x] 2.4 Lint passes: `pnpm lint`
+- [x] 2.1 Rust check: `cd src-tauri && cargo check` — 094ed7b
+- [x] 2.2 Unit tests for `compute_missed_repetitions`: `cd src-tauri && cargo test recovery` — 094ed7b
+- [x] 2.3 Type checking passes: `tsc --noEmit` — 094ed7b
+- [x] 2.4 Lint passes: `pnpm lint` — 094ed7b
 
 #### Manual
 
-- [x] 2.5 `get_missed_repetitions` returns correct missed slots after gap
-- [x] 2.6 `recover_habit_done` inserts completions with historical dates
-- [x] 2.7 `recover_habit_dismiss` inserts failed completions
+- [x] 2.5 `get_missed_repetitions` returns correct missed slots after gap — 094ed7b
+- [x] 2.6 `recover_habit_done` inserts completions with historical dates — 094ed7b
+- [x] 2.7 `recover_habit_dismiss` inserts failed completions — 094ed7b
 
 ### Phase 3: Recovery Modal
 
 #### Automated
 
-- [ ] 3.1 Type checking passes: `tsc --noEmit`
-- [ ] 3.2 Lint passes: `pnpm lint`
-- [ ] 3.3 Rust check: `cd src-tauri && cargo check`
-- [ ] 3.4 Existing tests still pass: `pnpm test` and `cd src-tauri && cargo test`
+- [x] 3.1 Type checking passes: `tsc --noEmit`
+- [x] 3.2 Lint passes: `pnpm lint`
+- [x] 3.3 Rust check: `cd src-tauri && cargo check`
+- [x] 3.4 Existing tests still pass: `pnpm test` and `cd src-tauri && cargo test`
 
 #### Manual
 
-- [ ] 3.5 Recovery modals appear sequentially per habit after gap
-- [ ] 3.6 "Done anyway" backfills completions and recovers streak
-- [ ] 3.7 "Dismiss" marks slots as failed
-- [ ] 3.8 30+ day gap shows Notification toast, no recovery modal
-- [ ] 3.9 No recovery modal when no missed reps
-- [ ] 3.10 Window hide (close button) → reopen → no recovery modal
+- [x] 3.5 Recovery modals appear sequentially per habit after gap
+- [x] 3.6 "Done anyway" backfills completions and recovers streak
+- [x] 3.7 "Dismiss" marks slots as failed
+- [x] 3.8 30+ day gap shows Notification toast, no recovery modal
+- [x] 3.9 No recovery modal when no missed reps
+- [x] 3.10 Window hide (close button) → reopen → no recovery modal
 
 ### Phase 4: Testing
 
