@@ -5,6 +5,7 @@ import type {
 	CreateUserProfileInput,
 	Habit,
 	HabitStatus,
+	RecoveryResult,
 	UserProfile,
 } from "../types";
 
@@ -96,5 +97,34 @@ export async function getLatestCompletion(
 ): Promise<Completion | null> {
 	return invoke<Completion | null>("get_latest_completion", {
 		habit_id: habitId,
+	});
+}
+
+export async function getMissedRepetitions(): Promise<RecoveryResult> {
+	return invoke<RecoveryResult>("get_missed_repetitions");
+}
+
+export interface RecoverySlot {
+	trigger_date: string;
+	scheduled_time: string;
+}
+
+export async function recoverHabitDone(
+	habitId: string,
+	slots: RecoverySlot[],
+): Promise<void> {
+	return invoke<void>("recover_habit_done", {
+		habit_id: habitId,
+		slots,
+	});
+}
+
+export async function recoverHabitDismiss(
+	habitId: string,
+	slots: RecoverySlot[],
+): Promise<void> {
+	return invoke<void>("recover_habit_dismiss", {
+		habit_id: habitId,
+		slots,
 	});
 }

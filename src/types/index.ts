@@ -62,3 +62,25 @@ export interface HabitStatus {
 	today_slots: SlotStatus[];
 	today_date: string;
 }
+
+export interface MissedRepetition {
+	habit_id: string;
+	habit_name: string;
+	habit_icon: string;
+	habit_icon_color: string;
+	trigger_date: string;
+	scheduled_time: string;
+}
+
+export interface HabitRecoveryInfo {
+	habit_id: string;
+	habit_name: string;
+	habit_icon: string;
+	habit_icon_color: string;
+	missed_reps: MissedRepetition[];
+	streak_reset: boolean;
+}
+
+export interface RecoveryResult {
+	habits: HabitRecoveryInfo[];
+}

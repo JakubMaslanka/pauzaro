@@ -2,6 +2,7 @@ pub mod commands;
 pub mod db;
 pub mod error;
 pub mod models;
+pub mod recovery;
 pub mod scheduler;
 pub mod streak;
 
@@ -14,10 +15,15 @@ use tauri::tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent}
 
 use db::Database;
 use db::app_state::{AppStateRepository, cleanup_stale_triggers};
+use db::completions::CompletionRepository;
+use db::habits::HabitRepository;
+use recovery::RecoveryResult;
 
 pub struct AppState {
     pub db: Arc<Mutex<Database>>,
 }
+
+pub struct RecoveryState(pub Mutex<Option<RecoveryResult>>);
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -37,34 +43,86 @@ pub fn run() {
             let db = Database::open(&db_path)
                 .map_err(|e| format!("failed to open database: {e}"))?;
 
-            // Startup: read last_seen_at, update to now, cleanup stale triggers
-            {
+            // Startup: read last_seen_at, update to now, cleanup stale triggers, detect missed reps
+            let recovery_result = {
                 let conn = db.connection();
                 let app_state_repo = AppStateRepository::new(conn);
                 let today = Local::now().format("%Y-%m-%d").to_string();
 
-                match app_state_repo.get_last_seen() {
-                    Ok(last_seen) => info!("Previous last_seen_at: {last_seen}"),
-                    Err(e) => error!("Failed to read last_seen_at: {e}"),
-                }
+                // Read previous last_seen_at for gap detection
+                let last_seen_str = match app_state_repo.get_last_seen() {
+                    Ok(ts) => {
+                        info!("Previous last_seen_at: {ts}");
+                        Some(ts)
+                    }
+                    Err(e) => {
+                        error!("Failed to read last_seen_at: {e}");
+                        None
+                    }
+                };
 
+                // Update last_seen_at to now
                 let now_ts = Local::now().format("%Y-%m-%dT%H:%M:%S").to_string();
                 if let Err(e) = app_state_repo.update_last_seen(&now_ts) {
                     error!("Failed to update last_seen_at: {e}");
                 }
 
+                // Cleanup stale pending triggers
                 match cleanup_stale_triggers(conn, &today) {
                     Ok(count) if count > 0 => info!("Auto-failed {count} stale pending triggers"),
                     Ok(_) => {}
                     Err(e) => error!("Failed to cleanup stale triggers: {e}"),
                 }
-            }
+
+                // Compute missed repetitions
+                last_seen_str.and_then(|ts| {
+                    let last_seen = chrono::NaiveDateTime::parse_from_str(&ts, "%Y-%m-%dT%H:%M:%S")
+                        .ok()?;
+                    let now = Local::now().naive_local();
+
+                    let habit_repo = HabitRepository::new(conn);
+                    let habits = habit_repo.list_active_with_schedules().ok()?;
+
+                    if habits.is_empty() {
+                        return None;
+                    }
+
+                    // Fetch completions for the gap window
+                    let from_date = last_seen.date().format("%Y-%m-%d").to_string();
+                    let to_date = now.date().format("%Y-%m-%d").to_string();
+                    let completion_repo = CompletionRepository::new(conn);
+
+                    let mut all_completions = Vec::new();
+                    for habit in &habits {
+                        if let Ok(comps) = completion_repo.list_by_habit_in_range(
+                            &habit.id, &from_date, &to_date,
+                        ) {
+                            all_completions.extend(comps);
+                        }
+                    }
+
+                    let result = recovery::compute_missed_repetitions(
+                        last_seen, now, &habits, &all_completions,
+                    );
+
+                    if result.habits.is_empty() {
+                        None
+                    } else {
+                        info!(
+                            "Recovery: {} habits with missed reps detected",
+                            result.habits.len()
+                        );
+                        Some(result)
+                    }
+                })
+            };
 
             let db_arc = Arc::new(Mutex::new(db));
 
             app.manage(AppState {
                 db: Arc::clone(&db_arc),
             });
+            app.manage(RecoveryState(Mutex::new(recovery_result)));
 
             let sched = std::sync::Arc::new(scheduler::Scheduler::new());
             app.manage(sched.clone());
@@ -143,6 +201,9 @@ pub fn run() {
             commands::habits::get_latest_completion,
             commands::overlay::mark_done,
             commands::overlay::snooze_habit,
+            commands::recovery::get_missed_repetitions,
+            commands::recovery::recover_habit_done,
+            commands::recovery::recover_habit_dismiss,
         ])
         .build(tauri::generate_context!())
         .expect("error while building tauri application")

@@ -492,31 +492,31 @@ Full-stack test coverage: Rust unit tests for gap detection pure logic, integrat
 
 #### Automated
 
-- [x] 1.1 Migration applies cleanly on fresh DB
-- [x] 1.2 Migration applies cleanly on existing DB (idempotent)
-- [x] 1.3 Type checking passes: `tsc --noEmit`
-- [x] 1.4 Rust check: `cd src-tauri && cargo check`
-- [x] 1.5 Lint passes: `pnpm lint`
+- [x] 1.1 Migration applies cleanly on fresh DB — 862f8b3
+- [x] 1.2 Migration applies cleanly on existing DB (idempotent) — 862f8b3
+- [x] 1.3 Type checking passes: `tsc --noEmit` — 862f8b3
+- [x] 1.4 Rust check: `cd src-tauri && cargo check` — 862f8b3
+- [x] 1.5 Lint passes: `pnpm lint` — 862f8b3
 
 #### Manual
 
-- [ ] 1.6 `app_state` table has correct `last_seen_at` after close and reopen
-- [ ] 1.7 Stale pending triggers auto-failed on startup
+- [x] 1.6 `app_state` table has correct `last_seen_at` after close and reopen — 862f8b3
+- [x] 1.7 Stale pending triggers auto-failed on startup — 862f8b3
 
 ### Phase 2: Recovery Detection & Actions
 
 #### Automated
 
-- [ ] 2.1 Rust check: `cd src-tauri && cargo check`
-- [ ] 2.2 Unit tests for `compute_missed_repetitions`: `cd src-tauri && cargo test recovery`
-- [ ] 2.3 Type checking passes: `tsc --noEmit`
-- [ ] 2.4 Lint passes: `pnpm lint`
+- [x] 2.1 Rust check: `cd src-tauri && cargo check`
+- [x] 2.2 Unit tests for `compute_missed_repetitions`: `cd src-tauri && cargo test recovery`
+- [x] 2.3 Type checking passes: `tsc --noEmit`
+- [x] 2.4 Lint passes: `pnpm lint`
 
 #### Manual
 
-- [ ] 2.5 `get_missed_repetitions` returns correct missed slots after gap
-- [ ] 2.6 `recover_habit_done` inserts completions with historical dates
-- [ ] 2.7 `recover_habit_dismiss` inserts failed completions
+- [x] 2.5 `get_missed_repetitions` returns correct missed slots after gap
+- [x] 2.6 `recover_habit_done` inserts completions with historical dates
+- [x] 2.7 `recover_habit_dismiss` inserts failed completions
 
 ### Phase 3: Recovery Modal
 
