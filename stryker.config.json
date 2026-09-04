@@ -1,0 +1,26 @@
+{
+	"$schema": "./node_modules/@stryker-mutator/core/schema/stryker-schema.json",
+	"_comment": "This config was generated using 'stryker init'. Please see the guide for more information: https://stryker-mutator.io/docs/stryker-js/guides/react",
+	"testRunner": "vitest",
+	"plugins": ["@stryker-mutator/vitest-runner"],
+	"reporters": ["progress", "clear-text", "html"],
+	"coverageAnalysis": "off",
+	"ignorePatterns": [
+		".claude",
+		".git",
+		"src-tauri",
+		"node_modules",
+		"dist",
+		".stryker-tmp"
+	],
+	"mutate": [
+		"src/**/*.ts",
+		"src/**/*.tsx",
+		"!src/**/*.test.ts",
+		"!src/**/*.test.tsx",
+		"!src/**/*.spec.ts",
+		"!src/**/*.spec.tsx",
+		"!src/vite-env.d.ts",
+		"!src/routeTree.gen.ts"
+	]
+}

@@ -6,9 +6,20 @@
         "hooks": [
           {
             "type": "command",
-            "command": "jq -r '.tool_input.file_path' | { read -r f; pnpm biome check --fix \"$f\"; } 2>/dev/null || true",
-            "timeout": 30,
-            "statusMessage": "Formatting..."
+            "command": "pnpm lint:fix --quiet 2>/dev/null || true",
+            "timeout": 10,
+            "statusMessage": "Linting frontend..."
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r '.tool_input.file_path' | { read -r f; echo \"$f\" | grep -q 'src-tauri/' && cd src-tauri && cargo check --quiet 2>/dev/null; } || true",
+            "timeout": 10,
+            "statusMessage": "Checking Rust..."
           }
         ]
       }

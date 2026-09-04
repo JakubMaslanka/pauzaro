@@ -1,0 +1,22 @@
+pre-commit:
+  parallel: true
+  jobs:
+    - name: lint
+      glob: "*.{js,ts,jsx,tsx,json,css}"
+      run: pnpm biome check --no-errors-on-unmatched {staged_files}
+
+    - name: typecheck
+      glob: "*.{ts,tsx}"
+      run: pnpm tsc --noEmit
+
+    - name: test
+      glob: "*.{ts,tsx}"
+      run: pnpm vitest run --reporter=dot
+
+    - name: rust-check
+      glob: "*.rs"
+      run: cd src-tauri && cargo check --quiet
+
+    - name: rust-test
+      glob: "*.rs"
+      run: cd src-tauri && cargo test --quiet

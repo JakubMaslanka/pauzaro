@@ -12,7 +12,8 @@
 		"test:watch": "vitest",
 		"lint": "biome check .",
 		"lint:fix": "biome check --fix .",
-		"format": "biome format --write ."
+		"format": "biome format --write .",
+		"prepare": "lefthook install"
 	},
 	"dependencies": {
 		"@fontsource/nunito": "^5.3.0",
@@ -29,6 +30,8 @@
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.5.9",
+		"@stryker-mutator/core": "^10.0.0",
+		"@stryker-mutator/vitest-runner": "^10.0.0",
 		"@tanstack/router-plugin": "^1.168.35",
 		"@tauri-apps/cli": "^2",
 		"@testing-library/jest-dom": "^7.0.1",
@@ -37,6 +40,7 @@
 		"@types/react-dom": "^19.1.6",
 		"@vitejs/plugin-react": "^4.6.0",
 		"jsdom": "^30.0.1",
+		"lefthook": "^2.1.12",
 		"postcss": "^8.5.26",
 		"postcss-preset-mantine": "^1.18.0",
 		"postcss-simple-vars": "^7.0.1",
