@@ -3,7 +3,7 @@ project: "Pauzaro"
 version: 1
 status: draft
 created: 2026-08-25
-updated: 2026-09-04
+updated: 2026-09-06
 
 prd_version: 1
 main_goal: learn
@@ -215,4 +215,10 @@ Foundations below assume these are present and do NOT re-scaffold them.
 
 ## Done
 
-(Empty on first generation. `/10x-archive` appends entries here when a change is archived.)
+- **F-01: (foundation) SQLite persistence wired through Tauri SQL plugin; migration runner operational** — Archived 2026-09-06 → `context/archive/2026-08-26-sqlite-persistence-scaffold/`. Lesson: —.
+- **S-01: launch app, complete onboarding, and create first habit with schedule** — Archived 2026-09-06 → `context/archive/2026-08-27-onboarding-first-habit/`. Lesson: —.
+- **S-02: receive overlay at scheduled time, mark habit done or snooze, and see streak update** — Archived 2026-09-06 → `context/archive/2026-08-29-overlay-habit-loop/`. Lesson: —.
+- **S-03: view full month calendar with per-day completion status and streak history** — Archived 2026-09-06 → `context/archive/2026-08-31-dashboard-month-view/`. Lesson: —.
+- **S-06: on app launch, user sees which habit repetitions were missed while the app was closed and can mark them completed retroactively, dismiss them, or catch up now** — Archived 2026-09-06 → `context/archive/2026-09-03-repetition-recovery/`. Lesson: —.
+- **T-01: (testing) streak calculation and snooze 3x auto-fail rule proven correct via pure Rust unit tests** — Archived 2026-09-06 → `context/archive/2026-09-01-testing-critical-path-backend/`. Lesson: —.
+- **T-02: (testing) scheduler fires correctly at configured times, overlay→completion→dashboard path works end-to-end** — Archived 2026-09-06 → `context/archive/2026-09-02-testing-scheduler-overlay/`. Lesson: —.
