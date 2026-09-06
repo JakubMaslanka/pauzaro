@@ -1,9 +1,9 @@
 {
   "package": "@przeprogramowani/10x-cli",
-  "version": "1.19.1",
+  "version": "1.20.0",
   "manifestVersion": 3,
-  "lastApplied": "2026-08-18T16:13:36.926Z",
-  "lessonId": "m5l5",
+  "lastApplied": "2026-09-06T19:52:51.618Z",
+  "lessonId": "m4l1",
   "course": "10xdevs3",
   "tool": "claude-code",
   "files": {
@@ -132,10 +132,12 @@
       },
       "10x-roadmap": {
         "files": [
+          "references/milestone-state.md",
           "SKILL.md"
         ],
         "contentHashes": {
-          "SKILL.md": "149154434c4ddbb3d18ebe3c7cfe9b80c9f3f760d833fc9536bf8a302378210c"
+          "SKILL.md": "13bcf9574200b62da4ae38879b68e5c0555cd67bcafcb071fb98bb4c5c84b50e",
+          "references/milestone-state.md": "d9446372acbab5617de079c5ee1e1d4a17fb3329e7bcc1a0129d3ee894fe0a2b"
         }
       },
       "10x-new": {
@@ -155,7 +157,7 @@
         ],
         "contentHashes": {
           "references/progress-format.md": "acd3841cb4b2baa3066f5ec4997d0c21b8791fcd432a66777fd8bcb38119e218",
-          "SKILL.md": "1338e92057e69b96ceedf1d76097edcbefbd11a0baedfc093887529ab0d7e2e5"
+          "SKILL.md": "f7a89e29a958edc09c50b9bb2dda1b950b688f810bc194580d9cd7d32bfa5584"
         }
       },
       "10x-plan-review": {
@@ -688,7 +690,7 @@
       "catalogContentHash": "bbb8dccb95677579e824cfe9c1faae071b43939482d272630d61f8b13e8f3361"
     },
     "m2l1": {
-      "appliedAt": "2026-08-18T16:13:33.819Z",
+      "appliedAt": "2026-09-06T19:51:58.250Z",
       "skills": {
         "10x-init": {
           "files": [
@@ -764,6 +766,7 @@
         },
         "10x-roadmap": {
           "files": [
+            "references/milestone-state.md",
             "SKILL.md"
           ]
         }
@@ -776,10 +779,10 @@
         "m1l5-4-store-plan.md"
       ],
       "configs": [],
-      "catalogContentHash": "a8dc5499d4381c0afa27838987874b425a7eaf2204ff09c21f1160e8a26a2bcf"
+      "catalogContentHash": "fa26820f33dca7eb47da710a152a84abec263c913cf82a9acd8ee96c226eea31"
     },
     "m2l2": {
-      "appliedAt": "2026-08-18T16:13:34.007Z",
+      "appliedAt": "2026-09-06T19:51:58.441Z",
       "skills": {
         "10x-init": {
           "files": [
@@ -855,6 +858,7 @@
         },
         "10x-roadmap": {
           "files": [
+            "references/milestone-state.md",
             "SKILL.md"
           ]
         },
@@ -894,10 +898,10 @@
         "m1l5-4-store-plan.md"
       ],
       "configs": [],
-      "catalogContentHash": "15b79f37ac3a274f5d8579f130005b7bb11b76086c3f4634811c61b2c7e55cae"
+      "catalogContentHash": "155940e12afc0eac034a4114371c67d81016ad7ce5e4975d32ce9314037cbe87"
     },
     "m2l3": {
-      "appliedAt": "2026-08-18T16:13:34.205Z",
+      "appliedAt": "2026-09-06T19:51:58.635Z",
       "skills": {
         "10x-init": {
           "files": [
@@ -973,6 +977,7 @@
         },
         "10x-roadmap": {
           "files": [
+            "references/milestone-state.md",
             "SKILL.md"
           ]
         },
@@ -1017,10 +1022,10 @@
         "m1l5-4-store-plan.md"
       ],
       "configs": [],
-      "catalogContentHash": "3bcf1517542a94215673b7a0d6b4806c3918310624a366cbc02f5005920566a3"
+      "catalogContentHash": "382a058761166b2fa3032f6962c7fc6418565ba76abb6f0993ef888d3573f886"
     },
     "m2l4": {
-      "appliedAt": "2026-08-18T16:13:34.397Z",
+      "appliedAt": "2026-09-06T19:51:58.820Z",
       "skills": {
         "10x-init": {
           "files": [
@@ -1096,6 +1101,7 @@
         },
         "10x-roadmap": {
           "files": [
+            "references/milestone-state.md",
             "SKILL.md"
           ]
         },
@@ -1150,10 +1156,10 @@
         "m1l5-4-store-plan.md"
       ],
       "configs": [],
-      "catalogContentHash": "650a2dea65cdb6896362118f0d9ac43f2dd72784bc0d3977bd751b54c59f3066"
+      "catalogContentHash": "155e643b0bdb8bc6bf1f5cd84bd6d2f0d69e69ae78a1e889b6870be64698b483"
     },
     "m2l5": {
-      "appliedAt": "2026-08-18T16:13:34.575Z",
+      "appliedAt": "2026-09-06T19:51:58.992Z",
       "skills": {
         "10x-init": {
           "files": [
@@ -1229,6 +1235,7 @@
         },
         "10x-roadmap": {
           "files": [
+            "references/milestone-state.md",
             "SKILL.md"
           ]
         },
@@ -1283,10 +1290,10 @@
         "m1l5-4-store-plan.md"
       ],
       "configs": [],
-      "catalogContentHash": "db6627064f24a673fc3b3c8d3b9e7ae5af7b8f24f078ed995d168faaf312ad2c"
+      "catalogContentHash": "d26cdaf79d1d618faa514d30af684e0acd119cd6df98a0b31c147d16f2c1b60d"
     },
     "m3l1": {
-      "appliedAt": "2026-08-18T16:13:34.761Z",
+      "appliedAt": "2026-09-06T19:51:59.201Z",
       "skills": {
         "10x-init": {
           "files": [
@@ -1362,6 +1369,7 @@
         },
         "10x-roadmap": {
           "files": [
+            "references/milestone-state.md",
             "SKILL.md"
           ]
         },
@@ -1422,10 +1430,10 @@
         "m1l5-4-store-plan.md"
       ],
       "configs": [],
-      "catalogContentHash": "d32bdf3a1252410537ee14c2e9418605caf0fead057feb423fe442af8bf31dbb"
+      "catalogContentHash": "edb8bb55d95937c5ee1bb72481e957e1262aa965647764b6e6edeb64a8159a2d"
     },
     "m3l2": {
-      "appliedAt": "2026-08-18T16:13:34.963Z",
+      "appliedAt": "2026-09-06T19:51:59.384Z",
       "skills": {
         "10x-init": {
           "files": [
@@ -1501,6 +1509,7 @@
         },
         "10x-roadmap": {
           "files": [
+            "references/milestone-state.md",
             "SKILL.md"
           ]
         },
@@ -1567,10 +1576,10 @@
         "m3l2-ad-hoc-testing.md"
       ],
       "configs": [],
-      "catalogContentHash": "a80a6ab63efb093c4283f8cb74829274b5a9f1c2d96028c5268ea7fcae893722"
+      "catalogContentHash": "b94e93fb3ce5d355378abf48ad08743ab578eeb62142a225f589b781fa6e9975"
     },
     "m3l3": {
-      "appliedAt": "2026-08-18T16:13:35.147Z",
+      "appliedAt": "2026-09-06T19:51:59.567Z",
       "skills": {
         "10x-init": {
           "files": [
@@ -1646,6 +1655,7 @@
         },
         "10x-roadmap": {
           "files": [
+            "references/milestone-state.md",
             "SKILL.md"
           ]
         },
@@ -1712,10 +1722,10 @@
         "m3l2-ad-hoc-testing.md"
       ],
       "configs": [],
-      "catalogContentHash": "6b96bfc5e6e7224624523e422720bd7391f5f646a58817888ba186a1f2c6b5bf"
+      "catalogContentHash": "9247c9a598af278d4a7c41635487ad49b3bdb34b918b112c4b134c991043d708"
     },
     "m3l4": {
-      "appliedAt": "2026-08-18T16:13:35.359Z",
+      "appliedAt": "2026-09-06T19:51:59.755Z",
       "skills": {
         "10x-init": {
           "files": [
@@ -1791,6 +1801,7 @@
         },
         "10x-roadmap": {
           "files": [
+            "references/milestone-state.md",
             "SKILL.md"
           ]
         },
@@ -1867,10 +1878,10 @@
         "m3l2-ad-hoc-testing.md"
       ],
       "configs": [],
-      "catalogContentHash": "8cf5de5127434a64d37f5b048e0636104d79dd8e1b6d85eccf6b614bcdc74829"
+      "catalogContentHash": "4e8fef0de17a9e143b66475d84d31c43cea1e6c04a5951d1dfb35820a9705662"
     },
     "m3l5": {
-      "appliedAt": "2026-08-18T16:13:35.622Z",
+      "appliedAt": "2026-09-06T19:51:59.937Z",
       "skills": {
         "10x-init": {
           "files": [
@@ -1946,6 +1957,7 @@
         },
         "10x-roadmap": {
           "files": [
+            "references/milestone-state.md",
             "SKILL.md"
           ]
         },
@@ -2022,10 +2034,10 @@
         "m3l2-ad-hoc-testing.md"
       ],
       "configs": [],
-      "catalogContentHash": "4dbc2e2e974fc2e4d841be69c242a06591f9685e60abb869c63300dfbf6854ee"
+      "catalogContentHash": "7043a5416f697a9375aa3ff7a953e136da027e0035966ef5d55e1c8e087e5291"
     },
     "m4l1": {
-      "appliedAt": "2026-08-18T16:13:35.752Z",
+      "appliedAt": "2026-09-06T19:52:51.617Z",
       "skills": {},
       "prompts": [],
       "configs": []
