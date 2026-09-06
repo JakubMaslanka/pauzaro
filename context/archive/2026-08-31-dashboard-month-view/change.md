@@ -1,8 +1,9 @@
 ---
 id: dashboard-month-view
-status: implemented
+status: archived
 created: 2026-08-31
-updated: 2026-09-01
+updated: 2026-09-06
+archived_at: 2026-09-06T19:47:33Z
 
 ---
 
