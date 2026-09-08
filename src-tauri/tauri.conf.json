@@ -14,7 +14,9 @@
       {
         "title": "pauzaro",
         "width": 1000,
-        "height": 600
+        "height": 600,
+        "minWidth": 600,
+        "minHeight": 400
       }
     ],
     "security": {
