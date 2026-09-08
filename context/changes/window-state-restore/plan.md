@@ -216,29 +216,29 @@ No code changes in this phase — verification only.
 
 #### Automated
 
-- [x] 1.1 Cargo dependency resolves
-- [x] 1.2 npm package installs
-- [x] 1.3 TypeScript compiles
-- [x] 1.4 Linting passes
+- [x] 1.1 Cargo dependency resolves — ff81f2e
+- [x] 1.2 npm package installs — ff81f2e
+- [x] 1.3 TypeScript compiles — ff81f2e
+- [x] 1.4 Linting passes — ff81f2e
 
 #### Manual
 
-- [x] 1.5 App launches with plugin active
-- [x] 1.6 Window respects minWidth/minHeight
+- [x] 1.5 App launches with plugin active — ff81f2e
+- [x] 1.6 Window respects minWidth/minHeight — ff81f2e
 
 ### Phase 2: Save Timing Integration
 
 #### Automated
 
-- [ ] 2.1 Rust compiles cleanly
-- [ ] 2.2 Existing Rust tests pass
+- [x] 2.1 Rust compiles cleanly
+- [x] 2.2 Existing Rust tests pass
 
 #### Manual
 
-- [ ] 2.3 State preserved through hide/show cycle
-- [ ] 2.4 State restored after tray quit and relaunch
-- [ ] 2.5 Maximized state round-trips
-- [ ] 2.6 Overlay windows unaffected
+- [x] 2.3 State preserved through hide/show cycle
+- [x] 2.4 State restored after tray quit and relaunch
+- [x] 2.5 Maximized state round-trips
+- [x] 2.6 Overlay windows unaffected
 
 ### Phase 3: Final Verification
 

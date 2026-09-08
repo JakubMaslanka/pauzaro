@@ -13,6 +13,8 @@ use log::{error, info};
 use tauri::Manager;
 use tauri::tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent};
 
+use tauri_plugin_window_state::{AppHandleExt, StateFlags};
+
 use db::Database;
 use db::app_state::{AppStateRepository, cleanup_stale_triggers};
 use db::completions::CompletionRepository;
@@ -185,6 +187,13 @@ pub fn run() {
             main_window.on_window_event(move |event| {
                 if let tauri::WindowEvent::CloseRequested { api, .. } = event {
                     api.prevent_close();
+
+                    // Save window state before hiding — plugin's default close-based save
+                    // won't fire since we prevent the close
+                    let _ = win.app_handle().save_window_state(
+                        StateFlags::POSITION | StateFlags::SIZE | StateFlags::MAXIMIZED,
+                    );
+
                     let _ = win.hide();
 
                     #[cfg(target_os = "macos")]
@@ -233,6 +242,11 @@ pub fn run() {
                     show_main_window(app);
                 }
                 tauri::RunEvent::Exit => {
+                    // Save window state on exit — safety net for tray quit / OS shutdown
+                    let _ = app.save_window_state(
+                        StateFlags::POSITION | StateFlags::SIZE | StateFlags::MAXIMIZED,
+                    );
+
                     // Write last_seen_at on actual process exit (tray Quit or OS shutdown).
                     // Errors logged but don't block exit.
                     if let Some(state) = app.try_state::<AppState>() {
