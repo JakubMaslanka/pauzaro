@@ -230,30 +230,30 @@ No code changes in this phase — verification only.
 
 #### Automated
 
-- [x] 2.1 Rust compiles cleanly
-- [x] 2.2 Existing Rust tests pass
+- [x] 2.1 Rust compiles cleanly — 0573cdc
+- [x] 2.2 Existing Rust tests pass — 0573cdc
 
 #### Manual
 
-- [x] 2.3 State preserved through hide/show cycle
-- [x] 2.4 State restored after tray quit and relaunch
-- [x] 2.5 Maximized state round-trips
-- [x] 2.6 Overlay windows unaffected
+- [x] 2.3 State preserved through hide/show cycle — 0573cdc
+- [x] 2.4 State restored after tray quit and relaunch — 0573cdc
+- [x] 2.5 Maximized state round-trips — 0573cdc
+- [x] 2.6 Overlay windows unaffected — 0573cdc
 
 ### Phase 3: Final Verification
 
 #### Automated
 
-- [ ] 3.1 Full Rust test suite passes
-- [ ] 3.2 Frontend tests pass
-- [ ] 3.3 Type checking passes
-- [ ] 3.4 Linting passes
+- [x] 3.1 Full Rust test suite passes
+- [x] 3.2 Frontend tests pass
+- [x] 3.3 Type checking passes
+- [x] 3.4 Linting passes
 
 #### Manual
 
-- [ ] 3.5 State survives tray quit and relaunch
-- [ ] 3.6 State survives force-quit and relaunch
-- [ ] 3.7 Maximized state round-trips
-- [ ] 3.8 Overlay windows unaffected
-- [ ] 3.9 Tray show/hide unchanged
-- [ ] 3.10 Recovery modal unaffected
+- [x] 3.5 State survives tray quit and relaunch
+- [x] 3.6 State survives force-quit and relaunch
+- [x] 3.7 Maximized state round-trips
+- [x] 3.8 Overlay windows unaffected
+- [x] 3.9 Tray show/hide unchanged
+- [x] 3.10 Recovery modal unaffected
