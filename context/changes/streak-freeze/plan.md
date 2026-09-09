@@ -437,8 +437,8 @@ Add comprehensive test coverage for freeze logic: unit tests for the refactored 
 
 #### Automated
 
-- [x] 4.1 All Rust tests pass including new freeze tests
-- [x] 4.2 New tests appear in test output by name
+- [x] 4.1 All Rust tests pass including new freeze tests — c61fd34
+- [x] 4.2 New tests appear in test output by name — c61fd34
 
 #### Manual
 
