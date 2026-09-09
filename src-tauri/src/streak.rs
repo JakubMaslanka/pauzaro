@@ -281,4 +281,99 @@ mod tests {
         let result = calculate_streak(today, &[0, 1, 2, 3, 4, 5, 6], 1, &completions, &[]);
         assert_eq!(result, 30);
     }
+
+    // --- Freeze tests ---
+
+    #[test]
+    fn frozen_day_skipped_not_breaking() {
+        // Streak: Sat done, Fri frozen (missed), Thu done. Freeze prevents break.
+        let today = NaiveDate::from_ymd_opt(2026, 8, 30).unwrap(); // Sun
+        let fri = NaiveDate::from_ymd_opt(2026, 8, 29).unwrap();
+        let completions = vec![
+            make_completion("2026-08-30", "10:00", CompletionStatus::Done),
+            // 2026-08-29 (Fri) missing — but frozen
+            make_completion("2026-08-28", "10:00", CompletionStatus::Done),
+        ];
+        let result = calculate_streak(today, &[0, 1, 2, 3, 4, 5, 6], 1, &completions, &[fri]);
+        assert_eq!(result, 2); // Sun + Thu; Fri skipped
+    }
+
+    #[test]
+    fn frozen_day_not_counted() {
+        // All 3 days done, middle one also frozen. Frozen day doesn't add to streak.
+        let today = NaiveDate::from_ymd_opt(2026, 8, 30).unwrap();
+        let sat = NaiveDate::from_ymd_opt(2026, 8, 29).unwrap();
+        let completions = vec![
+            make_completion("2026-08-30", "10:00", CompletionStatus::Done),
+            make_completion("2026-08-29", "10:00", CompletionStatus::Done),
+            make_completion("2026-08-28", "10:00", CompletionStatus::Done),
+        ];
+        // Sat is frozen — skipped even though it has a completion
+        let result = calculate_streak(today, &[0, 1, 2, 3, 4, 5, 6], 1, &completions, &[sat]);
+        assert_eq!(result, 2); // Sun + Fri; Sat skipped (frozen)
+    }
+
+    #[test]
+    fn freeze_budget_exhausted_breaks_streak() {
+        // 3 missed days, only 2 frozen. 3rd breaks streak.
+        let today = NaiveDate::from_ymd_opt(2026, 8, 30).unwrap(); // Sun
+        let completions = vec![
+            make_completion("2026-08-30", "10:00", CompletionStatus::Done),
+            // 29, 28, 27 all missing
+            make_completion("2026-08-26", "10:00", CompletionStatus::Done),
+        ];
+        let frozen = vec![
+            NaiveDate::from_ymd_opt(2026, 8, 27).unwrap(), // Wed
+            NaiveDate::from_ymd_opt(2026, 8, 28).unwrap(), // Thu
+            // 29 (Fri) NOT frozen — breaks streak
+        ];
+        let result = calculate_streak(today, &[0, 1, 2, 3, 4, 5, 6], 1, &completions, &frozen);
+        assert_eq!(result, 1); // Only today
+    }
+
+    #[test]
+    fn multiple_frozen_days_in_sequence() {
+        // 2 consecutive frozen days between completions.
+        let today = NaiveDate::from_ymd_opt(2026, 8, 30).unwrap(); // Sun
+        let completions = vec![
+            make_completion("2026-08-30", "10:00", CompletionStatus::Done),
+            // 29, 28 frozen
+            make_completion("2026-08-27", "10:00", CompletionStatus::Done),
+        ];
+        let frozen = vec![
+            NaiveDate::from_ymd_opt(2026, 8, 28).unwrap(),
+            NaiveDate::from_ymd_opt(2026, 8, 29).unwrap(),
+        ];
+        let result = calculate_streak(today, &[0, 1, 2, 3, 4, 5, 6], 1, &completions, &frozen);
+        assert_eq!(result, 2); // Sun + Thu
+    }
+
+    #[test]
+    fn frozen_and_non_scheduled_interleave() {
+        // MWF schedule. Fri frozen, Sat/Sun not scheduled, Mon done.
+        let today = NaiveDate::from_ymd_opt(2026, 9, 1).unwrap(); // Tue=2 not in schedule
+        // Actually let's pick Mon Sep 7 2026 = Mon
+        let today = NaiveDate::from_ymd_opt(2026, 9, 7).unwrap(); // Mon=1
+        let fri = NaiveDate::from_ymd_opt(2026, 9, 4).unwrap(); // Fri=5
+        let completions = vec![
+            make_completion("2026-09-07", "10:00", CompletionStatus::Done), // Mon
+            // Fri frozen
+            make_completion("2026-09-02", "10:00", CompletionStatus::Done), // Wed
+        ];
+        // Mon, Wed, Fri schedule. Sat/Sun skipped. Fri frozen. Wed done.
+        let result = calculate_streak(today, &[1, 3, 5], 1, &completions, &[fri]);
+        assert_eq!(result, 2); // Mon + Wed; Fri skipped (frozen), Sat/Sun skipped (not scheduled)
+    }
+
+    #[test]
+    fn empty_frozen_dates_preserves_old_behavior() {
+        // Same as gap_breaks_streak — confirms empty frozen_dates changes nothing.
+        let today = NaiveDate::from_ymd_opt(2026, 8, 30).unwrap();
+        let completions = vec![
+            make_completion("2026-08-30", "10:00", CompletionStatus::Done),
+            make_completion("2026-08-28", "10:00", CompletionStatus::Done),
+        ];
+        let result = calculate_streak(today, &[0, 1, 2, 3, 4, 5, 6], 1, &completions, &[]);
+        assert_eq!(result, 1); // Only today — 29 missing breaks streak
+    }
 }

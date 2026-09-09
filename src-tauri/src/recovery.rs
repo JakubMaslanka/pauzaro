@@ -332,4 +332,56 @@ mod tests {
         let result = compute_missed_repetitions(last, now, &[habit], &[], &[]);
         assert!(result.habits.is_empty());
     }
+
+    // --- Freeze tests ---
+
+    #[test]
+    fn frozen_days_excluded_from_missed_reps() {
+        // Gap covers Sep 3 (Wed). Frozen — should produce no missed reps.
+        let last = dt("2026-09-02T20:00:00");
+        let now = dt("2026-09-04T10:00:00");
+        let habit = make_habit("h1", vec![0, 1, 2, 3, 4, 5, 6], vec!["10:00"], "2026-08-01");
+        let frozen = vec![NaiveDate::from_ymd_opt(2026, 9, 3).unwrap()];
+
+        let result = compute_missed_repetitions(last, now, &[habit], &[], &frozen);
+        assert!(result.habits.is_empty(), "frozen day should not produce missed reps");
+    }
+
+    #[test]
+    fn mixed_frozen_and_missed_days() {
+        // 3-day gap: Sep 2 (Wed=3), Sep 3 (Thu=4), Sep 4 (Fri=5).
+        // Schedule: every day. Sep 2 and Sep 3 frozen. Sep 4 missed.
+        // Wait — now = Sep 5, so gap is Sep 3-4. Let me set up properly.
+        let last = dt("2026-09-01T20:00:00");
+        let now = dt("2026-09-05T10:00:00");
+        // Gap: Sep 2 (Tue), Sep 3 (Wed), Sep 4 (Thu). All scheduled.
+        let habit = make_habit("h1", vec![0, 1, 2, 3, 4, 5, 6], vec!["10:00"], "2026-08-01");
+        let frozen = vec![
+            NaiveDate::from_ymd_opt(2026, 9, 2).unwrap(),
+            NaiveDate::from_ymd_opt(2026, 9, 3).unwrap(),
+        ];
+
+        let result = compute_missed_repetitions(last, now, &[habit], &[], &frozen);
+
+        assert_eq!(result.habits.len(), 1);
+        // Only Sep 4 should be missed (Sep 2 and Sep 3 frozen)
+        assert_eq!(result.habits[0].missed_reps.len(), 1);
+        assert_eq!(result.habits[0].missed_reps[0].trigger_date, "2026-09-04");
+    }
+
+    #[test]
+    fn all_gap_days_frozen() {
+        // 2-day gap, both frozen. No missed reps, no recovery.
+        let last = dt("2026-09-01T20:00:00");
+        let now = dt("2026-09-04T10:00:00");
+        // Gap: Sep 2 (Tue), Sep 3 (Wed). Both frozen.
+        let habit = make_habit("h1", vec![0, 1, 2, 3, 4, 5, 6], vec!["10:00"], "2026-08-01");
+        let frozen = vec![
+            NaiveDate::from_ymd_opt(2026, 9, 2).unwrap(),
+            NaiveDate::from_ymd_opt(2026, 9, 3).unwrap(),
+        ];
+
+        let result = compute_missed_repetitions(last, now, &[habit], &[], &frozen);
+        assert!(result.habits.is_empty(), "all gap days frozen = no recovery needed");
+    }
 }

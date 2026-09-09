@@ -422,9 +422,9 @@ Add comprehensive test coverage for freeze logic: unit tests for the refactored 
 
 #### Automated
 
-- [x] 3.1 Type-check passes (pnpm tsc --noEmit)
-- [x] 3.2 Lint passes (pnpm lint)
-- [x] 3.3 Existing frontend tests pass (pnpm test)
+- [x] 3.1 Type-check passes (pnpm tsc --noEmit) — 0d3e705
+- [x] 3.2 Lint passes (pnpm lint) — 0d3e705
+- [x] 3.3 Existing frontend tests pass (pnpm test) — 0d3e705
 
 #### Manual
 
@@ -437,8 +437,8 @@ Add comprehensive test coverage for freeze logic: unit tests for the refactored 
 
 #### Automated
 
-- [ ] 4.1 All Rust tests pass including new freeze tests
-- [ ] 4.2 New tests appear in test output by name
+- [x] 4.1 All Rust tests pass including new freeze tests
+- [x] 4.2 New tests appear in test output by name
 
 #### Manual
 
