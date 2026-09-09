@@ -1,9 +1,10 @@
-use tauri::{AppHandle, State};
+use tauri::{AppHandle, Emitter, Manager, State};
 use tauri_plugin_autostart::ManagerExt;
 
 use crate::db::settings::SettingsRepository;
 use crate::error::AppError;
 use crate::models::Settings;
+use crate::tray::TrayState;
 use crate::AppState;
 
 #[tauri::command]
@@ -45,5 +46,15 @@ pub fn set_autostart(
         )));
     }
 
-    repo.get()
+    let settings = repo.get()?;
+
+    // Sync tray CheckMenuItem
+    if let Some(tray_state) = app.try_state::<TrayState>() {
+        let _ = tray_state.autostart_item.set_checked(enabled);
+    }
+
+    // Emit sync event for other UI components
+    let _ = app.emit("settings-changed", &settings);
+
+    Ok(settings)
 }
