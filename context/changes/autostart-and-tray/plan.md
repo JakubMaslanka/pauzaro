@@ -348,9 +348,9 @@ Negligible impact. Settings read is one SQLite query on a single-row table — s
 
 #### Automated
 
-- [ ] 1.1 Rust compiles: `cd src-tauri && cargo check`
-- [ ] 1.2 Unit tests pass: `cd src-tauri && cargo test`
-- [ ] 1.3 Migration applies on fresh DB
+- [x] 1.1 Rust compiles: `cd src-tauri && cargo check` — bd4e2d9
+- [x] 1.2 Unit tests pass: `cd src-tauri && cargo test` — bd4e2d9
+- [x] 1.3 Migration applies on fresh DB — bd4e2d9
 
 #### Manual
 

@@ -5,13 +5,13 @@ pub mod models;
 pub mod recovery;
 pub mod scheduler;
 pub mod streak;
+pub mod tray;
 
 use std::sync::{Arc, Mutex};
 
 use chrono::Local;
 use log::{error, info};
 use tauri::Manager;
-use tauri::tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent};
 
 use tauri_plugin_window_state::{AppHandleExt, StateFlags};
 
@@ -152,61 +152,7 @@ pub fn run() {
                 sched_run.run(db_arc, spawner).await;
             });
 
-            // System tray — keeps app alive when main window is closed
-            let show = tauri::menu::MenuItemBuilder::with_id("show", "Show Dashboard")
-                .build(app)?;
-            let quit = tauri::menu::MenuItemBuilder::with_id("quit", "Quit Pauzaro")
-                .build(app)?;
-            let menu = tauri::menu::MenuBuilder::new(app)
-                .items(&[&show, &quit])
-                .build()?;
-
-            TrayIconBuilder::new()
-                .icon(app.default_window_icon().unwrap().clone())
-                .menu(&menu)
-                .tooltip("Pauzaro")
-                .on_menu_event(|app, event| {
-                    match event.id().as_ref() {
-                        "show" => show_main_window(app),
-                        "quit" => app.exit(0),
-                        _ => {}
-                    }
-                })
-                .on_tray_icon_event(|tray, event| {
-                    if let TrayIconEvent::Click {
-                        button: MouseButton::Left,
-                        button_state: MouseButtonState::Up,
-                        ..
-                    } = event
-                    {
-                        show_main_window(tray.app_handle());
-                    }
-                })
-                .build(app)?;
-
-            // Hide main window on close — remove from dock, keep tray
-            let main_window = app.get_webview_window("main")
-                .expect("main window not found");
-            let win = main_window.clone();
-            main_window.on_window_event(move |event| {
-                if let tauri::WindowEvent::CloseRequested { api, .. } = event {
-                    api.prevent_close();
-
-                    // Save window state before hiding — plugin's default close-based save
-                    // won't fire since we prevent the close
-                    let _ = win.app_handle().save_window_state(
-                        StateFlags::POSITION | StateFlags::SIZE | StateFlags::MAXIMIZED,
-                    );
-
-                    let _ = win.hide();
-
-                    #[cfg(target_os = "macos")]
-                    {
-                        let _ = win.app_handle()
-                            .set_activation_policy(tauri::ActivationPolicy::Accessory);
-                    }
-                }
-            });
+            tray::setup_tray(app)?;
 
             Ok(())
         })
@@ -245,7 +191,7 @@ pub fn run() {
                 // macOS: dock icon clicked while hidden — re-show
                 #[cfg(target_os = "macos")]
                 tauri::RunEvent::Reopen { .. } => {
-                    show_main_window(app);
+                    tray::show_main_window(app);
                 }
                 tauri::RunEvent::Exit => {
                     // Save window state on exit — safety net for tray quit / OS shutdown
@@ -268,16 +214,4 @@ pub fn run() {
                 _ => {}
             }
         });
-}
-
-fn show_main_window(app: &tauri::AppHandle) {
-    #[cfg(target_os = "macos")]
-    {
-        let _ = app.set_activation_policy(tauri::ActivationPolicy::Regular);
-    }
-
-    if let Some(w) = app.get_webview_window("main") {
-        let _ = w.show();
-        let _ = w.set_focus();
-    }
 }
