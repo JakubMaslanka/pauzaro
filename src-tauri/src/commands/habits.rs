@@ -102,7 +102,7 @@ fn build_habit_status(
         .to_string();
     let all_completions = completion_repo.list_by_habit_since(&habit.id, &from_date)?;
     let slots_per_day = habit.schedule_times.len();
-    let streak = calculate_streak(today, &habit.schedule_days, slots_per_day, &all_completions);
+    let streak = calculate_streak(today, &habit.schedule_days, slots_per_day, &all_completions, &[]);
 
     Ok(HabitStatusResponse {
         habit_id: habit.id.clone(),

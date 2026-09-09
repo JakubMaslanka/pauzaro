@@ -77,6 +77,15 @@ const MIGRATIONS: &[&str] = &[
         autostart_enabled INTEGER NOT NULL DEFAULT 0
     );
     INSERT OR IGNORE INTO settings (id, autostart_enabled) VALUES (1, 0);",
+    // Migration 5: streak_freezes table (per-habit per-date freeze records)
+    "CREATE TABLE IF NOT EXISTS streak_freezes (
+        id TEXT PRIMARY KEY,
+        habit_id TEXT NOT NULL REFERENCES habits(id) ON DELETE CASCADE,
+        frozen_date TEXT NOT NULL,
+        created_at TEXT NOT NULL DEFAULT (datetime('now')),
+        UNIQUE(habit_id, frozen_date)
+    );
+    CREATE INDEX IF NOT EXISTS idx_streak_freezes_habit_id ON streak_freezes(habit_id);",
 ];
 
 /// Applies pending migrations tracked by `schema_version`.

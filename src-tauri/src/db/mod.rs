@@ -1,5 +1,6 @@
 pub mod app_state;
 pub mod completions;
+pub mod freeze;
 pub mod habits;
 pub mod migrations;
 pub mod pending_triggers;

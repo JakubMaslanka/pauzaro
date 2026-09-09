@@ -27,7 +27,7 @@ fn migration_runner_creates_schema_version_table() {
         })
         .expect("schema_version table should exist");
 
-    assert_eq!(version, 5, "version should be 5 after five migrations");
+    assert_eq!(version, 6, "version should be 6 after six migrations");
 }
 
 #[test]
@@ -46,7 +46,7 @@ fn database_open_is_idempotent() {
         })
         .expect("schema_version table should exist after second open");
 
-    assert_eq!(version, 5, "version should remain 5");
+    assert_eq!(version, 6, "version should remain 6");
 }
 
 #[test]
@@ -65,7 +65,7 @@ fn app_state_wraps_database_in_mutex() {
         })
         .expect("should query through AppState");
 
-    assert_eq!(version, 5);
+    assert_eq!(version, 6);
 }
 
 // --- App state / last_seen_at tests ---
