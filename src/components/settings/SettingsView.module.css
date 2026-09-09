@@ -1,0 +1,36 @@
+.card {
+	display: block;
+	width: 100%;
+	padding: var(--mantine-spacing-lg);
+	border-radius: var(--mantine-radius-md);
+	border: rem(1px) solid var(--mantine-color-default-border);
+	background-color: var(--mantine-color-body);
+	transition:
+		border-color 150ms ease,
+		background-color 150ms ease;
+	cursor: pointer;
+
+	&:hover {
+		background-color: light-dark(
+			var(--mantine-color-gray-0),
+			var(--mantine-color-dark-6)
+		);
+	}
+
+	&[data-checked] {
+		border-color: var(--mantine-color-teal-6);
+		background-color: light-dark(
+			var(--mantine-color-teal-0),
+			color-mix(in srgb, var(--mantine-color-teal-9) 15%, transparent)
+		);
+	}
+
+	&:disabled {
+		opacity: 0.6;
+		cursor: not-allowed;
+	}
+}
+
+.checkbox {
+	pointer-events: none;
+}

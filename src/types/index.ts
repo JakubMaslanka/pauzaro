@@ -84,3 +84,7 @@ export interface HabitRecoveryInfo {
 export interface RecoveryResult {
 	habits: HabitRecoveryInfo[];
 }
+
+export interface Settings {
+	autostart_enabled: boolean;
+}

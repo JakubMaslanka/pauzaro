@@ -6,6 +6,7 @@ import type {
 	Habit,
 	HabitStatus,
 	RecoveryResult,
+	Settings,
 	UserProfile,
 } from "../types";
 
@@ -127,4 +128,12 @@ export async function recoverHabitDismiss(
 		habit_id: habitId,
 		slots,
 	});
+}
+
+export async function getSettings(): Promise<Settings> {
+	return invoke<Settings>("get_settings");
+}
+
+export async function setAutostart(enabled: boolean): Promise<Settings> {
+	return invoke<Settings>("set_autostart", { enabled });
 }
