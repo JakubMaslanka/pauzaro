@@ -43,6 +43,7 @@ fn detects_missed_reps_after_3_day_gap() {
         dt("2026-09-04T10:00:00"),
         &habits,
         &completions,
+        &[],
     );
 
     assert_eq!(result.habits.len(), 1);
@@ -122,6 +123,7 @@ fn gap_over_30_days_sets_streak_reset() {
         dt("2026-09-04T10:00:00"), // 34 days gap
         &habits,
         &[],
+        &[],
     );
 
     assert_eq!(result.habits.len(), 1);
@@ -157,6 +159,7 @@ fn existing_completions_excluded_from_missed_list() {
         dt("2026-09-04T10:00:00"),
         &habits,
         &completions,
+        &[],
     );
 
     // Only 15:00 slot on Sep 2 should be missed (10:00 already done)
@@ -210,6 +213,7 @@ fn no_gap_returns_empty_recovery() {
         dt("2026-09-04T08:00:00"),
         dt("2026-09-04T10:00:00"),
         &habits,
+        &[],
         &[],
     );
 

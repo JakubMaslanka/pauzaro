@@ -9,7 +9,7 @@ pub mod tray;
 
 use std::sync::{Arc, Mutex};
 
-use chrono::Local;
+use chrono::{Datelike, Local};
 use log::{error, info};
 use tauri::Manager;
 
@@ -18,6 +18,7 @@ use tauri_plugin_window_state::{AppHandleExt, StateFlags};
 use db::Database;
 use db::app_state::{AppStateRepository, cleanup_stale_triggers};
 use db::completions::CompletionRepository;
+use db::freeze::FreezeRepository;
 use db::habits::HabitRepository;
 use recovery::RecoveryResult;
 
@@ -111,6 +112,7 @@ pub fn run() {
                     let from_date = last_seen.date().format("%Y-%m-%d").to_string();
                     let to_date = now.date().format("%Y-%m-%d").to_string();
                     let completion_repo = CompletionRepository::new(conn);
+                    let freeze_repo = FreezeRepository::new(conn);
 
                     let mut all_completions = Vec::new();
                     for habit in &habits {
@@ -121,8 +123,71 @@ pub fn run() {
                         }
                     }
 
+                    // Auto-apply streak freezes to earliest missed days per habit
+                    let mut all_frozen_dates = Vec::new();
+                    for habit in &habits {
+                        let existing = freeze_repo
+                            .list_by_habit_since(&habit.id, &from_date)
+                            .unwrap_or_default();
+                        let mut frozen: Vec<chrono::NaiveDate> = existing
+                            .iter()
+                            .filter_map(|f| {
+                                chrono::NaiveDate::parse_from_str(&f.frozen_date, "%Y-%m-%d").ok()
+                            })
+                            .collect();
+
+                        let budget_remaining =
+                            streak::MAX_FREEZES_PER_STREAK.saturating_sub(frozen.len());
+                        if budget_remaining > 0 {
+                            // Walk gap chronologically, freeze earliest incomplete days
+                            let gap_start = (last_seen.date() + chrono::Duration::days(1))
+                                .max(chrono::NaiveDate::parse_from_str(
+                                    &habit.start_date, "%Y-%m-%d",
+                                ).unwrap_or(last_seen.date()));
+                            let gap_end = now.date();
+                            let slots_per_day = habit.schedule_times.len();
+                            let mut date = gap_start;
+                            let mut applied = 0usize;
+
+                            while date < gap_end && applied < budget_remaining {
+                                let dow = date.weekday().num_days_from_sunday() as u8;
+                                if habit.schedule_days.contains(&dow)
+                                    && !frozen.contains(&date)
+                                {
+                                    let ds = date.format("%Y-%m-%d").to_string();
+                                    let day_comps: Vec<_> = all_completions
+                                        .iter()
+                                        .filter(|c| {
+                                            c.habit_id == habit.id && c.trigger_date == ds
+                                        })
+                                        .collect();
+
+                                    let is_complete = if day_comps.is_empty() {
+                                        false
+                                    } else {
+                                        let done = day_comps.iter().filter(|c| {
+                                            c.status == crate::models::CompletionStatus::Done
+                                        }).count();
+                                        done >= slots_per_day
+                                            && !day_comps.iter().any(|c| {
+                                                c.status == crate::models::CompletionStatus::Failed
+                                            })
+                                    };
+
+                                    if !is_complete {
+                                        let _ = freeze_repo.insert(&habit.id, &ds);
+                                        frozen.push(date);
+                                        applied += 1;
+                                    }
+                                }
+                                date += chrono::Duration::days(1);
+                            }
+                        }
+                        all_frozen_dates.extend(frozen);
+                    }
+
                     let result = recovery::compute_missed_repetitions(
-                        last_seen, now, &habits, &all_completions,
+                        last_seen, now, &habits, &all_completions, &all_frozen_dates,
                     );
 
                     if result.habits.is_empty() {

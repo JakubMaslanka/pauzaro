@@ -34,6 +34,7 @@ pub struct RecoveryResult {
 /// Compute missed repetitions for each habit between `last_seen` and `now`.
 ///
 /// Pure function — no DB access. Takes pre-fetched habits and completions.
+/// Frozen dates (from streak freezes) are excluded — they don't count as missed.
 ///
 /// For each active habit, iterates scheduled dates in the gap window
 /// (day after last_seen through yesterday). Today is excluded — the normal
@@ -46,6 +47,7 @@ pub fn compute_missed_repetitions(
     now: NaiveDateTime,
     habits: &[Habit],
     completions: &[Completion],
+    frozen_dates: &[NaiveDate],
 ) -> RecoveryResult {
     let gap_start = last_seen.date();
     let gap_end = now.date(); // exclusive — today handled by scheduler
@@ -86,6 +88,12 @@ pub fn compute_missed_repetitions(
                 let dow = date.weekday().num_days_from_sunday() as u8;
 
                 if habit.schedule_days.contains(&dow) {
+                    // Skip frozen days — they're covered by streak freeze
+                    if frozen_dates.contains(&date) {
+                        date += chrono::Duration::days(1);
+                        continue;
+                    }
+
                     let date_str = date.format("%Y-%m-%d").to_string();
 
                     for slot in &habit.schedule_times {
@@ -176,7 +184,7 @@ mod tests {
     fn no_gap_returns_empty() {
         let now = dt("2026-09-04T10:00:00");
         let habit = make_habit("h1", vec![0, 1, 2, 3, 4, 5, 6], vec!["10:00"], "2026-08-01");
-        let result = compute_missed_repetitions(now, now, &[habit], &[]);
+        let result = compute_missed_repetitions(now, now, &[habit], &[], &[]);
         assert!(result.habits.is_empty());
     }
 
@@ -187,7 +195,7 @@ mod tests {
         let now = dt("2026-09-04T10:00:00");
         let habit = make_habit("h1", vec![0, 1, 2, 3, 4, 5, 6], vec!["10:00", "15:00"], "2026-08-01");
 
-        let result = compute_missed_repetitions(last, now, &[habit], &[]);
+        let result = compute_missed_repetitions(last, now, &[habit], &[], &[]);
 
         assert_eq!(result.habits.len(), 1);
         assert_eq!(result.habits[0].missed_reps.len(), 2);
@@ -205,7 +213,7 @@ mod tests {
         let now = dt("2026-09-05T10:00:00");
         let habit = make_habit("h1", vec![1, 3, 5], vec!["10:00"], "2026-08-01");
 
-        let result = compute_missed_repetitions(last, now, &[habit], &[]);
+        let result = compute_missed_repetitions(last, now, &[habit], &[], &[]);
 
         assert_eq!(result.habits.len(), 1);
         let missed: Vec<&str> = result.habits[0]
@@ -225,7 +233,7 @@ mod tests {
         // 10:00 slot already done on Sep 3
         let completions = vec![make_completion("h1", "2026-09-03", "10:00")];
 
-        let result = compute_missed_repetitions(last, now, &[habit], &completions);
+        let result = compute_missed_repetitions(last, now, &[habit], &completions, &[]);
 
         assert_eq!(result.habits[0].missed_reps.len(), 1);
         assert_eq!(result.habits[0].missed_reps[0].scheduled_time, "15:00");
@@ -244,7 +252,7 @@ mod tests {
         let now = dt("2026-09-04T10:00:00"); // 30 days
         let habit = make_habit("h1", vec![0, 1, 2, 3, 4, 5, 6], vec!["10:00"], "2026-08-01");
 
-        let result = compute_missed_repetitions(last, now, &[habit], &[]);
+        let result = compute_missed_repetitions(last, now, &[habit], &[], &[]);
 
         assert_eq!(result.habits.len(), 1);
         assert!(!result.habits[0].streak_reset, "30-day gap should NOT reset");
@@ -257,7 +265,7 @@ mod tests {
         let now = dt("2026-09-04T10:00:00"); // 31 days
         let habit = make_habit("h1", vec![0, 1, 2, 3, 4, 5, 6], vec!["10:00"], "2026-08-01");
 
-        let result = compute_missed_repetitions(last, now, &[habit], &[]);
+        let result = compute_missed_repetitions(last, now, &[habit], &[], &[]);
 
         assert_eq!(result.habits.len(), 1);
         assert!(result.habits[0].streak_reset);
@@ -271,7 +279,7 @@ mod tests {
         let now = dt("2026-09-05T10:00:00");
         let habit = make_habit("h1", vec![0, 1, 2, 3, 4, 5, 6], vec!["10:00"], "2026-09-03");
 
-        let result = compute_missed_repetitions(last, now, &[habit], &[]);
+        let result = compute_missed_repetitions(last, now, &[habit], &[], &[]);
 
         assert_eq!(result.habits[0].missed_reps.len(), 2); // Sep 3, Sep 4
         assert_eq!(result.habits[0].missed_reps[0].trigger_date, "2026-09-03");
@@ -286,7 +294,7 @@ mod tests {
         let mut habit = make_habit("h1", vec![0, 1, 2, 3, 4, 5, 6], vec!["10:00"], "2026-08-01");
         habit.end_date = Some("2026-09-03".to_string());
 
-        let result = compute_missed_repetitions(last, now, &[habit], &[]);
+        let result = compute_missed_repetitions(last, now, &[habit], &[], &[]);
 
         let dates: Vec<&str> = result.habits[0]
             .missed_reps
@@ -304,7 +312,7 @@ mod tests {
         let h1 = make_habit("h1", vec![0, 1, 2, 3, 4, 5, 6], vec!["10:00"], "2026-08-01");
         let h2 = make_habit("h2", vec![0, 1, 2, 3, 4, 5, 6], vec!["09:00", "14:00"], "2026-08-01");
 
-        let result = compute_missed_repetitions(last, now, &[h1, h2], &[]);
+        let result = compute_missed_repetitions(last, now, &[h1, h2], &[], &[]);
 
         assert_eq!(result.habits.len(), 2);
         assert_eq!(result.habits[0].habit_id, "h1");
@@ -321,7 +329,7 @@ mod tests {
         let mut habit = make_habit("h1", vec![0, 1, 2, 3, 4, 5, 6], vec!["10:00"], "2026-08-01");
         habit.is_active = false;
 
-        let result = compute_missed_repetitions(last, now, &[habit], &[]);
+        let result = compute_missed_repetitions(last, now, &[habit], &[], &[]);
         assert!(result.habits.is_empty());
     }
 }

@@ -61,6 +61,8 @@ export interface HabitStatus {
 	streak: number;
 	today_slots: SlotStatus[];
 	today_date: string;
+	freezes_remaining: number;
+	frozen_dates: string[];
 }
 
 export interface MissedRepetition {

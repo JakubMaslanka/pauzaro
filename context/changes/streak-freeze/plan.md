@@ -396,21 +396,21 @@ Add comprehensive test coverage for freeze logic: unit tests for the refactored 
 
 #### Automated
 
-- [x] 1.1 Migration applies cleanly
-- [x] 1.2 Existing 13 streak unit tests pass with empty frozen_dates parameter
-- [x] 1.3 cargo check passes with new modules wired
+- [x] 1.1 Migration applies cleanly — 83ba87e
+- [x] 1.2 Existing 13 streak unit tests pass with empty frozen_dates parameter — 83ba87e
+- [x] 1.3 cargo check passes with new modules wired — 83ba87e
 
 #### Manual
 
-- [x] 1.4 Review streak_freezes table schema matches design
+- [x] 1.4 Review streak_freezes table schema matches design — 83ba87e
 
 ### Phase 2: Commands + Recovery Integration
 
 #### Automated
 
-- [ ] 2.1 Type-check passes (pnpm tsc --noEmit)
-- [ ] 2.2 Rust check passes (cargo check)
-- [ ] 2.3 Existing tests pass (cargo test)
+- [x] 2.1 Type-check passes (pnpm tsc --noEmit)
+- [x] 2.2 Rust check passes (cargo check)
+- [x] 2.3 Existing tests pass (cargo test)
 
 #### Manual
 
