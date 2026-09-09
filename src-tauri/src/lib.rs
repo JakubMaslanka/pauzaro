@@ -30,6 +30,10 @@ pub struct RecoveryState(pub Mutex<Option<RecoveryResult>>);
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_autostart::init(
+            tauri_plugin_autostart::MacosLauncher::LaunchAgent,
+            None,
+        ))
         .plugin(tauri_plugin_opener::init())
         .plugin(
             tauri_plugin_window_state::Builder::default()
@@ -224,6 +228,8 @@ pub fn run() {
             commands::recovery::get_missed_repetitions,
             commands::recovery::recover_habit_done,
             commands::recovery::recover_habit_dismiss,
+            commands::settings::get_settings,
+            commands::settings::set_autostart,
         ])
         .build(tauri::generate_context!())
         .expect("error while building tauri application")

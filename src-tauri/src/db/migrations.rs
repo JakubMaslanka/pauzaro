@@ -71,6 +71,12 @@ const MIGRATIONS: &[&str] = &[
         last_seen_at TEXT NOT NULL
     );
     INSERT OR IGNORE INTO app_state (id, last_seen_at) VALUES (1, strftime('%Y-%m-%dT%H:%M:%S', 'now', 'localtime'));",
+    // Migration 4: settings table (singleton row, autostart toggle)
+    "CREATE TABLE IF NOT EXISTS settings (
+        id INTEGER PRIMARY KEY CHECK (id = 1),
+        autostart_enabled INTEGER NOT NULL DEFAULT 0
+    );
+    INSERT OR IGNORE INTO settings (id, autostart_enabled) VALUES (1, 0);",
 ];
 
 /// Applies pending migrations tracked by `schema_version`.

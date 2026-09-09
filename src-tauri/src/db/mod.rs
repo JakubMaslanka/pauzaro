@@ -3,6 +3,7 @@ pub mod completions;
 pub mod habits;
 pub mod migrations;
 pub mod pending_triggers;
+pub mod settings;
 pub mod user_profile;
 
 use std::path::Path;

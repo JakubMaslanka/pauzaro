@@ -5,6 +5,7 @@ pub enum AppError {
     Database(String),
     Validation(String),
     NotFound(String),
+    Autostart(String),
 }
 
 impl std::fmt::Display for AppError {
@@ -13,6 +14,7 @@ impl std::fmt::Display for AppError {
             AppError::Database(msg) => write!(f, "Database error: {msg}"),
             AppError::Validation(msg) => write!(f, "Validation error: {msg}"),
             AppError::NotFound(msg) => write!(f, "Not found: {msg}"),
+            AppError::Autostart(msg) => write!(f, "Autostart error: {msg}"),
         }
     }
 }
