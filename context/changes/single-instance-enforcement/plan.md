@@ -134,15 +134,15 @@ None. No schema changes, no data changes, no breaking changes.
 
 #### Automated
 
-- [x] 1.1 Cargo check passes
-- [x] 1.2 Rust tests pass
-- [x] 1.3 TypeScript type-check passes
-- [x] 1.4 Lint passes
+- [x] 1.1 Cargo check passes — 2ce8643
+- [x] 1.2 Rust tests pass — 2ce8643
+- [x] 1.3 TypeScript type-check passes — 2ce8643
+- [x] 1.4 Lint passes — 2ce8643
 
 #### Manual
 
-- [x] 1.5 Second instance exits and focuses existing window
-- [x] 1.6 Minimized window unminimizes on second launch
-- [x] 1.7 Tray-hidden window shows on second launch
-- [x] 1.8 Tray click regression check
-- [x] 1.9 macOS dock click regression check
+- [x] 1.5 Second instance exits and focuses existing window — 2ce8643
+- [x] 1.6 Minimized window unminimizes on second launch — 2ce8643
+- [x] 1.7 Tray-hidden window shows on second launch — 2ce8643
+- [x] 1.8 Tray click regression check — 2ce8643
+- [x] 1.9 macOS dock click regression check — 2ce8643
