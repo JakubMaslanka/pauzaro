@@ -389,9 +389,9 @@ Negligible impact. Settings read is one SQLite query on a single-row table — s
 
 #### Automated
 
-- [ ] 4.1 Type-check passes: `tsc --noEmit`
-- [ ] 4.2 Lint passes: `pnpm lint`
-- [ ] 4.3 Frontend tests pass: `pnpm test`
+- [x] 4.1 Type-check passes: `tsc --noEmit` — 94d610e
+- [x] 4.2 Lint passes: `pnpm lint` — 94d610e
+- [x] 4.3 Frontend tests pass: `pnpm test` — 94d610e
 
 #### Manual
 
