@@ -37,7 +37,7 @@ A developer in deep focus loses track of time — forgets breaks, movement, and 
 | S-04 | streak-freeze               | freeze streak for up to 2 days to protect series from missed days                           | S-02          | FR-012                                | proposed |
 | S-05 | dinosaur-mascot             | see dinosaur mascot reacting to current streak status (happy/neutral/sad)                    | S-02          | FR-009                                | proposed |
 | S-06 | missed-repetition-recovery  | on launch, see missed repetitions while app was closed and recover/dismiss them               | S-02          | US-02, FR-007 (streak integrity)      | done |
-| S-07 | autostart-and-tray            | have app launch at system startup, live in menu bar tray, and toggle autostart in settings   | S-01          | —                                     | planning |
+| S-07 | autostart-and-tray            | have app launch at system startup, live in menu bar tray, and toggle autostart in settings   | S-01          | —                                     | done |
 | S-08 | window-state-restore          | have window position and size remembered across app restarts                                 | —             | —                                     | done |
 | S-09 | single-instance               | (infra) only one app instance runs at a time, keeping memory footprint minimal               | —             | —                                     | proposed |
 | T-01 | testing-critical-path-backend | (testing) streak calc and snooze rules proven correct via Rust unit tests                  | S-02          | test-plan §3 Phase 1                  | done |
@@ -177,7 +177,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Scope:**
   - **Backend (Rust):** Wire `tauri-plugin-autostart` for login-item registration. Configure Tauri system tray with app icon + context menu (show/quit). Persist autostart preference in SQLite settings table. On app init, sync autostart state with OS registration.
   - **Frontend (React):** Settings screen (or section in existing UI) with "Launch at startup" checkbox. Read current state from backend, toggle via Tauri command.
-- **Status:** planning
+- **Status:** done
 - **Linear:** [JAC-17](https://linear.app/jacobs-agents-playground/issue/JAC-17/s-07-autostart-menu-bar-tray)
 
 ### S-08: Window state restore
@@ -276,3 +276,4 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **T-01: (testing) streak calculation and snooze 3x auto-fail rule proven correct via pure Rust unit tests** — Archived 2026-09-06 → `context/archive/2026-09-01-testing-critical-path-backend/`. Lesson: —.
 - **T-02: (testing) scheduler fires correctly at configured times, overlay→completion→dashboard path works end-to-end** — Archived 2026-09-06 → `context/archive/2026-09-02-testing-scheduler-overlay/`. Lesson: —.
 - **S-08: window position and size remembered across app restarts via Tauri Window State plugin** — Archived 2026-09-09 → `context/archive/2026-09-09-window-state-restore/`. Lesson: —.
+- **S-07: app launches at system startup, lives in menu bar tray, user can toggle autostart in settings** — Archived 2026-09-09 → `context/archive/2026-09-09-autostart-and-tray/`. Lesson: —.
