@@ -285,6 +285,8 @@ export function Dashboard() {
 
 	const status = habitStatuses[activeHabit.id];
 	const streak = status?.streak ?? 0;
+	const freezesRemaining = status?.freezes_remaining ?? 2;
+	const frozenDates = status?.frozen_dates ?? [];
 	const slotsPerDay = activeHabit.schedule_times.length;
 	const totalScheduledDays = countScheduledDaysInMonth(
 		currentMonth.year,
@@ -353,6 +355,7 @@ export function Dashboard() {
 							scheduleDays={activeHabit.schedule_days}
 							slotsPerDay={slotsPerDay}
 							habitStartDate={activeHabit.start_date}
+							frozenDates={frozenDates}
 							onMonthChange={handleMonthChange}
 						/>
 					</Stack>
@@ -361,12 +364,15 @@ export function Dashboard() {
 				{/* Right column: streak hero + stats */}
 				<Grid.Col span={{ base: 12, sm: 4 }}>
 					<Stack gap="md" className="dashboard-right-col">
-						<StreakHero streak={streak} />
+						<StreakHero streak={streak} freezesRemaining={freezesRemaining} />
 						<MonthStats
 							daysPracticed={daysPracticed}
 							totalScheduledDays={totalScheduledDays}
 							streak={streak}
 							endDate={activeHabit.end_date}
+							frozenDates={frozenDates}
+							currentYear={currentMonth.year}
+							currentMonth={currentMonth.month}
 						/>
 					</Stack>
 				</Grid.Col>

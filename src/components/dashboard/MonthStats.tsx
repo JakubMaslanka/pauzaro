@@ -1,11 +1,14 @@
 import { Badge, Card, SimpleGrid, Stack, Text } from "@mantine/core";
-import { Calendar, CircleCheck, Flame } from "lucide-react";
+import { Calendar, CircleCheck, Flame, Snowflake } from "lucide-react";
 
 interface MonthStatsProps {
 	daysPracticed: number;
 	totalScheduledDays: number;
 	streak: number;
 	endDate?: string | null;
+	frozenDates?: string[];
+	currentYear?: number;
+	currentMonth?: number;
 }
 
 function getPerformanceBadge(
@@ -38,10 +41,22 @@ export function MonthStats({
 	totalScheduledDays,
 	streak,
 	endDate,
+	frozenDates = [],
+	currentYear,
+	currentMonth,
 }: MonthStatsProps) {
 	const badge = getPerformanceBadge(daysPracticed, totalScheduledDays);
 	const daysLeft = endDate ? computeDaysLeft(endDate) : null;
 	const showEndDate = daysLeft !== null;
+
+	// Count frozen days in displayed month
+	const frozenInMonth =
+		currentYear !== undefined && currentMonth !== undefined
+			? frozenDates.filter((d) => {
+					const prefix = `${currentYear}-${String(currentMonth + 1).padStart(2, "0")}-`;
+					return d.startsWith(prefix);
+				}).length
+			: 0;
 
 	return (
 		<Stack gap="xs" align="center">
@@ -84,6 +99,19 @@ export function MonthStats({
 							</Text>
 							<Text size="xs" c="dimmed">
 								Days left
+							</Text>
+						</Stack>
+					</Card>
+				) : null}
+				{frozenInMonth > 0 ? (
+					<Card shadow="xs" padding="md" radius="md" withBorder>
+						<Stack align="center" gap={4}>
+							<Snowflake size={24} color="#60a5fa" />
+							<Text fw={700} size="xl" lh={1}>
+								{frozenInMonth}
+							</Text>
+							<Text size="xs" c="dimmed">
+								Days frozen
 							</Text>
 						</Stack>
 					</Card>

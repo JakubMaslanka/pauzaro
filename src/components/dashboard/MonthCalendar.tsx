@@ -11,6 +11,7 @@ interface MonthCalendarProps {
 	scheduleDays: number[];
 	slotsPerDay: number;
 	habitStartDate: string;
+	frozenDates: string[];
 	onMonthChange: (year: number, month: number) => void;
 }
 
@@ -106,6 +107,7 @@ type DayCellStatus =
 	| "done"
 	| "failed"
 	| "partial"
+	| "frozen"
 	| "not-scheduled"
 	| "future"
 	| "today-pending";
@@ -128,6 +130,7 @@ function deriveDayStatus(
 	slotsPerDay: number,
 	todayStr: string,
 	habitStartDate: string,
+	frozenDates: string[],
 ): DerivedDay {
 	const dayNumber = Number.parseInt(dateStr.slice(8, 10), 10);
 	const isToday = dateStr === todayStr;
@@ -176,6 +179,18 @@ function deriveDayStatus(
 			status: "future",
 			isToday: false,
 			isCurrentMonth: true,
+		};
+	}
+
+	// Frozen day — streak freeze was consumed
+	if (frozenDates.includes(dateStr)) {
+		return {
+			date: dateStr,
+			dayNumber,
+			status: "frozen",
+			isToday,
+			isCurrentMonth: true,
+			tooltipLabel: "❄️ Streak freeze used",
 		};
 	}
 
@@ -244,6 +259,7 @@ export function MonthCalendar({
 	scheduleDays,
 	slotsPerDay,
 	habitStartDate,
+	frozenDates,
 	onMonthChange,
 }: MonthCalendarProps) {
 	const todayStr = getTodayString();
@@ -274,6 +290,7 @@ export function MonthCalendar({
 					slotsPerDay,
 					todayStr,
 					habitStartDate,
+					frozenDates,
 				),
 			),
 		[
@@ -283,6 +300,7 @@ export function MonthCalendar({
 			slotsPerDay,
 			todayStr,
 			habitStartDate,
+			frozenDates,
 		],
 	);
 

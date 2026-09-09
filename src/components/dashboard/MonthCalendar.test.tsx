@@ -35,6 +35,7 @@ describe("MonthCalendar", () => {
 				scheduleDays={[1, 3, 5]}
 				slotsPerDay={1}
 				habitStartDate="2026-08-01"
+				frozenDates={[]}
 				onMonthChange={vi.fn()}
 			/>,
 			{ wrapper: Wrapper },
@@ -51,6 +52,7 @@ describe("MonthCalendar", () => {
 				scheduleDays={[1, 3, 5]}
 				slotsPerDay={1}
 				habitStartDate="2026-08-01"
+				frozenDates={[]}
 				onMonthChange={vi.fn()}
 			/>,
 			{ wrapper: Wrapper },
@@ -73,6 +75,7 @@ describe("MonthCalendar", () => {
 				scheduleDays={[1]}
 				slotsPerDay={1}
 				habitStartDate="2026-08-01"
+				frozenDates={[]}
 				onMonthChange={vi.fn()}
 			/>,
 			{ wrapper: Wrapper },
@@ -96,6 +99,7 @@ describe("MonthCalendar", () => {
 				scheduleDays={[1]}
 				slotsPerDay={2}
 				habitStartDate="2026-08-01"
+				frozenDates={[]}
 				onMonthChange={vi.fn()}
 			/>,
 			{ wrapper: Wrapper },
@@ -112,6 +116,7 @@ describe("MonthCalendar", () => {
 				scheduleDays={[1, 3, 5]}
 				slotsPerDay={1}
 				habitStartDate="2026-08-01"
+				frozenDates={[]}
 				onMonthChange={vi.fn()}
 			/>,
 			{ wrapper: Wrapper },
@@ -130,6 +135,7 @@ describe("MonthCalendar", () => {
 				scheduleDays={[1, 3, 5]}
 				slotsPerDay={1}
 				habitStartDate="2026-08-01"
+				frozenDates={[]}
 				onMonthChange={onMonthChange}
 			/>,
 			{ wrapper: Wrapper },

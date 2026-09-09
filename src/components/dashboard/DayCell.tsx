@@ -1,10 +1,11 @@
 import { Box, Text, Tooltip } from "@mantine/core";
-import { CircleCheck, CircleX } from "lucide-react";
+import { CircleCheck, CircleX, Snowflake } from "lucide-react";
 
 type DayCellStatus =
 	| "done"
 	| "failed"
 	| "partial"
+	| "frozen"
 	| "not-scheduled"
 	| "future"
 	| "today-pending";
@@ -29,6 +30,7 @@ const STATUS_CONFIG: Record<
 	done: { bg: "#0d9488", icon: CircleCheck },
 	failed: { bg: "#e03131", icon: CircleX },
 	partial: { bg: "#E28743", icon: null },
+	frozen: { bg: "#60a5fa", icon: Snowflake },
 	"not-scheduled": { bg: "transparent", icon: null },
 	future: { bg: "transparent", icon: null, outline: true },
 	"today-pending": { bg: "transparent", icon: null, outline: true },
@@ -65,7 +67,11 @@ export function DayCell({
 	const IconComponent = config.icon;
 	const isPartial = status === "partial";
 	const showTooltip =
-		tooltipLabel && (status === "done" || status === "failed" || isPartial);
+		tooltipLabel &&
+		(status === "done" ||
+			status === "failed" ||
+			status === "frozen" ||
+			isPartial);
 
 	const todayBorder = isToday ? "2px solid #0d9488" : "none";
 	const todayShadow = isToday ? "0 0 0 2px rgba(13,148,136,0.25)" : "none";

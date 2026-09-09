@@ -1,9 +1,15 @@
-import { Stack, Text, Title } from "@mantine/core";
+import { Group, Stack, Text, Title } from "@mantine/core";
 import { motion } from "framer-motion";
 import { Flame } from "lucide-react";
 
+const FREEZE_SLOTS = [
+	{ key: "freeze-a", index: 0 },
+	{ key: "freeze-b", index: 1 },
+] as const;
+
 interface StreakHeroProps {
 	streak: number;
+	freezesRemaining: number;
 }
 
 function getStreakMessage(streak: number): string {
@@ -15,7 +21,7 @@ function getStreakMessage(streak: number): string {
 	return "Time to start!";
 }
 
-export function StreakHero({ streak }: StreakHeroProps) {
+export function StreakHero({ streak, freezesRemaining }: StreakHeroProps) {
 	return (
 		<motion.div
 			initial={{ opacity: 0, scale: 0.9 }}
@@ -46,6 +52,19 @@ export function StreakHero({ streak }: StreakHeroProps) {
 				<Text size="lg" fw={600} c="dimmed" ta="center">
 					{getStreakMessage(streak)}
 				</Text>
+				<Group gap={4} justify="center">
+					{FREEZE_SLOTS.map((slot) => (
+						<Text
+							key={slot.key}
+							size="lg"
+							style={{
+								opacity: slot.index < freezesRemaining ? 1 : 0.25,
+							}}
+						>
+							❄️
+						</Text>
+					))}
+				</Group>
 			</Stack>
 		</motion.div>
 	);
