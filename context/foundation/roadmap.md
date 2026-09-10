@@ -277,3 +277,4 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **T-02: (testing) scheduler fires correctly at configured times, overlay→completion→dashboard path works end-to-end** — Archived 2026-09-06 → `context/archive/2026-09-02-testing-scheduler-overlay/`. Lesson: —.
 - **S-08: window position and size remembered across app restarts via Tauri Window State plugin** — Archived 2026-09-09 → `context/archive/2026-09-09-window-state-restore/`. Lesson: —.
 - **S-07: app launches at system startup, lives in menu bar tray, user can toggle autostart in settings** — Archived 2026-09-09 → `context/archive/2026-09-09-autostart-and-tray/`. Lesson: —.
+- **S-04: freeze streak for up to 2 days to protect series from missed days** — Archived 2026-09-10 → `context/archive/2026-09-09-streak-freeze/`. Lesson: —.
