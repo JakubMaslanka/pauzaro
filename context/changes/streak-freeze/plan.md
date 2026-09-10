@@ -414,9 +414,9 @@ Add comprehensive test coverage for freeze logic: unit tests for the refactored 
 
 #### Manual
 
-- [ ] 2.4 Streak preserved after missing 1 scheduled day
-- [ ] 2.5 First 2 missed days frozen, 3rd breaks streak
-- [ ] 2.6 get_all_habit_statuses response includes freeze fields
+- [x] 2.4 Streak preserved after missing 1 scheduled day — 119da28
+- [x] 2.5 First 2 missed days frozen, 3rd breaks streak — 119da28
+- [x] 2.6 get_all_habit_statuses response includes freeze fields — 119da28
 
 ### Phase 3: Frontend
 
@@ -428,10 +428,10 @@ Add comprehensive test coverage for freeze logic: unit tests for the refactored 
 
 #### Manual
 
-- [ ] 3.4 Calendar shows snowflake cells for frozen days
-- [ ] 3.5 StreakHero shows freeze indicators
-- [ ] 3.6 Frozen day tooltip shows freeze message
-- [ ] 3.7 MonthStats shows frozen days card when applicable
+- [x] 3.4 Calendar shows snowflake cells for frozen days — 0d3e705
+- [x] 3.5 StreakHero shows freeze indicators — 0d3e705
+- [x] 3.6 Frozen day tooltip shows freeze message — 0d3e705
+- [x] 3.7 MonthStats shows frozen days card when applicable — 0d3e705
 
 ### Phase 4: Tests
 
@@ -442,4 +442,4 @@ Add comprehensive test coverage for freeze logic: unit tests for the refactored 
 
 #### Manual
 
-- [ ] 4.3 Review test coverage for edge cases from roadmap risk note
+- [x] 4.3 Review test coverage for edge cases from roadmap risk note — c61fd34
