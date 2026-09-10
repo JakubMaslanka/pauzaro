@@ -1,3 +1,4 @@
+pub mod debug;
 pub mod habits;
 pub mod overlay;
 pub mod recovery;

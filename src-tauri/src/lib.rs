@@ -244,6 +244,13 @@ pub fn run() {
             commands::recovery::recover_habit_dismiss,
             commands::settings::get_settings,
             commands::settings::set_autostart,
+            commands::debug::debug_get_day_state,
+            commands::debug::debug_insert_freeze,
+            commands::debug::debug_remove_freeze,
+            commands::debug::debug_clear_all_freezes,
+            commands::debug::debug_insert_completion,
+            commands::debug::debug_delete_completions_for_date,
+            commands::debug::debug_backdate_last_seen,
         ])
         .build(tauri::generate_context!())
         .expect("error while building tauri application")

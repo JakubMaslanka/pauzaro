@@ -137,3 +137,77 @@ export async function getSettings(): Promise<Settings> {
 export async function setAutostart(enabled: boolean): Promise<Settings> {
 	return invoke<Settings>("set_autostart", { enabled });
 }
+
+// --- Debug commands (dev-only) ---
+
+export interface DebugDayState {
+	habit_id: string;
+	date: string;
+	completions: { scheduled_time: string; status: string }[];
+	is_frozen: boolean;
+	freezes_total: number;
+	last_seen_at: string;
+}
+
+export async function debugGetDayState(
+	habitId: string,
+	date: string,
+): Promise<DebugDayState> {
+	return invoke<DebugDayState>("debug_get_day_state", {
+		habit_id: habitId,
+		date,
+	});
+}
+
+export async function debugInsertFreeze(
+	habitId: string,
+	date: string,
+): Promise<string> {
+	return invoke<string>("debug_insert_freeze", {
+		input: { habit_id: habitId, date },
+	});
+}
+
+export async function debugRemoveFreeze(
+	habitId: string,
+	date: string,
+): Promise<number> {
+	return invoke<number>("debug_remove_freeze", {
+		habit_id: habitId,
+		date,
+	});
+}
+
+export async function debugClearAllFreezes(habitId: string): Promise<number> {
+	return invoke<number>("debug_clear_all_freezes", {
+		habit_id: habitId,
+	});
+}
+
+export async function debugInsertCompletion(
+	habitId: string,
+	date: string,
+	scheduledTime: string,
+): Promise<string> {
+	return invoke<string>("debug_insert_completion", {
+		habit_id: habitId,
+		date,
+		scheduled_time: scheduledTime,
+	});
+}
+
+export async function debugDeleteCompletionsForDate(
+	habitId: string,
+	date: string,
+): Promise<number> {
+	return invoke<number>("debug_delete_completions_for_date", {
+		habit_id: habitId,
+		date,
+	});
+}
+
+export async function debugBackdateLastSeen(daysAgo: number): Promise<string> {
+	return invoke<string>("debug_backdate_last_seen", {
+		days_ago: daysAgo,
+	});
+}
