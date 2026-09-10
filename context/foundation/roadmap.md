@@ -39,7 +39,7 @@ A developer in deep focus loses track of time — forgets breaks, movement, and 
 | S-06 | missed-repetition-recovery  | on launch, see missed repetitions while app was closed and recover/dismiss them               | S-02          | US-02, FR-007 (streak integrity)      | done |
 | S-07 | autostart-and-tray            | have app launch at system startup, live in menu bar tray, and toggle autostart in settings   | S-01          | —                                     | done |
 | S-08 | window-state-restore          | have window position and size remembered across app restarts                                 | —             | —                                     | done |
-| S-09 | single-instance-enforcement   | (infra) only one app instance runs at a time, keeping memory footprint minimal               | —             | —                                     | in-progress |
+| S-09 | single-instance-enforcement   | (infra) only one app instance runs at a time, keeping memory footprint minimal               | —             | —                                     | done |
 | T-01 | testing-critical-path-backend | (testing) streak calc and snooze rules proven correct via Rust unit tests                  | S-02          | test-plan §3 Phase 1                  | done |
 | T-02 | testing-scheduler-overlay   | (testing) scheduler fires correctly, overlay→dashboard sync works                            | T-01          | test-plan §3 Phase 2                  | done |
 | T-03 | testing-cross-platform-gates | (testing) cross-platform overlay smoke + test runner wired into CI/pre-commit               | T-02          | test-plan §3 Phase 3                  | backlog |
@@ -209,7 +209,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Scope:**
   - **Backend (Rust):** Add `tauri-plugin-single-instance` dependency. Register plugin with callback that focuses/unminimizes existing main window when duplicate launch detected.
   - **Frontend:** No changes needed — handled entirely in Rust.
-- **Status:** in-progress
+- **Status:** done
 - **Linear:** [JAC-19](https://linear.app/jacobs-agents-playground/issue/JAC-19/s-09-single-instance-enforcement)
 
 ### T-01: Critical-path backend logic tests
@@ -278,3 +278,4 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **S-08: window position and size remembered across app restarts via Tauri Window State plugin** — Archived 2026-09-09 → `context/archive/2026-09-09-window-state-restore/`. Lesson: —.
 - **S-07: app launches at system startup, lives in menu bar tray, user can toggle autostart in settings** — Archived 2026-09-09 → `context/archive/2026-09-09-autostart-and-tray/`. Lesson: —.
 - **S-04: freeze streak for up to 2 days to protect series from missed days** — Archived 2026-09-10 → `context/archive/2026-09-09-streak-freeze/`. Lesson: —.
+- **S-09: (infra) only one app instance runs at a time, keeping memory footprint minimal** — Archived 2026-09-10 → `context/archive/2026-09-09-single-instance-enforcement/`. Lesson: —.
