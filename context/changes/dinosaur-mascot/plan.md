@@ -599,10 +599,10 @@ Add top-level bundle fields:
 
 #### Automated
 
-- [x] 5.1 Type checking passes
-- [x] 5.2 All tests pass
-- [x] 5.3 Lint passes
-- [x] 5.4 Rust check passes
+- [x] 5.1 Type checking passes — 32b2c3c
+- [x] 5.2 All tests pass — 32b2c3c
+- [x] 5.3 Lint passes — 32b2c3c
+- [x] 5.4 Rust check passes — 32b2c3c
 
 #### Manual
 
