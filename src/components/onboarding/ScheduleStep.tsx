@@ -17,9 +17,23 @@ interface HabitDetails {
 interface ScheduleStepProps {
 	habitDetails: HabitDetails;
 	onBack: () => void;
+	animate: boolean;
 }
 
-export function ScheduleStep({ habitDetails, onBack }: ScheduleStepProps) {
+function stagger(index: number, animate: boolean) {
+	if (!animate) return { initial: false, animate: { opacity: 1, y: 0 } };
+	return {
+		initial: { opacity: 0, y: 15 },
+		animate: { opacity: 1, y: 0 },
+		transition: { delay: index * 0.2, duration: 0.3 },
+	};
+}
+
+export function ScheduleStep({
+	habitDetails,
+	onBack,
+	animate,
+}: ScheduleStepProps) {
 	const navigate = useNavigate();
 	const [scheduleDays, setScheduleDays] = useState<number[]>([1, 2, 3, 4, 5]);
 	const [scheduleTimes, setScheduleTimes] = useState<TimeSlot[]>([
@@ -35,12 +49,13 @@ export function ScheduleStep({ habitDetails, onBack }: ScheduleStepProps) {
 	const [endDate, setEndDate] = useState("");
 	const [error, setError] = useState("");
 	const [submitting, setSubmitting] = useState(false);
-	const [bubbleVisible, setBubbleVisible] = useState(false);
+	const [bubbleVisible, setBubbleVisible] = useState(!animate);
 
 	useEffect(() => {
-		const timer = setTimeout(() => setBubbleVisible(true), 300);
+		if (!animate) return;
+		const timer = setTimeout(() => setBubbleVisible(true), 350);
 		return () => clearTimeout(timer);
-	}, []);
+	}, [animate]);
 
 	const hasDuplicates = () => {
 		const seen = new Set<string>();
@@ -53,15 +68,15 @@ export function ScheduleStep({ habitDetails, onBack }: ScheduleStepProps) {
 
 	const handleSubmit = async () => {
 		if (scheduleDays.length === 0) {
-			setError("Pick at least one day! 📅");
+			setError("Pick at least one day!");
 			return;
 		}
 		if (scheduleTimes.length === 0) {
-			setError("Add at least one time slot! ⏰");
+			setError("Add at least one time slot!");
 			return;
 		}
 		if (hasDuplicates()) {
-			setError("Remove duplicate time slots first! 🔁");
+			setError("Remove duplicate time slots first!");
 			return;
 		}
 
@@ -86,7 +101,7 @@ export function ScheduleStep({ habitDetails, onBack }: ScheduleStepProps) {
 		} catch (err) {
 			const message = err instanceof Error ? err.message : String(err);
 			console.error("Failed to create habit:", message);
-			setError("Oops! Something went wrong. Try again? 🙈");
+			setError("Something went wrong. Try again?");
 		} finally {
 			setSubmitting(false);
 		}
@@ -94,7 +109,7 @@ export function ScheduleStep({ habitDetails, onBack }: ScheduleStepProps) {
 
 	return (
 		<motion.div
-			initial={{ opacity: 0, x: 50 }}
+			initial={animate ? { opacity: 0, x: 50 } : false}
 			animate={{ opacity: 1, x: 0 }}
 			exit={{ opacity: 0, x: -50 }}
 			transition={{ duration: 0.3 }}
@@ -108,68 +123,80 @@ export function ScheduleStep({ habitDetails, onBack }: ScheduleStepProps) {
 			}}
 		>
 			<Stack align="center" gap="lg" maw={460} w="100%">
-				<MascotImage reaction="happy" size={80} />
-				<SpeechBubble
-					message="Almost there! Tell me when to nudge you — I promise I'll be on time! 📅"
-					visible={bubbleVisible}
-					direction="top"
-				/>
-				<Title order={2} fw={800} ta="center">
-					When should we remind you?
-				</Title>
+				{/* Mascot + bubble */}
+				<motion.div {...stagger(0, animate)}>
+					<div style={{ position: "relative", display: "inline-block" }}>
+						<SpeechBubble
+							message="Almost there! Tell me when to nudge you, I promise I'll be on time!"
+							visible={bubbleVisible}
+							offsetY={4}
+						/>
+						<MascotImage reaction="happy" size={100} />
+					</div>
+				</motion.div>
 
-				<Stack gap="md" w="100%">
-					<SchedulePicker
-						days={scheduleDays}
-						times={scheduleTimes}
-						onDaysChange={setScheduleDays}
-						onTimesChange={setScheduleTimes}
-					/>
+				{/* Title */}
+				<motion.div {...stagger(2, animate)}>
+					<Title order={2} fw={800} ta="center">
+						When should we remind you?
+					</Title>
+				</motion.div>
 
-					<Group grow>
-						<div>
-							<Text size="sm" fw={700} mb={4}>
-								Start date
-							</Text>
-							<input
-								type="date"
-								value={startDate}
-								onChange={(e) => setStartDate(e.target.value)}
-								style={{
-									width: "100%",
-									padding: "8px 12px",
-									border: "2px solid var(--mantine-color-gray-3)",
-									borderRadius: "var(--mantine-radius-md)",
-									fontSize: 14,
-									fontFamily: "inherit",
-									background: "white",
-								}}
-							/>
-						</div>
-						<div>
-							<Text size="sm" fw={700} mb={4}>
-								End date{" "}
-								<Text span size="xs" c="dimmed">
-									(optional)
+				{/* Form */}
+				<motion.div {...stagger(3, animate)} style={{ width: "100%" }}>
+					<Stack gap="md" w="100%">
+						<SchedulePicker
+							days={scheduleDays}
+							times={scheduleTimes}
+							onDaysChange={setScheduleDays}
+							onTimesChange={setScheduleTimes}
+						/>
+
+						<Group grow>
+							<div>
+								<Text size="sm" fw={700} mb={4}>
+									Start date
 								</Text>
-							</Text>
-							<input
-								type="date"
-								value={endDate}
-								onChange={(e) => setEndDate(e.target.value)}
-								style={{
-									width: "100%",
-									padding: "8px 12px",
-									border: "2px solid var(--mantine-color-gray-3)",
-									borderRadius: "var(--mantine-radius-md)",
-									fontSize: 14,
-									fontFamily: "inherit",
-									background: "white",
-								}}
-							/>
-						</div>
-					</Group>
-				</Stack>
+								<input
+									type="date"
+									value={startDate}
+									onChange={(e) => setStartDate(e.target.value)}
+									style={{
+										width: "100%",
+										padding: "8px 12px",
+										border: "2px solid var(--mantine-color-gray-3)",
+										borderRadius: "var(--mantine-radius-md)",
+										fontSize: 14,
+										fontFamily: "inherit",
+										background: "white",
+									}}
+								/>
+							</div>
+							<div>
+								<Text size="sm" fw={700} mb={4}>
+									End date{" "}
+									<Text span size="xs" c="dimmed">
+										(optional)
+									</Text>
+								</Text>
+								<input
+									type="date"
+									value={endDate}
+									onChange={(e) => setEndDate(e.target.value)}
+									style={{
+										width: "100%",
+										padding: "8px 12px",
+										border: "2px solid var(--mantine-color-gray-3)",
+										borderRadius: "var(--mantine-radius-md)",
+										fontSize: 14,
+										fontFamily: "inherit",
+										background: "white",
+									}}
+								/>
+							</div>
+						</Group>
+					</Stack>
+				</motion.div>
 
 				{error && (
 					<Text size="sm" c="red" ta="center">
@@ -177,20 +204,23 @@ export function ScheduleStep({ habitDetails, onBack }: ScheduleStepProps) {
 					</Text>
 				)}
 
-				<Group mt="sm">
-					<Button variant="subtle" color="gray" radius="xl" onClick={onBack}>
-						← Back
-					</Button>
-					<Button
-						color="teal"
-						radius="xl"
-						size="md"
-						onClick={handleSubmit}
-						loading={submitting}
-					>
-						Create habit! 🎉
-					</Button>
-				</Group>
+				{/* Buttons */}
+				<motion.div {...stagger(4, animate)}>
+					<Group mt="sm">
+						<Button variant="subtle" color="gray" radius="xl" onClick={onBack}>
+							← Back
+						</Button>
+						<Button
+							color="teal"
+							radius="xl"
+							size="md"
+							onClick={handleSubmit}
+							loading={submitting}
+						>
+							Create habit! 🎉
+						</Button>
+					</Group>
+				</motion.div>
 			</Stack>
 		</motion.div>
 	);

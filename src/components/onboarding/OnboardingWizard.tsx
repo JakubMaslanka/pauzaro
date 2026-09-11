@@ -16,7 +16,8 @@ interface HabitDetails {
 }
 
 export function OnboardingWizard() {
-	const { step, nextStep, prevStep } = useOnboardingStore();
+	const { step, nextStep, prevStep, visitedSteps, markVisited } =
+		useOnboardingStore();
 	const [habitDetails, setHabitDetails] = useState<HabitDetails>({
 		name: "",
 		description: "",
@@ -24,6 +25,12 @@ export function OnboardingWizard() {
 	});
 
 	const progress = ((step + 1) / TOTAL_STEPS) * 100;
+	const shouldAnimate = !visitedSteps.has(step);
+
+	const handleNext = () => {
+		markVisited(step);
+		nextStep();
+	};
 
 	return (
 		<div
@@ -46,17 +53,29 @@ export function OnboardingWizard() {
 
 			<div style={{ flex: 1, overflow: "hidden" }}>
 				<AnimatePresence mode="wait">
-					{step === 0 && <WelcomeStep key="welcome" onNext={nextStep} />}
+					{step === 0 && (
+						<WelcomeStep
+							key="welcome"
+							onNext={handleNext}
+							animate={shouldAnimate}
+						/>
+					)}
 					{step === 1 && (
-						<NameStep key="name" onNext={nextStep} onBack={prevStep} />
+						<NameStep
+							key="name"
+							onNext={handleNext}
+							onBack={prevStep}
+							animate={shouldAnimate}
+						/>
 					)}
 					{step === 2 && (
 						<HabitDetailsStep
 							key="habit-details"
 							value={habitDetails}
 							onChange={setHabitDetails}
-							onNext={nextStep}
+							onNext={handleNext}
 							onBack={prevStep}
+							animate={shouldAnimate}
 						/>
 					)}
 					{step === 3 && (
@@ -64,6 +83,7 @@ export function OnboardingWizard() {
 							key="schedule"
 							habitDetails={habitDetails}
 							onBack={prevStep}
+							animate={shouldAnimate}
 						/>
 					)}
 				</AnimatePresence>

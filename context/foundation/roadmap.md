@@ -3,7 +3,7 @@ project: "Pauzaro"
 version: 1
 status: draft
 created: 2026-08-25
-updated: 2026-09-10
+updated: 2026-09-11
 
 prd_version: 1
 main_goal: learn
@@ -35,7 +35,7 @@ A developer in deep focus loses track of time — forgets breaks, movement, and 
 | S-02 | overlay-habit-loop          | receive overlay at scheduled time, mark habit done or snooze, and see streak update         | S-01          | US-02, FR-006, FR-007                 | done |
 | S-03 | dashboard-month-view        | view full month calendar with per-day completion status and streak history                   | S-02          | US-02, FR-008                         | done |
 | S-04 | streak-freeze               | freeze streak for up to 2 days to protect series from missed days                           | S-02          | FR-012                                | done |
-| S-05 | dinosaur-mascot             | see dinosaur mascot reacting to current streak status (happy/neutral/sad)                    | S-02          | FR-009                                | proposed |
+| S-05 | dinosaur-mascot             | see dinosaur mascot reacting to current streak status (happy/neutral/sad)                    | S-02          | FR-009                                | done        |
 | S-06 | missed-repetition-recovery  | on launch, see missed repetitions while app was closed and recover/dismiss them               | S-02          | US-02, FR-007 (streak integrity)      | done |
 | S-07 | autostart-and-tray            | have app launch at system startup, live in menu bar tray, and toggle autostart in settings   | S-01          | —                                     | done |
 | S-08 | window-state-restore          | have window position and size remembered across app restarts                                 | —             | —                                     | done |
@@ -143,7 +143,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** Needs static dinosaur assets (2-3 states). If no suitable assets are available, creating them is a design task outside code. PRD accepts relaxed visual polish for MVP — simple SVGs or placeholder images suffice.
-- **Status:** proposed
+- **Status:** done
 
 ### S-06: Missed-repetition recovery on launch
 

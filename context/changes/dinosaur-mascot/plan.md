@@ -558,10 +558,10 @@ Add top-level bundle fields:
 
 #### Manual
 
-- [ ] 2.4 Side nav shows correct mascot reaction for current streak
-- [ ] 2.5 Mascot changes when switching habits
-- [ ] 2.6 Freeze image shows when freeze active
-- [ ] 2.7 Image renders crisp at 32px, no layout shift
+- [x] 2.4 Side nav shows correct mascot reaction for current streak
+- [x] 2.5 Mascot changes when switching habits
+- [x] 2.6 Freeze image shows when freeze active
+- [x] 2.7 Image renders crisp at 32px, no layout shift
 
 ### Phase 3: StreakHero Redesign
 
@@ -573,11 +573,11 @@ Add top-level bundle fields:
 
 #### Manual
 
-- [ ] 3.4 Mascot image shows correct reaction for streak tier
-- [ ] 3.5 Speech bubble animates in on dashboard load
-- [ ] 3.6 Speech bubble re-triggers on habit switch
-- [ ] 3.7 Streak number and "day streak" label visible
-- [ ] 3.8 Layout works at minimum window size
+- [x] 3.4 Mascot image shows correct reaction for streak tier
+- [x] 3.5 Speech bubble animates in on dashboard load
+- [x] 3.6 Speech bubble re-triggers on habit switch
+- [x] 3.7 Streak number and "day streak" label visible
+- [x] 3.8 Layout works at minimum window size
 
 ### Phase 4: Onboarding Redesign
 
@@ -589,11 +589,11 @@ Add top-level bundle fields:
 
 #### Manual
 
-- [ ] 4.4 Each step shows mascot image (not emoji)
-- [ ] 4.5 Speech bubbles animate on step transitions
-- [ ] 4.6 Copy reads naturally as Pauzaro speaking
-- [ ] 4.7 Full onboarding flow completes (creates profile + habit)
-- [ ] 4.8 Layout works at minimum window size
+- [x] 4.4 Each step shows mascot image (not emoji)
+- [x] 4.5 Speech bubbles animate on step transitions
+- [x] 4.6 Copy reads naturally as Pauzaro speaking
+- [x] 4.7 Full onboarding flow completes (creates profile + habit)
+- [x] 4.8 Layout works at minimum window size
 
 ### Phase 5: First-Release Polish
 
@@ -606,13 +606,13 @@ Add top-level bundle fields:
 
 #### Manual
 
-- [ ] 5.5 Window title shows "Pauzaro" (capitalized)
-- [ ] 5.6 macOS menu bar functional (About, Edit shortcuts, Window)
-- [ ] 5.7 Cmd+C/V/X/Z/A work in text inputs
-- [ ] 5.8 Cmd+Q quits, Cmd+W closes, Cmd+H hides
-- [ ] 5.9 About dialog shows icon, name, version, copyright
-- [ ] 5.10 Error boundary shows friendly fallback on crash
-- [ ] 5.11 Favicon shows Pauzaro icon
-- [ ] 5.12 Settings shows version at bottom
-- [ ] 5.13 ActionIcons announce labels via VoiceOver
-- [ ] 5.14 App stays in light mode when macOS is dark
+- [x] 5.5 Window title shows "Pauzaro" (capitalized)
+- [x] 5.6 macOS menu bar functional (About, Edit shortcuts, Window)
+- [x] 5.7 Cmd+C/V/X/Z/A work in text inputs
+- [x] 5.8 Cmd+Q quits, Cmd+W closes, Cmd+H hides
+- [x] 5.9 About dialog shows icon, name, version, copyright
+- [x] 5.10 Error boundary shows friendly fallback on crash
+- [x] 5.11 Favicon shows Pauzaro icon
+- [x] 5.12 Settings shows version at bottom
+- [x] 5.13 ActionIcons announce labels via VoiceOver
+- [x] 5.14 App stays in light mode when macOS is dark

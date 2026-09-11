@@ -56,26 +56,28 @@ export function StreakHero({
 			transition={{ type: "spring", stiffness: 260, damping: 20 }}
 		>
 			<Stack align="center" gap={4} py="md">
-				<motion.div
-					initial={{ scale: 0 }}
-					animate={{ scale: 1 }}
-					transition={{
-						type: "spring",
-						stiffness: 300,
-						damping: 15,
-						delay: 0.15,
-					}}
-				>
-					<MascotImage
-						reaction={getMascotReaction({ streak, isFrozen })}
-						size={72}
+				<div style={{ position: "relative", display: "inline-block" }}>
+					<SpeechBubble
+						message={getStreakMessage(streak)}
+						visible={bubbleVisible}
+						offsetY={4}
 					/>
-				</motion.div>
-				<SpeechBubble
-					message={getStreakMessage(streak)}
-					visible={bubbleVisible}
-					direction="top"
-				/>
+					<motion.div
+						initial={{ scale: 0 }}
+						animate={{ scale: 1 }}
+						transition={{
+							type: "spring",
+							stiffness: 300,
+							damping: 15,
+							delay: 0.15,
+						}}
+					>
+						<MascotImage
+							reaction={getMascotReaction({ streak, isFrozen })}
+							size={72}
+						/>
+					</motion.div>
+				</div>
 				<Title order={1} fz={56} lh={1} ta="center">
 					{streak}
 				</Title>

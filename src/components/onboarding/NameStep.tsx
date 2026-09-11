@@ -9,22 +9,24 @@ import { SpeechBubble } from "../shared/SpeechBubble";
 interface NameStepProps {
 	onNext: () => void;
 	onBack: () => void;
+	animate: boolean;
 }
 
-export function NameStep({ onNext, onBack }: NameStepProps) {
+export function NameStep({ onNext, onBack, animate }: NameStepProps) {
 	const { name, setName } = useOnboardingStore();
 	const [error, setError] = useState("");
 	const [submitting, setSubmitting] = useState(false);
-	const [bubbleVisible, setBubbleVisible] = useState(false);
+	const [bubbleVisible, setBubbleVisible] = useState(!animate);
 
 	useEffect(() => {
+		if (!animate) return;
 		const timer = setTimeout(() => setBubbleVisible(true), 300);
 		return () => clearTimeout(timer);
-	}, []);
+	}, [animate]);
 
 	const handleSubmit = async () => {
 		if (!name.trim()) {
-			setError("Don't be shy, tell us your name! 😊");
+			setError("Don't be shy, tell us your name!");
 			return;
 		}
 
@@ -43,7 +45,7 @@ export function NameStep({ onNext, onBack }: NameStepProps) {
 		} catch (err) {
 			const message = err instanceof Error ? err.message : String(err);
 			console.error("Failed to create profile:", message);
-			setError("Oops! Something went wrong. Try again? 🙈");
+			setError("Something went wrong. Try again?");
 		} finally {
 			setSubmitting(false);
 		}
@@ -51,7 +53,7 @@ export function NameStep({ onNext, onBack }: NameStepProps) {
 
 	return (
 		<motion.div
-			initial={{ opacity: 0, x: 50 }}
+			initial={animate ? { opacity: 0, x: 50 } : false}
 			animate={{ opacity: 1, x: 0 }}
 			exit={{ opacity: 0, x: -50 }}
 			transition={{ duration: 0.3 }}
@@ -65,14 +67,19 @@ export function NameStep({ onNext, onBack }: NameStepProps) {
 			}}
 		>
 			<Stack align="center" gap="lg" maw={360} w="100%">
-				<MascotImage reaction="happy" size={80} />
-				<SpeechBubble
-					message="What's your name? I want to know who I'm cheering for!"
-					visible={bubbleVisible}
-					direction="top"
-				/>
+				<div style={{ position: "relative", display: "inline-block" }}>
+					<SpeechBubble
+						message={`What's your name?\nI want to know who I'm cheering for!`}
+						visible={bubbleVisible}
+						offsetY={-5}
+						offsetX={-100}
+						width={270}
+					/>
+					<MascotImage reaction="happy" size={140} />
+				</div>
+
 				<Title order={2} fw={800} ta="center">
-					What should we call you?
+					What should I call you?
 				</Title>
 
 				<TextInput

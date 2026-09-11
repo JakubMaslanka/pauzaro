@@ -29,7 +29,7 @@ describe("OnboardingWizard", () => {
 		fireEvent.click(screen.getByText("Let's go! 🚀"));
 
 		await waitFor(() => {
-			expect(screen.getByText("What should we call you?")).toBeInTheDocument();
+			expect(screen.getByText("What should I call you?")).toBeInTheDocument();
 		});
 	});
 
@@ -38,14 +38,14 @@ describe("OnboardingWizard", () => {
 		fireEvent.click(screen.getByText("Let's go! 🚀"));
 
 		await waitFor(() => {
-			expect(screen.getByText("What should we call you?")).toBeInTheDocument();
+			expect(screen.getByText("What should I call you?")).toBeInTheDocument();
 		});
 
 		fireEvent.click(screen.getByText("Continue ✨"));
 
 		await waitFor(() => {
 			expect(
-				screen.getByText("Don't be shy, tell us your name! 😊"),
+				screen.getByText("Don't be shy, tell us your name!"),
 			).toBeInTheDocument();
 		});
 	});
@@ -55,7 +55,7 @@ describe("OnboardingWizard", () => {
 		fireEvent.click(screen.getByText("Let's go! 🚀"));
 
 		await waitFor(() => {
-			expect(screen.getByText("What should we call you?")).toBeInTheDocument();
+			expect(screen.getByText("What should I call you?")).toBeInTheDocument();
 		});
 
 		fireEvent.click(screen.getByText("← Back"));

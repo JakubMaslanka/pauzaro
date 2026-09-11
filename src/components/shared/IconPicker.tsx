@@ -63,34 +63,28 @@ export function IconPicker({ value, onChange }: IconPickerProps) {
 			radius="lg"
 		>
 			<Popover.Target>
-				<UnstyledButton
-					onClick={() => setOpened((o) => !o)}
-					style={{
-						display: "flex",
-						alignItems: "center",
-						gap: 10,
-						padding: "8px 14px",
-						border: "2px solid var(--mantine-color-default-border)",
-						borderRadius: "var(--mantine-radius-lg)",
-						background: "white",
-					}}
-				>
-					<DynamicIcon
-						name={value.name}
-						color={value.color}
-						strokeWidth={value.strokeWidth}
-						size={22}
-					/>
-					<Text size="sm" fw={600}>
-						{value.name}
-					</Text>
-				</UnstyledButton>
+				<Tooltip label="Pick an icon" withArrow>
+					<ActionIcon
+						variant="light"
+						color="gray"
+						size={42}
+						radius="lg"
+						onClick={() => setOpened((o) => !o)}
+					>
+						<DynamicIcon
+							name={value.name}
+							color={value.color}
+							strokeWidth={value.strokeWidth}
+							size={22}
+						/>
+					</ActionIcon>
+				</Tooltip>
 			</Popover.Target>
 
 			<Popover.Dropdown p="sm">
 				<Stack gap="sm">
 					<TextInput
-						placeholder="Search icons... 🔍"
+						placeholder="Search icons..."
 						value={search}
 						onChange={(e) => setSearch(e.currentTarget.value)}
 						size="sm"

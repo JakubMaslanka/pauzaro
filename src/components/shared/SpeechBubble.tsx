@@ -4,49 +4,20 @@ import { AnimatePresence, motion } from "framer-motion";
 interface SpeechBubbleProps {
 	message: string;
 	visible: boolean;
-	direction?: "left" | "right" | "top";
+	/** Horizontal offset from center (px). Positive = right. */
+	offsetX?: number;
+	/** Vertical offset from anchor (px). Negative = higher above. */
+	offsetY?: number;
+	/** Width of the bubble (px). Default is auto. */
+	width?: number | string;
 }
-
-const TAIL_STYLES: Record<string, React.CSSProperties> = {
-	top: {
-		position: "absolute",
-		bottom: -8,
-		left: "50%",
-		transform: "translateX(-50%)",
-		width: 0,
-		height: 0,
-		borderLeft: "8px solid transparent",
-		borderRight: "8px solid transparent",
-		borderTop: "8px solid #F7F5F0",
-	},
-	left: {
-		position: "absolute",
-		top: "50%",
-		right: -8,
-		transform: "translateY(-50%)",
-		width: 0,
-		height: 0,
-		borderTop: "8px solid transparent",
-		borderBottom: "8px solid transparent",
-		borderLeft: "8px solid #F7F5F0",
-	},
-	right: {
-		position: "absolute",
-		top: "50%",
-		left: -8,
-		transform: "translateY(-50%)",
-		width: 0,
-		height: 0,
-		borderTop: "8px solid transparent",
-		borderBottom: "8px solid transparent",
-		borderRight: "8px solid #F7F5F0",
-	},
-};
 
 export function SpeechBubble({
 	message,
 	visible,
-	direction = "top",
+	offsetX = 0,
+	offsetY = 0,
+	width = "auto",
 }: SpeechBubbleProps) {
 	return (
 		<AnimatePresence>
@@ -61,24 +32,44 @@ export function SpeechBubble({
 						damping: 12,
 					}}
 					style={{
-						position: "relative",
-						display: "inline-block",
+						position: "absolute",
+						bottom: `calc(100% + ${offsetY}px)`,
+						left: `calc(50% + ${offsetX}px)`,
+						transform: "translateX(-50%)",
+						zIndex: 10,
+						whiteSpace: "nowrap",
+						width: width ? `${width}px` : "auto",
 					}}
 				>
 					<div
 						style={{
-							background: "#F7F5F0",
+							background: "#FFFFFF",
 							borderRadius: 16,
 							padding: "10px 16px",
 							boxShadow:
 								"0 2px 8px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04)",
+							whiteSpace: "pre-line",
+							maxWidth: 280,
 						}}
 					>
 						<Text size="sm" fw={600} ta="center" lh={1.4}>
 							{message}
 						</Text>
 					</div>
-					<div style={TAIL_STYLES[direction]} />
+					{/* Tail pointing down toward mascot */}
+					<div
+						style={{
+							position: "absolute",
+							bottom: -8,
+							left: "50%",
+							transform: "translateX(-50%)",
+							width: 0,
+							height: 0,
+							borderLeft: "8px solid transparent",
+							borderRight: "8px solid transparent",
+							borderTop: "8px solid #FFFFFF",
+						}}
+					/>
 				</motion.div>
 			)}
 		</AnimatePresence>

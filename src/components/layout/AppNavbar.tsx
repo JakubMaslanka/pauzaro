@@ -6,16 +6,12 @@ import {
 	Tooltip,
 } from "@mantine/core";
 import { Bug, Plus, Settings } from "lucide-react";
-import { getMascotReaction } from "../../lib/mascot";
 import type { Habit } from "../../types";
 import { DynamicIcon } from "../shared/DynamicIcon";
-import { MascotImage } from "../shared/MascotImage";
 
 interface AppNavbarProps {
 	habits: Habit[];
 	activeHabitId: string | null;
-	streak: number;
-	isFrozen: boolean;
 	onSelectHabit: (id: string) => void;
 	onCreateHabit: () => void;
 	onOpenSettings: () => void;
@@ -25,8 +21,6 @@ interface AppNavbarProps {
 export function AppNavbar({
 	habits,
 	activeHabitId,
-	streak,
-	isFrozen,
 	onSelectHabit,
 	onCreateHabit,
 	onOpenSettings,
@@ -36,29 +30,6 @@ export function AppNavbar({
 
 	return (
 		<>
-			<AppShell.Section
-				style={{
-					display: "flex",
-					justifyContent: "center",
-					paddingTop: 16,
-					paddingBottom: 24,
-					borderBottom: "1px solid var(--mantine-color-gray-2)",
-				}}
-			>
-				<ActionIcon
-					variant="transparent"
-					size={40}
-					radius="md"
-					style={{ cursor: "default" }}
-					aria-label="Pauzaro mascot"
-				>
-					<MascotImage
-						reaction={getMascotReaction({ streak, isFrozen })}
-						size={32}
-					/>
-				</ActionIcon>
-			</AppShell.Section>
-
 			<AppShell.Section grow component={ScrollArea} scrollbarSize={4}>
 				<Stack align="center" gap={4} py={4}>
 					{habits.map((habit) => {

@@ -71,9 +71,9 @@ function AppShellLayout() {
 	const location = useLocation();
 	const habits = useDashboardStore((s) => s.habits);
 	const activeHabitId = useDashboardStore((s) => s.activeHabitId);
-	const mascotStreak = useDashboardStore((s) => s.mascotStreak);
-	const mascotFrozen = useDashboardStore((s) => s.mascotFrozen);
 	const setHabits = useDashboardStore((s) => s.setHabits);
+
+	const isOnboarding = location.pathname === "/onboarding";
 
 	// Only show active habit highlight on dashboard route
 	const isDashboard = location.pathname === "/dashboard";
@@ -123,7 +123,7 @@ function AppShellLayout() {
 
 	return (
 		<AppShell
-			navbar={{ width: 64, breakpoint: 0 }}
+			navbar={isOnboarding ? undefined : { width: 64, breakpoint: 0 }}
 			padding={0}
 			styles={{
 				main: {
@@ -133,23 +133,23 @@ function AppShellLayout() {
 				},
 			}}
 		>
-			<AppShell.Navbar
-				style={{
-					backgroundColor: "white",
-					borderRight: "1px solid var(--mantine-color-gray-2)",
-				}}
-			>
-				<AppNavbar
-					habits={habits}
-					activeHabitId={visibleActiveId}
-					streak={mascotStreak}
-					isFrozen={mascotFrozen}
-					onSelectHabit={handleSelectHabit}
-					onCreateHabit={handleCreateHabit}
-					onOpenSettings={handleOpenSettings}
-					onOpenDebug={handleOpenDebug}
-				/>
-			</AppShell.Navbar>
+			{!isOnboarding && (
+				<AppShell.Navbar
+					style={{
+						backgroundColor: "white",
+						borderRight: "1px solid var(--mantine-color-gray-2)",
+					}}
+				>
+					<AppNavbar
+						habits={habits}
+						activeHabitId={visibleActiveId}
+						onSelectHabit={handleSelectHabit}
+						onCreateHabit={handleCreateHabit}
+						onOpenSettings={handleOpenSettings}
+						onOpenDebug={handleOpenDebug}
+					/>
+				</AppShell.Navbar>
+			)}
 			<AppShell.Main>
 				<Outlet />
 			</AppShell.Main>
