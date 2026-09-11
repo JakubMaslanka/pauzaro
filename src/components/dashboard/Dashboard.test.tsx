@@ -98,8 +98,10 @@ describe("Dashboard", () => {
 		});
 		// Greeting with user name
 		expect(screen.getByText(/Jacob/)).toBeInTheDocument();
-		// Streak hero message
-		expect(screen.getByText("Building momentum!")).toBeInTheDocument();
+		// Streak hero message (speech bubble has animation delay)
+		await waitFor(() => {
+			expect(screen.getByText("Building momentum!")).toBeInTheDocument();
+		});
 		// Streak number appears
 		expect(screen.getAllByText("5").length).toBeGreaterThanOrEqual(1);
 		// MonthStats cards

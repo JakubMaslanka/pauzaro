@@ -552,9 +552,9 @@ Add top-level bundle fields:
 
 #### Automated
 
-- [x] 2.1 Type checking passes
-- [x] 2.2 Existing tests pass
-- [x] 2.3 Lint passes
+- [x] 2.1 Type checking passes — a061c3f
+- [x] 2.2 Existing tests pass — a061c3f
+- [x] 2.3 Lint passes — a061c3f
 
 #### Manual
 
@@ -567,9 +567,9 @@ Add top-level bundle fields:
 
 #### Automated
 
-- [ ] 3.1 Type checking passes
-- [ ] 3.2 Existing tests pass
-- [ ] 3.3 Lint passes
+- [x] 3.1 Type checking passes
+- [x] 3.2 Existing tests pass
+- [x] 3.3 Lint passes
 
 #### Manual
 

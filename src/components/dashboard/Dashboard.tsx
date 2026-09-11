@@ -380,7 +380,13 @@ export function Dashboard() {
 				{/* Right column: streak hero + stats */}
 				<Grid.Col span={{ base: 12, sm: 4 }}>
 					<Stack gap="md" className="dashboard-right-col">
-						<StreakHero streak={streak} freezesRemaining={freezesRemaining} />
+						<StreakHero
+							streak={streak}
+							freezesRemaining={freezesRemaining}
+							isFrozen={frozenDates.includes(
+								new Date().toISOString().slice(0, 10),
+							)}
+						/>
 						<MonthStats
 							daysPracticed={daysPracticed}
 							totalScheduledDays={totalScheduledDays}

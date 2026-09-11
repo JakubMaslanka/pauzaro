@@ -1,6 +1,9 @@
 import { Group, Stack, Text, Title } from "@mantine/core";
 import { motion } from "framer-motion";
-import { Flame } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { getMascotReaction } from "../../lib/mascot";
+import { MascotImage } from "../shared/MascotImage";
+import { SpeechBubble } from "../shared/SpeechBubble";
 
 const FREEZE_SLOTS = [
 	{ key: "freeze-a", index: 0 },
@@ -10,6 +13,7 @@ const FREEZE_SLOTS = [
 interface StreakHeroProps {
 	streak: number;
 	freezesRemaining: number;
+	isFrozen: boolean;
 }
 
 function getStreakMessage(streak: number): string {
@@ -21,7 +25,30 @@ function getStreakMessage(streak: number): string {
 	return "Time to start!";
 }
 
-export function StreakHero({ streak, freezesRemaining }: StreakHeroProps) {
+export function StreakHero({
+	streak,
+	freezesRemaining,
+	isFrozen,
+}: StreakHeroProps) {
+	const [bubbleVisible, setBubbleVisible] = useState(false);
+	const prevStreakRef = useRef(streak);
+
+	// Show bubble on mount with delay
+	useEffect(() => {
+		const timer = setTimeout(() => setBubbleVisible(true), 300);
+		return () => clearTimeout(timer);
+	}, []);
+
+	// Re-trigger bubble when streak changes (habit switch)
+	useEffect(() => {
+		if (prevStreakRef.current !== streak) {
+			prevStreakRef.current = streak;
+			setBubbleVisible(false);
+			const timer = setTimeout(() => setBubbleVisible(true), 150);
+			return () => clearTimeout(timer);
+		}
+	}, [streak]);
+
 	return (
 		<motion.div
 			initial={{ opacity: 0, scale: 0.9 }}
@@ -39,18 +66,21 @@ export function StreakHero({ streak, freezesRemaining }: StreakHeroProps) {
 						delay: 0.15,
 					}}
 				>
-					<Flame
-						size={48}
-						color={streak > 0 ? "#E28743" : "#c4b090"}
-						fill={streak > 0 ? "#E28743" : "none"}
-						strokeWidth={1.5}
+					<MascotImage
+						reaction={getMascotReaction({ streak, isFrozen })}
+						size={72}
 					/>
 				</motion.div>
+				<SpeechBubble
+					message={getStreakMessage(streak)}
+					visible={bubbleVisible}
+					direction="top"
+				/>
 				<Title order={1} fz={56} lh={1} ta="center">
 					{streak}
 				</Title>
-				<Text size="lg" fw={600} c="dimmed" ta="center">
-					{getStreakMessage(streak)}
+				<Text size="sm" fw={600} c="dimmed" ta="center">
+					day streak
 				</Text>
 				<Group gap={4} justify="center">
 					{FREEZE_SLOTS.map((slot) => (
