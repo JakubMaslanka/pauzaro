@@ -3,7 +3,7 @@ project: "Pauzaro"
 version: 1
 status: draft
 created: 2026-08-25
-updated: 2026-09-11
+updated: 2026-09-12
 
 prd_version: 1
 main_goal: learn
@@ -42,6 +42,11 @@ A developer in deep focus loses track of time — forgets breaks, movement, and 
 | S-09 | single-instance-enforcement   | (infra) only one app instance runs at a time, keeping memory footprint minimal               | —             | —                                     | done |
 | T-01 | testing-critical-path-backend | (testing) streak calc and snooze rules proven correct via Rust unit tests                  | S-02          | test-plan §3 Phase 1                  | done |
 | T-02 | testing-scheduler-overlay   | (testing) scheduler fires correctly, overlay→dashboard sync works                            | T-01          | test-plan §3 Phase 2                  | done |
+| S-10 | schedule-alert-limit          | see at most 10 time slots per day with info tooltip explaining the cap                      | S-01          | —                                     | backlog |
+| S-11 | calendar-week-start-setting   | choose Sunday or Monday as first day of week, auto-detected from locale                     | S-03          | —                                     | backlog |
+| S-12 | overlay-window-polish         | see a full-bleed overlay panel (no rounded corners, no scroll, edge-to-edge)                | S-02          | —                                     | backlog |
+| S-13 | settings-version-footer       | always see app version pinned to the bottom of the settings view                            | S-07          | —                                     | backlog |
+| S-14 | creation-view-simplify        | create a habit without seeing start/end date fields unless expanding "Advanced options"      | S-01          | —                                     | backlog |
 | T-03 | testing-cross-platform-gates | (testing) cross-platform overlay smoke + test runner wired into CI/pre-commit               | T-02          | test-plan §3 Phase 3                  | backlog |
 
 ## Streams
@@ -53,6 +58,7 @@ Navigation aid — groups items that share a Prerequisites chain. Canonical orde
 | A      | Core loop           | `F-01` → `S-01` → `S-02` → `S-03` / `S-06` | Main learning path — Tauri overlay, Rust scheduling, SQLite. S-06 branches from S-02 (missed-rep recovery on launch). |
 | B      | Gamification extras | `S-04` / `S-05`                    | Both join Stream A at `S-02`. Parallel with `S-03` and each other. |
 | C      | Test coverage       | `T-01` → `T-02` → `T-03`          | Sequential rollout from `context/foundation/test-plan.md`. T-01 depends on S-02 (tests existing backend logic). Linear: JAC-13 → JAC-14 → JAC-15. |
+| D      | Pre-release polish  | `S-10` / `S-11` / `S-12` / `S-13` / `S-14` | UX refinements before first public release. All independent of each other; each depends only on its parent slice being done (all parents are done). |
 
 ## Baseline
 
@@ -212,6 +218,86 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Status:** done
 - **Linear:** [JAC-19](https://linear.app/jacobs-agents-playground/issue/JAC-19/s-09-single-instance-enforcement)
 
+### S-10: Schedule alert limit
+
+- **Outcome:** user can add at most 10 time slots per day in the schedule picker; an info icon (question mark) next to the "What time?" section header shows a tooltip on hover explaining the cap
+- **Change ID:** schedule-alert-limit
+- **PRD refs:** —
+- **Prerequisites:** S-01
+- **Parallel with:** S-11, S-12, S-13, S-14
+- **Blockers:** —
+- **Unknowns:** —
+- **Risk:** Low. Pure frontend validation change.
+- **Scope:**
+  - **Frontend (React):** In `SchedulePicker`, disable/hide the "+ Add time slot" button once `times.length >= 10`. Add a Mantine `Tooltip` wrapping a small `?` `ActionIcon` next to the "What time?" heading. Tooltip text: "You can schedule up to 10 reminders per day. Too many alerts reduce their effectiveness." Same limit applies in both `ScheduleStep` (onboarding) and `CreateHabitView` (dashboard) since both use the shared `SchedulePicker` component.
+  - **Backend (Rust):** Optionally add server-side validation in `CreateHabitInput::validate()` rejecting `schedule_times.len() > 10` as a safety net.
+- **Status:** backlog
+
+### S-11: Calendar week start setting
+
+- **Outcome:** user can choose whether the calendar week starts on Sunday (US) or Monday (EU) via a new setting; the app auto-detects the best default from the browser locale (`navigator.language` / `Intl.DateTimeFormat`). Both the `MonthCalendar` grid and the `SchedulePicker` day chips follow this setting.
+- **Change ID:** calendar-week-start-setting
+- **PRD refs:** —
+- **Prerequisites:** S-03
+- **Parallel with:** S-10, S-12, S-13, S-14
+- **Blockers:** —
+- **Unknowns:** —
+- **Risk:** Low-medium. Touches calendar grid rendering (`buildCalendarGrid`, `DAY_HEADERS` in `MonthCalendar`) and day chip ordering (`DAY_LABELS`, `DAY_VALUES` in `SchedulePicker`). Must ensure `schedule_days` values stored in DB (0=Sun, 1=Mon, ..., 6=Sat) remain stable regardless of display order.
+- **Scope:**
+  - **Backend (Rust):** Add `week_start_day` column to the `settings` table (values: `"sunday"` or `"monday"`, default `"sunday"`). New Tauri command `set_week_start` to update the setting. Extend `Settings` struct and `get_settings` response to include `week_start_day`.
+  - **Frontend (React):**
+    - **Auto-detection on first launch:** On initial settings creation, read `Intl.DateTimeFormat().resolvedOptions().locale`. If locale suggests a European or Monday-first region (most locales except `en-US`, `en-CA`, `ja`, `ko`, `zh`, etc.), default to `"monday"`; otherwise `"sunday"`. Send detected default to backend.
+    - **Settings UI:** Add a new card in `SettingsView` with a segmented control or radio group: "Week starts on: Sunday / Monday".
+    - **MonthCalendar:** Make `DAY_HEADERS` and `buildCalendarGrid` respect the setting. When `"monday"`: headers become `["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"]`; grid fill logic shifts so Monday = column 0.
+    - **SchedulePicker:** Make `DAY_LABELS` and `DAY_VALUES` order dynamic based on the setting. When `"sunday"`: chips show `["Sun", "Mon", "Tue", ..., "Sat"]`. When `"monday"`: chips show `["Mon", "Tue", ..., "Sun"]` (current default). The underlying day values (0-6) sent to the backend stay unchanged.
+- **Status:** backlog
+
+### S-12: Overlay window polish
+
+- **Outcome:** the overlay window renders as a full-bleed, edge-to-edge solid panel with no rounded corners and no scroll; its width accommodates all content without horizontal overflow
+- **Change ID:** overlay-window-polish
+- **PRD refs:** —
+- **Prerequisites:** S-02
+- **Parallel with:** S-10, S-11, S-13, S-14
+- **Blockers:** —
+- **Unknowns:** —
+- **Risk:** Low. Primarily CSS and Rust window config adjustments.
+- **Scope:**
+  - **Backend (Rust):** In `TauriOverlaySpawner::spawn_overlay`, adjust `inner_size` to a comfortable fixed width (around 400px) and a height that fits the tallest state (auto-fail text) without scrolling. Keep `decorations(false)` and `always_on_top(true)`. Remove any `transparent` flag if set.
+  - **Frontend (React):** In `OverlayPanel`, replace the current `OverlayCard` wrapper (centered `<Card radius="xl" shadow="xl">` inside transparent `100vh` container) with a full-bleed layout: remove outer padding, set `radius={0}` (square corners), remove `maxWidth` constraint, make the card fill the entire viewport edge-to-edge. The background should cover the full window area. Ensure no content overflow causes scrolling.
+- **Status:** backlog
+
+### S-13: Settings version sticky footer
+
+- **Outcome:** the app version string ("Pauzaro vX.Y.Z") is pinned as a sticky footer at the bottom of the settings view, always visible regardless of scroll position
+- **Change ID:** settings-version-footer
+- **PRD refs:** —
+- **Prerequisites:** S-07
+- **Parallel with:** S-10, S-11, S-12, S-14
+- **Blockers:** —
+- **Unknowns:** —
+- **Risk:** Low. CSS-only change.
+- **Scope:**
+  - **Frontend (React):** In `SettingsView`, restructure the layout so the settings content scrolls independently while the version text remains fixed at the bottom of the viewport (or the settings container). Use `position: sticky; bottom: 0` or a flex layout with `margin-top: auto` on the version element. Keep the current styling (xs, dimmed, centered).
+- **Status:** backlog
+
+### S-14: Creation view simplification
+
+- **Outcome:** user creates a habit without seeing a start date field (auto-set to today) and without seeing an end date at first glance; end date is accessible via an expandable "Advanced options" section
+- **Change ID:** creation-view-simplify
+- **PRD refs:** —
+- **Prerequisites:** S-01
+- **Parallel with:** S-10, S-11, S-12, S-13
+- **Blockers:** —
+- **Unknowns:** —
+- **Risk:** Low. Frontend-only change; backend contract unchanged.
+- **Scope:**
+  - **Frontend (React):** Applies to both `CreateHabitView` (dashboard) and `ScheduleStep` (onboarding).
+    - **Remove start date field:** Delete the start date `<input type="date">` from the schedule step. The `startDate` state stays initialized to today's date and is sent to the backend as-is, silently.
+    - **Collapse end date into "Advanced options":** Replace the end date input with a collapsible section. Default state: collapsed, showing only a subtle "Advanced options" text button. On click, the section expands to reveal the end date picker. Use Mantine's `Collapse` component for smooth animation.
+    - The schedule step's primary view becomes: day picker chips + time slot picker only. Clean and focused.
+- **Status:** backlog
+
 ### T-01: Critical-path backend logic tests
 
 - **Outcome:** (testing) streak calculation and snooze 3x auto-fail rule proven correct via pure Rust unit tests
@@ -265,6 +351,16 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Mascot editor + Lottie animations** — Why parked: shape-notes §Forward: technical-roadmap. Developer tooling for v2; MVP uses static assets per FR-009 resolution.
 - **SchedulePicker ref mutation during render** — Why parked: `slotKeysRef.current` mutated during render (push/slice) is unsafe under React 18+ concurrent mode. Not a bug today (Tauri webview has no concurrent features), but fragile. Fix: move key generation into addTimeSlot/removeTimeSlot callbacks. Source: impl-review F9 (2026-08-31).
 - **Backend time format validation** — Why parked: `CreateHabitInput::validate()` doesn't check `start_time` format (expected "HH:MM"). Invalid string silently never fires in scheduler. Low risk since UI uses `<input type="time">`. Fix: add `NaiveTime::parse_from_str` check. Source: impl-review F10 (2026-08-31).
+
+## Personal TODO (design / non-code)
+
+Tasks that are not dev slices but need to happen before or around release. Tracked here so they don't get lost.
+
+- [ ] **Generate new app icons** for Pauzaro (all required platform sizes)
+- [ ] **Generate mascot variants:**
+  - Mascot waving an arm (friendly greeting pose)
+  - Mascot that is busy noting something in a small notepad, wearing glasses on its nose, with a "pleasing dog eyes" facial expression
+- [ ] Integrate new mascot assets into the app (replace or extend current `mascot-happy.png` / `mascot-neutral.png` / `mascot-sad.png`)
 
 ## Done
 
