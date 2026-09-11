@@ -21,7 +21,7 @@ describe("OnboardingWizard", () => {
 
 	it("renders welcome step initially", () => {
 		render(<OnboardingWizard />, { wrapper: Wrapper });
-		expect(screen.getByText("Hey there! 👋")).toBeInTheDocument();
+		expect(screen.getByText("Your break-time buddy")).toBeInTheDocument();
 	});
 
 	it("advances to name step", async () => {
@@ -61,7 +61,7 @@ describe("OnboardingWizard", () => {
 		fireEvent.click(screen.getByText("← Back"));
 
 		await waitFor(() => {
-			expect(screen.getByText("Hey there! 👋")).toBeInTheDocument();
+			expect(screen.getByText("Your break-time buddy")).toBeInTheDocument();
 		});
 	});
 });

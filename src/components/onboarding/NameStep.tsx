@@ -1,8 +1,10 @@
-import { Button, Group, Stack, Text, TextInput, Title } from "@mantine/core";
+import { Button, Group, Stack, TextInput, Title } from "@mantine/core";
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createUserProfile, getUserProfile } from "../../lib/invoke";
 import { useOnboardingStore } from "../../stores/onboarding";
+import { MascotImage } from "../shared/MascotImage";
+import { SpeechBubble } from "../shared/SpeechBubble";
 
 interface NameStepProps {
 	onNext: () => void;
@@ -13,6 +15,12 @@ export function NameStep({ onNext, onBack }: NameStepProps) {
 	const { name, setName } = useOnboardingStore();
 	const [error, setError] = useState("");
 	const [submitting, setSubmitting] = useState(false);
+	const [bubbleVisible, setBubbleVisible] = useState(false);
+
+	useEffect(() => {
+		const timer = setTimeout(() => setBubbleVisible(true), 300);
+		return () => clearTimeout(timer);
+	}, []);
 
 	const handleSubmit = async () => {
 		if (!name.trim()) {
@@ -57,15 +65,15 @@ export function NameStep({ onNext, onBack }: NameStepProps) {
 			}}
 		>
 			<Stack align="center" gap="lg" maw={360} w="100%">
-				<Stack gap={4} align="center">
-					<Text size="xl">🦕💬</Text>
-					<Title order={2} fw={800} ta="center">
-						What should we call you?
-					</Title>
-					<Text size="sm" c="dimmed" ta="center">
-						Our dino wants to know who they're cheering for!
-					</Text>
-				</Stack>
+				<MascotImage reaction="happy" size={80} />
+				<SpeechBubble
+					message="What's your name? I want to know who I'm cheering for!"
+					visible={bubbleVisible}
+					direction="top"
+				/>
+				<Title order={2} fw={800} ta="center">
+					What should we call you?
+				</Title>
 
 				<TextInput
 					placeholder="Your awesome name"

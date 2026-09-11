@@ -1,11 +1,21 @@
 import { Button, Stack, Text, Title } from "@mantine/core";
 import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
+import { MascotImage } from "../shared/MascotImage";
+import { SpeechBubble } from "../shared/SpeechBubble";
 
 interface WelcomeStepProps {
 	onNext: () => void;
 }
 
 export function WelcomeStep({ onNext }: WelcomeStepProps) {
+	const [bubbleVisible, setBubbleVisible] = useState(false);
+
+	useEffect(() => {
+		const timer = setTimeout(() => setBubbleVisible(true), 400);
+		return () => clearTimeout(timer);
+	}, []);
+
 	return (
 		<motion.div
 			initial={{ opacity: 0, y: 20 }}
@@ -31,22 +41,24 @@ export function WelcomeStep({ onNext }: WelcomeStepProps) {
 						type: "spring",
 						stiffness: 200,
 					}}
-					style={{ fontSize: 72 }}
 				>
-					🦕
+					<MascotImage reaction="happy" size={120} />
 				</motion.div>
+
+				<SpeechBubble
+					message="Hi! I'm Pauzaro! 🦕"
+					visible={bubbleVisible}
+					direction="top"
+				/>
 
 				<Stack gap={4} align="center">
 					<Title order={1} fw={800} size={34}>
-						Hey there! 👋
+						Your break-time buddy
 					</Title>
 					<Text size="lg" c="dimmed" maw={380}>
-						Welcome to{" "}
-						<Text span fw={800} c="teal">
-							Pauzaro
-						</Text>
-						! Your friendly reminder to take breaks, stretch, and stay awesome
-						while you code.
+						I'll remind you to stretch, move, and rest while you code. Together
+						we'll build healthy habits — and I'll cheer you on with every
+						streak!
 					</Text>
 				</Stack>
 

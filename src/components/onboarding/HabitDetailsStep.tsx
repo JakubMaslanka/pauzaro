@@ -8,8 +8,10 @@ import {
 	Title,
 } from "@mantine/core";
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IconPicker } from "../shared/IconPicker";
+import { MascotImage } from "../shared/MascotImage";
+import { SpeechBubble } from "../shared/SpeechBubble";
 
 interface HabitDetails {
 	name: string;
@@ -31,6 +33,12 @@ export function HabitDetailsStep({
 	onBack,
 }: HabitDetailsStepProps) {
 	const [error, setError] = useState("");
+	const [bubbleVisible, setBubbleVisible] = useState(false);
+
+	useEffect(() => {
+		const timer = setTimeout(() => setBubbleVisible(true), 300);
+		return () => clearTimeout(timer);
+	}, []);
 
 	const handleNext = () => {
 		if (!value.name.trim()) {
@@ -57,15 +65,15 @@ export function HabitDetailsStep({
 			}}
 		>
 			<Stack align="center" gap="lg" maw={420} w="100%">
-				<Stack gap={4} align="center">
-					<Text size="xl">✨🦕</Text>
-					<Title order={2} fw={800} ta="center">
-						Design your first habit!
-					</Title>
-					<Text size="sm" c="dimmed" ta="center">
-						Pick a name, icon, and give it some personality.
-					</Text>
-				</Stack>
+				<MascotImage reaction="promising" size={80} />
+				<SpeechBubble
+					message="Let's create your first habit! Pick something fun — I'll make sure you stick with it! ✨"
+					visible={bubbleVisible}
+					direction="top"
+				/>
+				<Title order={2} fw={800} ta="center">
+					Design your first habit!
+				</Title>
 
 				<Stack gap="md" w="100%">
 					<TextInput

@@ -1,10 +1,12 @@
 import { Button, Group, Stack, Text, Title } from "@mantine/core";
 import { useNavigate } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { completeOnboarding, createHabit } from "../../lib/invoke";
 import type { TimeSlot } from "../../types";
+import { MascotImage } from "../shared/MascotImage";
 import { SchedulePicker } from "../shared/SchedulePicker";
+import { SpeechBubble } from "../shared/SpeechBubble";
 
 interface HabitDetails {
 	name: string;
@@ -33,6 +35,12 @@ export function ScheduleStep({ habitDetails, onBack }: ScheduleStepProps) {
 	const [endDate, setEndDate] = useState("");
 	const [error, setError] = useState("");
 	const [submitting, setSubmitting] = useState(false);
+	const [bubbleVisible, setBubbleVisible] = useState(false);
+
+	useEffect(() => {
+		const timer = setTimeout(() => setBubbleVisible(true), 300);
+		return () => clearTimeout(timer);
+	}, []);
 
 	const hasDuplicates = () => {
 		const seen = new Set<string>();
@@ -100,15 +108,15 @@ export function ScheduleStep({ habitDetails, onBack }: ScheduleStepProps) {
 			}}
 		>
 			<Stack align="center" gap="lg" maw={460} w="100%">
-				<Stack gap={4} align="center">
-					<Text size="xl">📅🦕</Text>
-					<Title order={2} fw={800} ta="center">
-						When should we remind you?
-					</Title>
-					<Text size="sm" c="dimmed" ta="center">
-						Set your schedule — our dino will nudge you on time!
-					</Text>
-				</Stack>
+				<MascotImage reaction="happy" size={80} />
+				<SpeechBubble
+					message="Almost there! Tell me when to nudge you — I promise I'll be on time! 📅"
+					visible={bubbleVisible}
+					direction="top"
+				/>
+				<Title order={2} fw={800} ta="center">
+					When should we remind you?
+				</Title>
 
 				<Stack gap="md" w="100%">
 					<SchedulePicker
