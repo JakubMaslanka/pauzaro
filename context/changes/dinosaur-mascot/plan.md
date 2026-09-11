@@ -539,22 +539,22 @@ Add top-level bundle fields:
 
 #### Automated
 
-- [x] 1.1 Type checking passes
-- [x] 1.2 Unit tests pass (including mascot utility tests)
-- [x] 1.3 Lint passes
+- [x] 1.1 Type checking passes — a6a7e29
+- [x] 1.2 Unit tests pass (including mascot utility tests) — a6a7e29
+- [x] 1.3 Lint passes — a6a7e29
 
 #### Manual
 
-- [ ] 1.4 MascotImage renders all 5 reactions correctly
-- [ ] 1.5 SpeechBubble animation feels bouncy and kid-friendly
+- [x] 1.4 MascotImage renders all 5 reactions correctly — a6a7e29
+- [x] 1.5 SpeechBubble animation feels bouncy and kid-friendly — a6a7e29
 
 ### Phase 2: Side Nav Mascot
 
 #### Automated
 
-- [ ] 2.1 Type checking passes
-- [ ] 2.2 Existing tests pass
-- [ ] 2.3 Lint passes
+- [x] 2.1 Type checking passes
+- [x] 2.2 Existing tests pass
+- [x] 2.3 Lint passes
 
 #### Manual
 

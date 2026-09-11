@@ -235,6 +235,21 @@ export function Dashboard() {
 		loadData();
 	}, [loadData]);
 
+	// Sync mascot state to store so AppNavbar can subscribe
+	const setMascotState = useDashboardStore((s) => s.setMascotState);
+	const mascotStatus = useMemo(() => {
+		if (state.status !== "ready" || !activeHabit) return null;
+		return state.habitStatuses[activeHabit.id] ?? null;
+	}, [state, activeHabit]);
+
+	useEffect(() => {
+		if (!mascotStatus) return;
+		const todayStr = new Date().toISOString().slice(0, 10);
+		const frozenDates = mascotStatus.frozen_dates ?? [];
+		const isFrozen = frozenDates.includes(todayStr);
+		setMascotState(mascotStatus.streak ?? 0, isFrozen);
+	}, [mascotStatus, setMascotState]);
+
 	if (state.status === "loading") {
 		return (
 			<Container size="lg" py="xl">
@@ -287,6 +302,7 @@ export function Dashboard() {
 	const streak = status?.streak ?? 0;
 	const freezesRemaining = status?.freezes_remaining ?? 2;
 	const frozenDates = status?.frozen_dates ?? [];
+
 	const slotsPerDay = activeHabit.schedule_times.length;
 	const totalScheduledDays = countScheduledDaysInMonth(
 		currentMonth.year,

@@ -66,6 +66,8 @@ function AppShellLayout() {
 	const location = useLocation();
 	const habits = useDashboardStore((s) => s.habits);
 	const activeHabitId = useDashboardStore((s) => s.activeHabitId);
+	const mascotStreak = useDashboardStore((s) => s.mascotStreak);
+	const mascotFrozen = useDashboardStore((s) => s.mascotFrozen);
 	const setHabits = useDashboardStore((s) => s.setHabits);
 
 	// Only show active habit highlight on dashboard route
@@ -135,6 +137,8 @@ function AppShellLayout() {
 				<AppNavbar
 					habits={habits}
 					activeHabitId={visibleActiveId}
+					streak={mascotStreak}
+					isFrozen={mascotFrozen}
 					onSelectHabit={handleSelectHabit}
 					onCreateHabit={handleCreateHabit}
 					onOpenSettings={handleOpenSettings}
