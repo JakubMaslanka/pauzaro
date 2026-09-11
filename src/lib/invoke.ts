@@ -206,6 +206,10 @@ export async function debugDeleteCompletionsForDate(
 	});
 }
 
+export async function debugResetOnboarding(): Promise<void> {
+	return invoke<void>("debug_reset_onboarding");
+}
+
 export async function debugBackdateLastSeen(daysAgo: number): Promise<string> {
 	return invoke<string>("debug_backdate_last_seen", {
 		days_ago: daysAgo,

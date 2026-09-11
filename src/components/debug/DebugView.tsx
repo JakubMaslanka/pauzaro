@@ -12,6 +12,7 @@ import {
 	TextInput,
 	Title,
 } from "@mantine/core";
+import { useNavigate } from "@tanstack/react-router";
 import { WebviewWindow } from "@tauri-apps/api/webviewWindow";
 import { motion } from "framer-motion";
 import {
@@ -19,6 +20,7 @@ import {
 	CheckCircle,
 	Play,
 	RefreshCw,
+	RotateCcw,
 	Snowflake,
 	Timer,
 	Trash2,
@@ -34,6 +36,7 @@ import {
 	debugInsertCompletion,
 	debugInsertFreeze,
 	debugRemoveFreeze,
+	debugResetOnboarding,
 	listHabits,
 } from "../../lib/invoke";
 import type { Habit } from "../../types";
@@ -50,6 +53,7 @@ function formatYesterday(): string {
 }
 
 export function DebugView() {
+	const navigate = useNavigate();
 	const [status, setStatus] = useState<string>("");
 	const [habits, setHabits] = useState<Habit[]>([]);
 	const [selectedHabitId, setSelectedHabitId] = useState<string | null>(null);
@@ -221,15 +225,34 @@ export function DebugView() {
 						</Text>
 					</Stack>
 
-					{/* Overlay trigger */}
-					<Button
-						variant="outline"
-						color="teal"
-						onClick={handleTriggerOverlay}
-						leftSection={<Play size={16} />}
-					>
-						Show Overlay Window
-					</Button>
+					{/* Quick actions */}
+					<Group grow>
+						<Button
+							variant="outline"
+							color="teal"
+							onClick={handleTriggerOverlay}
+							leftSection={<Play size={16} />}
+						>
+							Show Overlay Window
+						</Button>
+						<Button
+							variant="outline"
+							color="orange"
+							onClick={async () => {
+								try {
+									await debugResetOnboarding();
+									navigate({ to: "/onboarding" });
+								} catch (error) {
+									const message =
+										error instanceof Error ? error.message : String(error);
+									setStatus(`Error: ${message}`);
+								}
+							}}
+							leftSection={<RotateCcw size={16} />}
+						>
+							Reset Onboarding
+						</Button>
+					</Group>
 
 					<Divider label="🧪 Streak & Freeze Testing" labelPosition="center" />
 

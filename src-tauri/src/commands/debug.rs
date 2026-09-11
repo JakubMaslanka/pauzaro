@@ -155,6 +155,19 @@ pub fn debug_delete_completions_for_date(
     Ok(rows)
 }
 
+/// Reset onboarding_completed flag so the onboarding wizard shows again.
+#[tauri::command]
+pub fn debug_reset_onboarding(
+    state: State<'_, AppState>,
+) -> Result<(), AppError> {
+    let db = state.db.lock().map_err(|e| {
+        AppError::Database(format!("Failed to acquire database lock: {e}"))
+    })?;
+    let conn = db.connection();
+    conn.execute("UPDATE user_profile SET onboarding_completed = 0", [])?;
+    Ok(())
+}
+
 /// Backdate last_seen_at by N days to simulate an app-closed gap.
 #[tauri::command(rename_all = "snake_case")]
 pub fn debug_backdate_last_seen(

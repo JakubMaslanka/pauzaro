@@ -286,6 +286,7 @@ pub fn run() {
             commands::debug::debug_insert_completion,
             commands::debug::debug_delete_completions_for_date,
             commands::debug::debug_backdate_last_seen,
+            commands::debug::debug_reset_onboarding,
         ])
         .build(tauri::generate_context!())
         .expect("error while building tauri application")
