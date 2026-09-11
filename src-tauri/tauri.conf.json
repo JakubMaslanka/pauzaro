@@ -13,6 +13,9 @@
     "windows": [
       {
         "title": "Pauzaro",
+        "titleBarStyle": "Transparent",
+        "hiddenTitle": true,
+        "backgroundColor": [247, 245, 239, 255],
         "width": 1000,
         "height": 600,
         "minWidth": 600,
