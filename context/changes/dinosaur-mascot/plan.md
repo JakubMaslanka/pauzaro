@@ -583,9 +583,9 @@ Add top-level bundle fields:
 
 #### Automated
 
-- [x] 4.1 Type checking passes
-- [x] 4.2 Onboarding tests pass
-- [x] 4.3 Lint passes
+- [x] 4.1 Type checking passes — 09f6d5f
+- [x] 4.2 Onboarding tests pass — 09f6d5f
+- [x] 4.3 Lint passes — 09f6d5f
 
 #### Manual
 
@@ -599,10 +599,10 @@ Add top-level bundle fields:
 
 #### Automated
 
-- [ ] 5.1 Type checking passes
-- [ ] 5.2 All tests pass
-- [ ] 5.3 Lint passes
-- [ ] 5.4 Rust check passes
+- [x] 5.1 Type checking passes
+- [x] 5.2 All tests pass
+- [x] 5.3 Lint passes
+- [x] 5.4 Rust check passes
 
 #### Manual
 

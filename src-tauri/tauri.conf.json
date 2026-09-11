@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "pauzaro",
+  "productName": "Pauzaro",
   "version": "0.1.0",
   "identifier": "com.nondescriptstudio.pauzaro",
   "build": {
@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-        "title": "pauzaro",
+        "title": "Pauzaro",
         "width": 1000,
         "height": 600,
         "minWidth": 600,
@@ -26,12 +26,18 @@
   "bundle": {
     "active": true,
     "targets": "all",
+    "copyright": "© 2026 Nondescript Studio",
+    "category": "DeveloperTool",
+    "shortDescription": "Your friendly break reminder for developers",
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",
       "icons/128x128@2x.png",
       "icons/icon.icns",
       "icons/icon.ico"
-    ]
+    ],
+    "macOS": {
+      "minimumSystemVersion": "10.15"
+    }
   }
 }

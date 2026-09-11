@@ -27,6 +27,7 @@ export function HabitMenu({
 					color="gray"
 					size="sm"
 					radius="xl"
+					aria-label="More options"
 					className="habit-menu-trigger"
 					style={{ opacity: 0.2, transition: "opacity 150ms ease" }}
 				>

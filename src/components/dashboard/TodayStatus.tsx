@@ -33,6 +33,7 @@ export function TodayStatus({ habitStatus, onMarkDone }: TodayStatusProps) {
 								color="teal"
 								size="xs"
 								radius="xl"
+								aria-label="Mark as done"
 								style={{ opacity: 0.5 }}
 								onClick={() => onMarkDone(slot.scheduled_time)}
 							>

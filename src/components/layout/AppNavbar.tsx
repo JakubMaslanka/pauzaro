@@ -76,6 +76,7 @@ export function AppNavbar({
 									color="teal"
 									size={40}
 									radius="md"
+									aria-label={habit.name}
 									onClick={() => onSelectHabit(habit.id)}
 									style={{
 										border: isActive
@@ -104,6 +105,7 @@ export function AppNavbar({
 							color="teal"
 							size={40}
 							radius="md"
+							aria-label="Create habit"
 							onClick={onCreateHabit}
 						>
 							<Plus size={20} />
@@ -134,6 +136,7 @@ export function AppNavbar({
 							color="gray"
 							size={40}
 							radius="md"
+							aria-label="Debug panel"
 							onClick={onOpenDebug}
 						>
 							<Bug size={20} />
@@ -151,6 +154,7 @@ export function AppNavbar({
 						color="gray"
 						size={40}
 						radius="md"
+						aria-label="Settings"
 						onClick={onOpenSettings}
 					>
 						<Settings size={20} />

@@ -12,6 +12,7 @@ use std::sync::{Arc, Mutex};
 use chrono::{Datelike, Local};
 use log::{error, info};
 use tauri::Manager;
+use tauri::menu::{MenuBuilder, PredefinedMenuItem, SubmenuBuilder};
 
 use tauri_plugin_window_state::{AppHandleExt, StateFlags};
 
@@ -219,6 +220,40 @@ pub fn run() {
             tauri::async_runtime::spawn(async move {
                 sched_run.run(db_arc, spawner).await;
             });
+
+            // Native macOS menu bar
+            let app_menu = SubmenuBuilder::new(app, "Pauzaro")
+                .about(None)
+                .separator()
+                .hide()
+                .separator()
+                .quit()
+                .build()?;
+
+            let edit_menu = SubmenuBuilder::new(app, "Edit")
+                .undo()
+                .redo()
+                .separator()
+                .cut()
+                .copy()
+                .paste()
+                .select_all()
+                .build()?;
+
+            let window_menu = SubmenuBuilder::new(app, "Window")
+                .minimize()
+                .item(&PredefinedMenuItem::fullscreen(app, None)?)
+                .separator()
+                .close_window()
+                .build()?;
+
+            let menu = MenuBuilder::new(app)
+                .item(&app_menu)
+                .item(&edit_menu)
+                .item(&window_menu)
+                .build()?;
+
+            app.set_menu(menu)?;
 
             tray::setup_tray(app)?;
 

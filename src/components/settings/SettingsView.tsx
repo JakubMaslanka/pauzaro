@@ -7,11 +7,11 @@ import {
 	Title,
 	UnstyledButton,
 } from "@mantine/core";
+import { getVersion } from "@tauri-apps/api/app";
 import { listen } from "@tauri-apps/api/event";
 import { motion } from "framer-motion";
 import { Power, Settings as SettingsIcon } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
-
 import { getSettings, setAutostart } from "../../lib/invoke";
 import type { Settings } from "../../types";
 import classes from "./SettingsView.module.css";
@@ -21,6 +21,13 @@ export function SettingsView() {
 	const [loading, setLoading] = useState(true);
 	const [toggling, setToggling] = useState(false);
 	const [error, setError] = useState<string | null>(null);
+	const [version, setVersion] = useState("");
+
+	useEffect(() => {
+		getVersion()
+			.then(setVersion)
+			.catch(() => setVersion(""));
+	}, []);
 
 	useEffect(() => {
 		getSettings()
@@ -123,6 +130,12 @@ export function SettingsView() {
 					{error ? (
 						<Text size="sm" c="red">
 							⚠️ {error}
+						</Text>
+					) : null}
+
+					{version ? (
+						<Text size="xs" c="dimmed" ta="center" mt="xl">
+							Pauzaro v{version}
 						</Text>
 					) : null}
 				</Stack>

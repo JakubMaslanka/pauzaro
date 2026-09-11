@@ -16,6 +16,7 @@ import { listen } from "@tauri-apps/api/event";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { useCallback, useEffect, useState } from "react";
 import { AppNavbar } from "../components/layout/AppNavbar";
+import { ErrorBoundary } from "../components/shared/ErrorBoundary";
 import { listHabits } from "../lib/invoke";
 import { useDashboardStore } from "../stores/dashboard";
 import { theme } from "../theme";
@@ -46,17 +47,21 @@ function RootLayout() {
 
 	if (isOverlay) {
 		return (
-			<MantineProvider theme={theme}>
-				<div className="app-root">
-					<Outlet />
-				</div>
+			<MantineProvider theme={theme} defaultColorScheme="light">
+				<ErrorBoundary>
+					<div className="app-root">
+						<Outlet />
+					</div>
+				</ErrorBoundary>
 			</MantineProvider>
 		);
 	}
 
 	return (
-		<MantineProvider theme={theme}>
-			<AppShellLayout />
+		<MantineProvider theme={theme} defaultColorScheme="light">
+			<ErrorBoundary>
+				<AppShellLayout />
+			</ErrorBoundary>
 		</MantineProvider>
 	);
 }

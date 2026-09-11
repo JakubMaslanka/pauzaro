@@ -164,6 +164,7 @@ export function SchedulePicker({
 										color="red"
 										size="sm"
 										radius="xl"
+										aria-label="Remove time slot"
 										onClick={() => removeTimeSlot(idx)}
 									>
 										<X size={14} />
