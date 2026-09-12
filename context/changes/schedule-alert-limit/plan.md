@@ -194,10 +194,10 @@ Add an upper-bound check in `CreateHabitInput::validate()` to reject more than 1
 
 #### Automated
 
-- [x] 1.1 All existing SchedulePicker tests still pass (updated for new components)
-- [x] 1.2 New tests pass: button disabled at 10, enabled below 10, tooltip icon renders
-- [x] 1.3 Type checking passes: `tsc --noEmit`
-- [x] 1.4 Linting passes: `pnpm lint`
+- [x] 1.1 All existing SchedulePicker tests still pass (updated for new components) — 9ae0d14
+- [x] 1.2 New tests pass: button disabled at 10, enabled below 10, tooltip icon renders — 9ae0d14
+- [x] 1.3 Type checking passes: `tsc --noEmit` — 9ae0d14
+- [x] 1.4 Linting passes: `pnpm lint` — 9ae0d14
 
 #### Manual
 
@@ -212,5 +212,5 @@ Add an upper-bound check in `CreateHabitInput::validate()` to reject more than 1
 
 #### Automated
 
-- [ ] 2.1 Rust tests pass: `cd src-tauri && cargo test`
-- [ ] 2.2 Rust compiles cleanly: `cd src-tauri && cargo check`
+- [x] 2.1 Rust tests pass: `cd src-tauri && cargo test`
+- [x] 2.2 Rust compiles cleanly: `cd src-tauri && cargo check`
