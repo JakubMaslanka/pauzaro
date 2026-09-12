@@ -1,7 +1,7 @@
 ---
 change_id: schedule-alert-limit
 title: Cap daily time slots at 10 with info tooltip
-status: new
+status: planned
 created: 2026-09-12
 updated: 2026-09-12
 archived_at: null
