@@ -194,10 +194,10 @@ Add an upper-bound check in `CreateHabitInput::validate()` to reject more than 1
 
 #### Automated
 
-- [ ] 1.1 All existing SchedulePicker tests still pass (updated for new components)
-- [ ] 1.2 New tests pass: button disabled at 10, enabled below 10, tooltip icon renders
-- [ ] 1.3 Type checking passes: `tsc --noEmit`
-- [ ] 1.4 Linting passes: `pnpm lint`
+- [x] 1.1 All existing SchedulePicker tests still pass (updated for new components)
+- [x] 1.2 New tests pass: button disabled at 10, enabled below 10, tooltip icon renders
+- [x] 1.3 Type checking passes: `tsc --noEmit`
+- [x] 1.4 Linting passes: `pnpm lint`
 
 #### Manual
 

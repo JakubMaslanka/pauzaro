@@ -10,7 +10,7 @@ function Wrapper({ children }: { children: ReactNode }) {
 }
 
 describe("SchedulePicker", () => {
-	it("renders all day buttons", () => {
+	it("renders all day chips", () => {
 		render(
 			<SchedulePicker
 				days={[]}
@@ -109,5 +109,59 @@ describe("SchedulePicker", () => {
 
 		const duplicateLabels = screen.getAllByText("Duplicate!");
 		expect(duplicateLabels.length).toBeGreaterThan(0);
+	});
+
+	it("disables add button when 10 time slots exist", () => {
+		const tenSlots = Array.from({ length: 10 }, (_, i) => ({
+			start_time: `${String(i + 8).padStart(2, "0")}:00`,
+		}));
+
+		render(
+			<SchedulePicker
+				days={[1]}
+				times={tenSlots}
+				onDaysChange={vi.fn()}
+				onTimesChange={vi.fn()}
+			/>,
+			{ wrapper: Wrapper },
+		);
+
+		const addButton = screen.getByText("+ Add time slot").closest("button");
+		expect(addButton).toBeDisabled();
+	});
+
+	it("enables add button when fewer than 10 time slots exist", () => {
+		const nineSlots = Array.from({ length: 9 }, (_, i) => ({
+			start_time: `${String(i + 8).padStart(2, "0")}:00`,
+		}));
+
+		render(
+			<SchedulePicker
+				days={[1]}
+				times={nineSlots}
+				onDaysChange={vi.fn()}
+				onTimesChange={vi.fn()}
+			/>,
+			{ wrapper: Wrapper },
+		);
+
+		const addButton = screen.getByText("+ Add time slot").closest("button");
+		expect(addButton).not.toBeDisabled();
+	});
+
+	it("renders schedule limit info icon", () => {
+		render(
+			<SchedulePicker
+				days={[1]}
+				times={[{ start_time: "09:00" }]}
+				onDaysChange={vi.fn()}
+				onTimesChange={vi.fn()}
+			/>,
+			{ wrapper: Wrapper },
+		);
+
+		expect(
+			screen.getByRole("button", { name: "Schedule limit info" }),
+		).toBeInTheDocument();
 	});
 });

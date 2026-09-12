@@ -42,7 +42,7 @@ A developer in deep focus loses track of time — forgets breaks, movement, and 
 | S-09 | single-instance-enforcement   | (infra) only one app instance runs at a time, keeping memory footprint minimal               | —             | —                                     | done |
 | T-01 | testing-critical-path-backend | (testing) streak calc and snooze rules proven correct via Rust unit tests                  | S-02          | test-plan §3 Phase 1                  | done |
 | T-02 | testing-scheduler-overlay   | (testing) scheduler fires correctly, overlay→dashboard sync works                            | T-01          | test-plan §3 Phase 2                  | done |
-| S-10 | schedule-alert-limit          | see at most 10 time slots per day with info tooltip explaining the cap                      | S-01          | —                                     | planning |
+| S-10 | schedule-alert-limit          | see at most 10 time slots per day with info tooltip explaining the cap                      | S-01          | —                                     | in-progress |
 | S-11 | calendar-week-start-setting   | choose Sunday or Monday as first day of week, auto-detected from locale                     | S-03          | —                                     | backlog |
 | S-12 | overlay-window-polish         | see a full-bleed overlay panel (no rounded corners, no scroll, edge-to-edge)                | S-02          | —                                     | backlog |
 | S-13 | settings-version-footer       | always see app version pinned to the bottom of the settings view                            | S-07          | —                                     | backlog |
@@ -231,7 +231,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Scope:**
   - **Frontend (React):** In `SchedulePicker`, disable/hide the "+ Add time slot" button once `times.length >= 10`. Add a Mantine `Tooltip` wrapping a small `?` `ActionIcon` next to the "What time?" heading. Tooltip text: "You can schedule up to 10 reminders per day. Too many alerts reduce their effectiveness." Same limit applies in both `ScheduleStep` (onboarding) and `CreateHabitView` (dashboard) since both use the shared `SchedulePicker` component.
   - **Backend (Rust):** Optionally add server-side validation in `CreateHabitInput::validate()` rejecting `schedule_times.len() > 10` as a safety net.
-- **Status:** planning
+- **Status:** in-progress
 
 ### S-11: Calendar week start setting
 
