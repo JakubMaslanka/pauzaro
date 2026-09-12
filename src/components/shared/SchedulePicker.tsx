@@ -1,17 +1,21 @@
 import {
 	ActionIcon,
 	Button,
+	Chip,
 	Group,
 	Stack,
 	Text,
-	UnstyledButton,
+	TextInput,
+	Tooltip,
 } from "@mantine/core";
-import { X } from "lucide-react";
+import { CircleHelp, X } from "lucide-react";
 import { useCallback, useRef } from "react";
 import type { TimeSlot } from "../../types";
 
 const DAY_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 const DAY_VALUES = [1, 2, 3, 4, 5, 6, 0];
+
+const MAX_TIME_SLOTS = 10;
 
 interface SchedulePickerProps {
 	days: number[];
@@ -39,15 +43,11 @@ export function SchedulePicker({
 
 	const slotKeys = slotKeysRef.current;
 
-	const toggleDay = useCallback(
-		(day: number) => {
-			if (days.includes(day)) {
-				onDaysChange(days.filter((d) => d !== day));
-			} else {
-				onDaysChange([...days, day].sort((a, b) => a - b));
-			}
+	const handleDaysChange = useCallback(
+		(values: string[]) => {
+			onDaysChange(values.map(Number).sort((a, b) => a - b));
 		},
-		[days, onDaysChange],
+		[onDaysChange],
 	);
 
 	const updateTimeSlot = useCallback(
@@ -100,63 +100,65 @@ export function SchedulePicker({
 				<Text size="sm" fw={700} mb={6}>
 					🗓️ Which days?
 				</Text>
-				<Group gap={6}>
-					{DAY_LABELS.map((label, i) => {
-						const dayValue = DAY_VALUES[i];
-						const selected = days.includes(dayValue);
-						return (
-							<UnstyledButton
-								key={dayValue}
-								onClick={() => toggleDay(dayValue)}
-								style={{
-									padding: "6px 12px",
-									borderRadius: "var(--mantine-radius-xl)",
-									border: selected
-										? "2px solid var(--mantine-color-teal-6)"
-										: "2px solid var(--mantine-color-gray-3)",
-									background: selected
-										? "var(--mantine-color-teal-1)"
-										: "white",
-									color: selected
-										? "var(--mantine-color-teal-8)"
-										: "var(--mantine-color-gray-6)",
-									fontWeight: selected ? 700 : 500,
-									fontSize: 13,
-									transition: "all 0.15s",
-								}}
+				<Chip.Group
+					multiple
+					value={days.map(String)}
+					onChange={handleDaysChange}
+				>
+					<Group gap={6}>
+						{DAY_LABELS.map((label, i) => (
+							<Chip
+								key={DAY_VALUES[i]}
+								value={String(DAY_VALUES[i])}
+								color="teal"
+								variant="outline"
+								radius="xl"
+								size="sm"
 							>
 								{label}
-							</UnstyledButton>
-						);
-					})}
-				</Group>
+							</Chip>
+						))}
+					</Group>
+				</Chip.Group>
 			</div>
 
 			<div>
-				<Text size="sm" fw={700} mb={6}>
-					⏰ What time?
-				</Text>
+				<Group gap={6} mb={6}>
+					<Text size="sm" fw={700}>
+						⏰ What time?
+					</Text>
+					<Tooltip
+						label="You can schedule up to 10 reminders per day. Too many alerts reduce their effectiveness."
+						multiline
+						w={240}
+						withArrow
+					>
+						<ActionIcon
+							variant="subtle"
+							color="gray"
+							size="xs"
+							radius="xl"
+							aria-label="Schedule limit info"
+						>
+							<CircleHelp size={14} />
+						</ActionIcon>
+					</Tooltip>
+				</Group>
 				<Stack gap="xs">
 					{times.map((slot, idx) => {
 						const duplicate = isDuplicateSlot(slot.start_time, idx);
 						return (
 							<Group key={slotKeys[idx]} gap="xs" align="center">
-								<input
+								<TextInput
 									type="time"
 									value={slot.start_time}
 									onChange={(e) =>
 										updateTimeSlot(idx, "start_time", e.target.value)
 									}
-									style={{
-										padding: "6px 10px",
-										border: duplicate
-											? "2px solid var(--mantine-color-red-5)"
-											: "2px solid var(--mantine-color-gray-3)",
-										borderRadius: "var(--mantine-radius-md)",
-										fontSize: 14,
-										fontFamily: "inherit",
-										background: "white",
-									}}
+									size="sm"
+									radius="md"
+									error={duplicate ? "Duplicate!" : undefined}
+									w={130}
 								/>
 								{times.length > 1 && (
 									<ActionIcon
@@ -170,11 +172,6 @@ export function SchedulePicker({
 										<X size={14} />
 									</ActionIcon>
 								)}
-								{duplicate && (
-									<Text size="xs" c="red">
-										Duplicate!
-									</Text>
-								)}
 							</Group>
 						);
 					})}
@@ -184,6 +181,7 @@ export function SchedulePicker({
 						size="xs"
 						radius="xl"
 						onClick={addTimeSlot}
+						disabled={times.length >= MAX_TIME_SLOTS}
 						style={{ alignSelf: "flex-start" }}
 					>
 						+ Add time slot

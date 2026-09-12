@@ -96,6 +96,11 @@ impl CreateHabitInput {
                 "At least one time slot is required".into(),
             ));
         }
+        if self.schedule_times.len() > 10 {
+            return Err(AppError::Validation(
+                "A maximum of 10 time slots per day is allowed".into(),
+            ));
+        }
         for &day in &self.schedule_days {
             if day > 6 {
                 return Err(AppError::Validation(format!(
@@ -104,5 +109,48 @@ impl CreateHabitInput {
             }
         }
         Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn make_input(time_slot_count: usize) -> CreateHabitInput {
+        let schedule_times = (0..time_slot_count)
+            .map(|i| TimeSlot {
+                start_time: format!("{:02}:00", 8 + i),
+            })
+            .collect();
+
+        CreateHabitInput {
+            name: "Test habit".into(),
+            description: None,
+            icon: "dumbbell".into(),
+            icon_color: None,
+            icon_stroke_width: None,
+            schedule_days: vec![1, 3, 5],
+            schedule_times,
+            start_date: "2026-09-12".into(),
+            end_date: None,
+        }
+    }
+
+    #[test]
+    fn validate_accepts_10_time_slots() {
+        let input = make_input(10);
+        assert!(input.validate().is_ok());
+    }
+
+    #[test]
+    fn validate_rejects_11_time_slots() {
+        let input = make_input(11);
+        let err = input.validate().unwrap_err();
+        match err {
+            AppError::Validation(msg) => {
+                assert!(msg.contains("maximum"), "unexpected message: {msg}");
+            }
+            other => panic!("expected Validation error, got: {other:?}"),
+        }
     }
 }
