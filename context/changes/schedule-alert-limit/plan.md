@@ -212,5 +212,5 @@ Add an upper-bound check in `CreateHabitInput::validate()` to reject more than 1
 
 #### Automated
 
-- [x] 2.1 Rust tests pass: `cd src-tauri && cargo test`
-- [x] 2.2 Rust compiles cleanly: `cd src-tauri && cargo check`
+- [x] 2.1 Rust tests pass: `cd src-tauri && cargo test` — e73499a
+- [x] 2.2 Rust compiles cleanly: `cd src-tauri && cargo check` — e73499a
