@@ -1,6 +1,16 @@
-import { Button, Group, Stack, Text, Title } from "@mantine/core";
+import {
+	Button,
+	Collapse,
+	Group,
+	Stack,
+	Text,
+	Title,
+	UnstyledButton,
+} from "@mantine/core";
+import { DateInput } from "@mantine/dates";
 import { useNavigate } from "@tanstack/react-router";
 import { motion } from "framer-motion";
+import { ChevronDown } from "lucide-react";
 import { useEffect, useState } from "react";
 import { completeOnboarding, createHabit } from "../../lib/invoke";
 import type { TimeSlot } from "../../types";
@@ -39,7 +49,7 @@ export function ScheduleStep({
 	const [scheduleTimes, setScheduleTimes] = useState<TimeSlot[]>([
 		{ start_time: "10:00" },
 	]);
-	const [startDate, setStartDate] = useState(() => {
+	const [startDate] = useState(() => {
 		const now = new Date();
 		const year = now.getFullYear();
 		const month = String(now.getMonth() + 1).padStart(2, "0");
@@ -47,6 +57,7 @@ export function ScheduleStep({
 		return `${year}-${month}-${day}`;
 	});
 	const [endDate, setEndDate] = useState("");
+	const [optionsOpen, setOptionsOpen] = useState(false);
 	const [error, setError] = useState("");
 	const [submitting, setSubmitting] = useState(false);
 	const [bubbleVisible, setBubbleVisible] = useState(!animate);
@@ -152,49 +163,42 @@ export function ScheduleStep({
 							onTimesChange={setScheduleTimes}
 						/>
 
-						<Group grow>
-							<div>
-								<Text size="sm" fw={700} mb={4}>
-									Start date
+						<UnstyledButton
+							onClick={() => setOptionsOpen((o) => !o)}
+							style={{ alignSelf: "flex-start" }}
+						>
+							<Group gap={4}>
+								<Text size="sm" fw={600} c="teal">
+									Options
 								</Text>
-								<input
-									type="date"
-									value={startDate}
-									onChange={(e) => setStartDate(e.target.value)}
+								<ChevronDown
+									size={16}
+									color="var(--mantine-color-teal-6)"
 									style={{
-										width: "100%",
-										padding: "8px 12px",
-										border: "2px solid var(--mantine-color-gray-3)",
-										borderRadius: "var(--mantine-radius-md)",
-										fontSize: 14,
-										fontFamily: "inherit",
-										background: "white",
+										transform: optionsOpen ? "rotate(180deg)" : "rotate(0deg)",
+										transition: "transform 200ms ease",
 									}}
 								/>
-							</div>
-							<div>
-								<Text size="sm" fw={700} mb={4}>
-									End date{" "}
-									<Text span size="xs" c="dimmed">
-										(optional)
-									</Text>
-								</Text>
-								<input
-									type="date"
-									value={endDate}
-									onChange={(e) => setEndDate(e.target.value)}
-									style={{
-										width: "100%",
-										padding: "8px 12px",
-										border: "2px solid var(--mantine-color-gray-3)",
-										borderRadius: "var(--mantine-radius-md)",
-										fontSize: 14,
-										fontFamily: "inherit",
-										background: "white",
-									}}
-								/>
-							</div>
-						</Group>
+							</Group>
+						</UnstyledButton>
+
+						<Collapse expanded={optionsOpen}>
+							<DateInput
+								label="End date (optional)"
+								placeholder="Pick an end date"
+								clearable
+								size="md"
+								radius="lg"
+								value={endDate || null}
+								onChange={(value) => setEndDate(value ?? "")}
+								styles={{
+									label: {
+										fontWeight: 700,
+										marginBottom: 4,
+									},
+								}}
+							/>
+						</Collapse>
 					</Stack>
 				</motion.div>
 

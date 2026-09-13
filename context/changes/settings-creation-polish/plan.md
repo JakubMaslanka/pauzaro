@@ -201,9 +201,9 @@ Remove the start date field from both `CreateHabitView` and `ScheduleStep`, inst
 
 #### Automated
 
-- [x] 1.1 Lint passes
-- [x] 1.2 Type-check passes
-- [x] 1.3 Existing tests pass
+- [x] 1.1 Lint passes — 5776f23
+- [x] 1.2 Type-check passes — 5776f23
+- [x] 1.3 Existing tests pass — 5776f23
 
 #### Manual
 
@@ -215,10 +215,10 @@ Remove the start date field from both `CreateHabitView` and `ScheduleStep`, inst
 
 #### Automated
 
-- [ ] 2.1 Dependencies install successfully
-- [ ] 2.2 Lint passes
-- [ ] 2.3 Type-check passes
-- [ ] 2.4 Existing tests pass
+- [x] 2.1 Dependencies install successfully
+- [x] 2.2 Lint passes
+- [x] 2.3 Type-check passes
+- [x] 2.4 Existing tests pass
 
 #### Manual
 
