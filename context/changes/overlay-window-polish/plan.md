@@ -124,11 +124,11 @@ The `Card` import from `@mantine/core` can be removed since no other code in thi
 
 #### Automated
 
-- [ ] 1.1 Type checking passes
-- [ ] 1.2 Lint passes
-- [ ] 1.3 Rust check passes
-- [ ] 1.4 Rust tests pass
-- [ ] 1.5 Frontend tests pass
+- [x] 1.1 Type checking passes
+- [x] 1.2 Lint passes
+- [x] 1.3 Rust check passes
+- [x] 1.4 Rust tests pass
+- [x] 1.5 Frontend tests pass
 
 #### Manual
 

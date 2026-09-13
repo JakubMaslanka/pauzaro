@@ -115,12 +115,11 @@ export function DebugView() {
 			const webview = new WebviewWindow(label, {
 				url,
 				title: "Pauzaro",
-				width: 420,
+				width: 400,
 				height: 380,
 				alwaysOnTop: true,
 				center: true,
 				decorations: false,
-				transparent: true,
 			});
 
 			webview.once("tauri://error", (e) => {

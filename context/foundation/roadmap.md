@@ -44,7 +44,7 @@ A developer in deep focus loses track of time — forgets breaks, movement, and 
 | T-02 | testing-scheduler-overlay   | (testing) scheduler fires correctly, overlay→dashboard sync works                            | T-01          | test-plan §3 Phase 2                  | done |
 | S-10 | schedule-alert-limit          | see at most 10 time slots per day with info tooltip explaining the cap                      | S-01          | —                                     | in-progress |
 | S-11 | calendar-week-start-setting   | choose Sunday or Monday as first day of week, auto-detected from locale                     | S-03          | —                                     | backlog |
-| S-12 | overlay-window-polish         | see a full-bleed overlay panel (no rounded corners, no scroll, edge-to-edge)                | S-02          | —                                     | planning |
+| S-12 | overlay-window-polish         | see a full-bleed overlay panel (no rounded corners, no scroll, edge-to-edge)                | S-02          | —                                     | in-progress |
 | S-13 | settings-version-footer       | always see app version pinned to the bottom of the settings view                            | S-07          | —                                     | backlog |
 | S-14 | creation-view-simplify        | create a habit without seeing start/end date fields unless expanding "Advanced options"      | S-01          | —                                     | backlog |
 | T-03 | testing-cross-platform-gates | (testing) cross-platform overlay smoke + test runner wired into CI/pre-commit               | T-02          | test-plan §3 Phase 3                  | backlog |
@@ -265,7 +265,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Scope:**
   - **Backend (Rust):** In `TauriOverlaySpawner::spawn_overlay`, adjust `inner_size` to a comfortable fixed width (around 400px) and a height that fits the tallest state (auto-fail text) without scrolling. Keep `decorations(false)` and `always_on_top(true)`. Remove any `transparent` flag if set.
   - **Frontend (React):** In `OverlayPanel`, replace the current `OverlayCard` wrapper (centered `<Card radius="xl" shadow="xl">` inside transparent `100vh` container) with a full-bleed layout: remove outer padding, set `radius={0}` (square corners), remove `maxWidth` constraint, make the card fill the entire viewport edge-to-edge. The background should cover the full window area. Ensure no content overflow causes scrolling.
-- **Status:** planning
+- **Status:** in-progress
 
 ### S-13: Settings version sticky footer
 
