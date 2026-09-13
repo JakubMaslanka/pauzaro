@@ -42,11 +42,11 @@ A developer in deep focus loses track of time — forgets breaks, movement, and 
 | S-09 | single-instance-enforcement   | (infra) only one app instance runs at a time, keeping memory footprint minimal               | —             | —                                     | done |
 | T-01 | testing-critical-path-backend | (testing) streak calc and snooze rules proven correct via Rust unit tests                  | S-02          | test-plan §3 Phase 1                  | done |
 | T-02 | testing-scheduler-overlay   | (testing) scheduler fires correctly, overlay→dashboard sync works                            | T-01          | test-plan §3 Phase 2                  | done |
-| S-10 | schedule-alert-limit          | see at most 10 time slots per day with info tooltip explaining the cap                      | S-01          | —                                     | in-progress |
+| S-10 | schedule-alert-limit          | see at most 10 time slots per day with info tooltip explaining the cap                      | S-01          | —                                     | done |
 | S-11 | calendar-week-start-setting   | choose Sunday or Monday as first day of week, auto-detected from locale                     | S-03          | —                                     | backlog |
-| S-12 | overlay-window-polish         | see a full-bleed overlay panel (no rounded corners, no scroll, edge-to-edge)                | S-02          | —                                     | in-progress |
-| S-13 | settings-version-footer       | always see app version pinned to the bottom of the settings view                            | S-07          | —                                     | in-progress |
-| S-14 | creation-view-simplify        | create a habit without seeing start/end date fields unless expanding "Options"               | S-01          | —                                     | in-progress |
+| S-12 | overlay-window-polish         | see a full-bleed overlay panel (no rounded corners, no scroll, edge-to-edge)                | S-02          | —                                     | done |
+| S-13 | settings-version-footer       | always see app version pinned to the bottom of the settings view                            | S-07          | —                                     | done |
+| S-14 | creation-view-simplify        | create a habit without seeing start/end date fields unless expanding "Options"               | S-01          | —                                     | done |
 | T-03 | testing-cross-platform-gates | (testing) cross-platform overlay smoke + test runner wired into CI/pre-commit               | T-02          | test-plan §3 Phase 3                  | backlog |
 
 ## Streams
@@ -231,7 +231,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Scope:**
   - **Frontend (React):** In `SchedulePicker`, disable/hide the "+ Add time slot" button once `times.length >= 10`. Add a Mantine `Tooltip` wrapping a small `?` `ActionIcon` next to the "What time?" heading. Tooltip text: "You can schedule up to 10 reminders per day. Too many alerts reduce their effectiveness." Same limit applies in both `ScheduleStep` (onboarding) and `CreateHabitView` (dashboard) since both use the shared `SchedulePicker` component.
   - **Backend (Rust):** Optionally add server-side validation in `CreateHabitInput::validate()` rejecting `schedule_times.len() > 10` as a safety net.
-- **Status:** in-progress
+- **Status:** done
 
 ### S-11: Calendar week start setting
 
@@ -265,7 +265,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Scope:**
   - **Backend (Rust):** In `TauriOverlaySpawner::spawn_overlay`, adjust `inner_size` to a comfortable fixed width (around 400px) and a height that fits the tallest state (auto-fail text) without scrolling. Keep `decorations(false)` and `always_on_top(true)`. Remove any `transparent` flag if set.
   - **Frontend (React):** In `OverlayPanel`, replace the current `OverlayCard` wrapper (centered `<Card radius="xl" shadow="xl">` inside transparent `100vh` container) with a full-bleed layout: remove outer padding, set `radius={0}` (square corners), remove `maxWidth` constraint, make the card fill the entire viewport edge-to-edge. The background should cover the full window area. Ensure no content overflow causes scrolling.
-- **Status:** in-progress
+- **Status:** done
 
 ### S-13: Settings version sticky footer
 
@@ -279,7 +279,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Risk:** Low. CSS-only change.
 - **Scope:**
   - **Frontend (React):** In `SettingsView`, restructure the layout so the settings content scrolls independently while the version text remains fixed at the bottom of the viewport (or the settings container). Use `position: sticky; bottom: 0` or a flex layout with `margin-top: auto` on the version element. Keep the current styling (xs, dimmed, centered).
-- **Status:** in-progress
+- **Status:** done
 
 ### S-14: Creation view simplification
 
@@ -296,7 +296,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
     - **Remove start date field:** Delete the start date `<input type="date">` from the schedule step. The `startDate` state stays initialized to today's date and is sent to the backend as-is, silently.
     - **Collapse end date into "Options":** Replace the end date input with a collapsible section. Default state: collapsed, showing only a subtle "Options" text button. On click, the section expands to reveal the end date picker. Use Mantine's `Collapse` component for smooth animation.
     - The schedule step's primary view becomes: day picker chips + time slot picker only. Clean and focused.
-- **Status:** in-progress
+- **Status:** done
 
 ### T-01: Critical-path backend logic tests
 
