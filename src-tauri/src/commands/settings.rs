@@ -58,3 +58,23 @@ pub fn set_autostart(
 
     Ok(settings)
 }
+
+#[tauri::command]
+pub fn set_week_start(
+    app: AppHandle,
+    state: State<'_, AppState>,
+    day: String,
+) -> Result<Settings, AppError> {
+    let db = state.db.lock().map_err(|e| {
+        AppError::Database(format!("Failed to acquire database lock: {e}"))
+    })?;
+    let repo = SettingsRepository::new(db.connection());
+    repo.set_week_start(&day)?;
+
+    let settings = repo.get()?;
+
+    // Emit sync event for other UI components
+    let _ = app.emit("settings-changed", &settings);
+
+    Ok(settings)
+}

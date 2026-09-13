@@ -279,6 +279,7 @@ pub fn run() {
             commands::recovery::recover_habit_dismiss,
             commands::settings::get_settings,
             commands::settings::set_autostart,
+            commands::settings::set_week_start,
             commands::debug::debug_get_day_state,
             commands::debug::debug_insert_freeze,
             commands::debug::debug_remove_freeze,

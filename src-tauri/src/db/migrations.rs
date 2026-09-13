@@ -86,6 +86,8 @@ const MIGRATIONS: &[&str] = &[
         UNIQUE(habit_id, frozen_date)
     );
     CREATE INDEX IF NOT EXISTS idx_streak_freezes_habit_id ON streak_freezes(habit_id);",
+    // Migration 6: add week_start_day to settings (sentinel 'auto' triggers frontend locale detection)
+    "ALTER TABLE settings ADD COLUMN week_start_day TEXT NOT NULL DEFAULT 'auto';",
 ];
 
 /// Applies pending migrations tracked by `schema_version`.

@@ -170,10 +170,22 @@ fn handle_autostart_toggle(app: &tauri::AppHandle) {
         return;
     }
 
-    // Emit sync event for frontend
-    let _ = app.emit("settings-changed", Settings {
-        autostart_enabled: new_enabled,
-    });
+    // Emit sync event for frontend — read full settings from DB to include all fields
+    let app_state = app.state::<AppState>();
+    let settings = match app_state.db.lock() {
+        Ok(db) => {
+            let repo = SettingsRepository::new(db.connection());
+            repo.get().unwrap_or(Settings {
+                autostart_enabled: new_enabled,
+                week_start_day: "auto".to_string(),
+            })
+        }
+        Err(_) => Settings {
+            autostart_enabled: new_enabled,
+            week_start_day: "auto".to_string(),
+        },
+    };
+    let _ = app.emit("settings-changed", settings);
 }
 
 /// Revert CheckMenuItem to previous state on error.

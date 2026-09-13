@@ -16,11 +16,12 @@ impl<'a> SettingsRepository<'a> {
     pub fn get(&self) -> Result<Settings, AppError> {
         self.conn
             .query_row(
-                "SELECT autostart_enabled FROM settings WHERE id = 1",
+                "SELECT autostart_enabled, week_start_day FROM settings WHERE id = 1",
                 [],
                 |row| {
                     Ok(Settings {
                         autostart_enabled: row.get::<_, i32>(0)? != 0,
+                        week_start_day: row.get(1)?,
                     })
                 },
             )
@@ -32,6 +33,23 @@ impl<'a> SettingsRepository<'a> {
         self.conn.execute(
             "UPDATE settings SET autostart_enabled = ?1 WHERE id = 1",
             params![enabled as i32],
+        )?;
+        Ok(())
+    }
+
+    /// Update the week start day preference.
+    pub fn set_week_start(&self, day: &str) -> Result<(), AppError> {
+        match day {
+            "sunday" | "monday" => {}
+            _ => {
+                return Err(AppError::Validation(format!(
+                    "Invalid week_start_day: \"{day}\". Must be \"sunday\" or \"monday\""
+                )));
+            }
+        }
+        self.conn.execute(
+            "UPDATE settings SET week_start_day = ?1 WHERE id = 1",
+            params![day],
         )?;
         Ok(())
     }
