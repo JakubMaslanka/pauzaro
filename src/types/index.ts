@@ -89,4 +89,7 @@ export interface RecoveryResult {
 
 export interface Settings {
 	autostart_enabled: boolean;
+	week_start_day: "auto" | "sunday" | "monday";
 }
+
+export type WeekStartDay = "sunday" | "monday";

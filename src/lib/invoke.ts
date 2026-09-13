@@ -8,6 +8,7 @@ import type {
 	RecoveryResult,
 	Settings,
 	UserProfile,
+	WeekStartDay,
 } from "../types";
 
 export async function createUserProfile(
@@ -136,6 +137,10 @@ export async function getSettings(): Promise<Settings> {
 
 export async function setAutostart(enabled: boolean): Promise<Settings> {
 	return invoke<Settings>("set_autostart", { enabled });
+}
+
+export async function setWeekStart(day: WeekStartDay): Promise<Settings> {
+	return invoke<Settings>("set_week_start", { day });
 }
 
 // --- Debug commands (dev-only) ---

@@ -382,9 +382,9 @@ Note: `buildCalendarGrid` is currently a module-private function. Export it (or 
 
 #### Automated
 
-- [x] 1.1 Rust compiles: `cd src-tauri && cargo check`
-- [x] 1.2 Existing settings tests pass: `cd src-tauri && cargo test settings`
-- [x] 1.3 All Rust tests pass: `cd src-tauri && cargo test`
+- [x] 1.1 Rust compiles: `cd src-tauri && cargo check` — b3c8666
+- [x] 1.2 Existing settings tests pass: `cd src-tauri && cargo test settings` — b3c8666
+- [x] 1.3 All Rust tests pass: `cd src-tauri && cargo test` — b3c8666
 
 #### Manual
 
@@ -395,9 +395,9 @@ Note: `buildCalendarGrid` is currently a module-private function. Export it (or 
 
 #### Automated
 
-- [ ] 2.1 TypeScript compiles: `pnpm tsc --noEmit`
-- [ ] 2.2 Lint passes: `pnpm lint`
-- [ ] 2.3 Existing frontend tests pass: `pnpm test`
+- [x] 2.1 TypeScript compiles: `pnpm tsc --noEmit`
+- [x] 2.2 Lint passes: `pnpm lint`
+- [x] 2.3 Existing frontend tests pass: `pnpm test`
 
 #### Manual
 

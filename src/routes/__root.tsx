@@ -22,6 +22,7 @@ import { AppNavbar } from "../components/layout/AppNavbar";
 import { ErrorBoundary } from "../components/shared/ErrorBoundary";
 import { listHabits } from "../lib/invoke";
 import { useDashboardStore } from "../stores/dashboard";
+import { useSettingsStore } from "../stores/settings";
 import { theme } from "../theme";
 
 export const Route = createRootRoute({
@@ -83,6 +84,11 @@ function AppShellLayout() {
 	// Only show active habit highlight on dashboard route
 	const isDashboard = location.pathname === "/dashboard";
 	const visibleActiveId = isDashboard ? activeHabitId : null;
+
+	// Initialize settings store on app start
+	useEffect(() => {
+		useSettingsStore.getState().init();
+	}, []);
 
 	const loadHabits = useCallback(async () => {
 		try {

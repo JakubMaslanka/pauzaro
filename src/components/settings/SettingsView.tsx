@@ -12,13 +12,13 @@ import { listen } from "@tauri-apps/api/event";
 import { motion } from "framer-motion";
 import { Power, Settings as SettingsIcon } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
-import { getSettings, setAutostart } from "../../lib/invoke";
-import type { Settings } from "../../types";
+import { useSettingsStore } from "../../stores/settings";
 import classes from "./SettingsView.module.css";
 
 export function SettingsView() {
-	const [settings, setSettings] = useState<Settings | null>(null);
-	const [loading, setLoading] = useState(true);
+	const autostartEnabled = useSettingsStore((s) => s.autostartEnabled);
+	const loaded = useSettingsStore((s) => s.loaded);
+
 	const [toggling, setToggling] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 	const [version, setVersion] = useState("");
@@ -27,24 +27,6 @@ export function SettingsView() {
 		getVersion()
 			.then(setVersion)
 			.catch(() => setVersion(""));
-	}, []);
-
-	useEffect(() => {
-		getSettings()
-			.then(setSettings)
-			.catch((e) => console.error("Failed to load settings:", e))
-			.finally(() => setLoading(false));
-	}, []);
-
-	// Sync with tray toggle via Tauri event
-	useEffect(() => {
-		const unlisten = listen<Settings>("settings-changed", (event) => {
-			setSettings(event.payload);
-		});
-
-		return () => {
-			unlisten.then((fn) => fn());
-		};
 	}, []);
 
 	// Listen for autostart errors from tray toggle
@@ -59,14 +41,13 @@ export function SettingsView() {
 	}, []);
 
 	const handleToggle = useCallback(async () => {
-		if (!settings || toggling) return;
+		if (toggling) return;
 
 		setToggling(true);
 		setError(null);
 
 		try {
-			const updated = await setAutostart(!settings.autostart_enabled);
-			setSettings(updated);
+			await useSettingsStore.getState().setAutostart(!autostartEnabled);
 		} catch (e) {
 			const message =
 				e instanceof Error ? e.message : typeof e === "string" ? e : String(e);
@@ -78,7 +59,7 @@ export function SettingsView() {
 		} finally {
 			setToggling(false);
 		}
-	}, [settings, toggling]);
+	}, [autostartEnabled, toggling]);
 
 	return (
 		<Container size="sm" py="xl">
@@ -94,18 +75,18 @@ export function SettingsView() {
 						<Title order={2}>Settings</Title>
 					</Group>
 
-					{loading ? (
+					{!loaded ? (
 						<Text c="dimmed">Loading settings...</Text>
 					) : (
 						<UnstyledButton
 							onClick={handleToggle}
 							disabled={toggling}
 							className={classes.card}
-							data-checked={settings?.autostart_enabled || undefined}
+							data-checked={autostartEnabled || undefined}
 						>
 							<Group wrap="nowrap" align="flex-start" gap="md">
 								<Checkbox
-									checked={settings?.autostart_enabled ?? false}
+									checked={autostartEnabled}
 									onChange={() => {}}
 									tabIndex={-1}
 									size="md"
