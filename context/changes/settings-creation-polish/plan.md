@@ -201,9 +201,9 @@ Remove the start date field from both `CreateHabitView` and `ScheduleStep`, inst
 
 #### Automated
 
-- [ ] 1.1 Lint passes
-- [ ] 1.2 Type-check passes
-- [ ] 1.3 Existing tests pass
+- [x] 1.1 Lint passes
+- [x] 1.2 Type-check passes
+- [x] 1.3 Existing tests pass
 
 #### Manual
 
