@@ -1,4 +1,4 @@
-import { Button, Card, Loader, Stack, Text } from "@mantine/core";
+import { Button, Loader, Stack, Text } from "@mantine/core";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { getHabit, markDone, snoozeHabit } from "../../lib/invoke";
@@ -198,23 +198,13 @@ function OverlayCard({ children }: { children: React.ReactNode }) {
 				alignItems: "center",
 				justifyContent: "center",
 				height: "100vh",
-				padding: 16,
-				background: "transparent",
+				width: "100%",
+				padding: "0 24px",
+				background: "#F7F5F0",
+				overflow: "hidden",
 			}}
 		>
-			<Card
-				shadow="xl"
-				padding="xl"
-				radius="xl"
-				withBorder
-				style={{
-					width: "100%",
-					maxWidth: 360,
-					background: "var(--mantine-color-body)",
-				}}
-			>
-				{children}
-			</Card>
+			{children}
 		</div>
 	);
 }

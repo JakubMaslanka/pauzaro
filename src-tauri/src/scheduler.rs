@@ -53,7 +53,7 @@ impl OverlaySpawner for TauriOverlaySpawner {
             tauri::WebviewUrl::App(url.into()),
         )
         .title("Pauzaro")
-        .inner_size(420.0, 380.0)
+        .inner_size(400.0, 380.0)
         .always_on_top(true)
         .decorations(false)
         .center()
