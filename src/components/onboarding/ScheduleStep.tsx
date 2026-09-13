@@ -56,7 +56,7 @@ export function ScheduleStep({
 		const day = String(now.getDate()).padStart(2, "0");
 		return `${year}-${month}-${day}`;
 	});
-	const [endDate, setEndDate] = useState("");
+	const [endDate, setEndDate] = useState<string | null>(null);
 	const [optionsOpen, setOptionsOpen] = useState(false);
 	const [error, setError] = useState("");
 	const [submitting, setSubmitting] = useState(false);
@@ -133,7 +133,7 @@ export function ScheduleStep({
 				overflowY: "auto",
 			}}
 		>
-			<Stack align="center" gap="lg" maw={460} w="100%">
+			<Stack align="center" gap="lg" maw={500} w="100%">
 				{/* Mascot + bubble */}
 				<motion.div {...stagger(0, animate)}>
 					<div style={{ position: "relative", display: "inline-block" }}>
@@ -189,8 +189,8 @@ export function ScheduleStep({
 								clearable
 								size="md"
 								radius="lg"
-								value={endDate || null}
-								onChange={(value) => setEndDate(value ?? "")}
+								value={endDate}
+								onChange={(value) => setEndDate(value)}
 								styles={{
 									label: {
 										fontWeight: 700,

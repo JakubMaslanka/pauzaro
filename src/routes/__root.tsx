@@ -1,4 +1,6 @@
 import "@mantine/core/styles.css";
+import "@mantine/dates/styles.css";
+import "@mantine/notifications/styles.css";
 import "@fontsource/nunito/400.css";
 import "@fontsource/nunito/600.css";
 import "@fontsource/nunito/700.css";
@@ -6,6 +8,7 @@ import "@fontsource/nunito/800.css";
 import "../styles/global.css";
 
 import { AppShell, MantineProvider } from "@mantine/core";
+import { Notifications } from "@mantine/notifications";
 import {
 	createRootRoute,
 	Outlet,
@@ -48,6 +51,7 @@ function RootLayout() {
 	if (isOverlay) {
 		return (
 			<MantineProvider theme={theme} defaultColorScheme="light">
+				<Notifications position="bottom-right" />
 				<ErrorBoundary>
 					<div className="app-root">
 						<Outlet />
@@ -59,6 +63,7 @@ function RootLayout() {
 
 	return (
 		<MantineProvider theme={theme} defaultColorScheme="light">
+			<Notifications position="bottom-right" />
 			<ErrorBoundary>
 				<AppShellLayout />
 			</ErrorBoundary>

@@ -12,6 +12,7 @@ import {
 	TextInput,
 	Title,
 } from "@mantine/core";
+import { notifications } from "@mantine/notifications";
 import { useNavigate } from "@tanstack/react-router";
 import { WebviewWindow } from "@tauri-apps/api/webviewWindow";
 import { motion } from "framer-motion";
@@ -54,7 +55,6 @@ function formatYesterday(): string {
 
 export function DebugView() {
 	const navigate = useNavigate();
-	const [status, setStatus] = useState<string>("");
 	const [habits, setHabits] = useState<Habit[]>([]);
 	const [selectedHabitId, setSelectedHabitId] = useState<string | null>(null);
 	const [selectedDate, setSelectedDate] = useState(formatYesterday);
@@ -81,7 +81,7 @@ export function DebugView() {
 			setDayState(state);
 		} catch (error) {
 			const message = error instanceof Error ? error.message : String(error);
-			setStatus(`Error loading state: ${message}`);
+			notifications.show({ title: "Error", message, color: "red" });
 			setDayState(null);
 		}
 	}, [selectedHabitId, selectedDate]);
@@ -103,7 +103,10 @@ export function DebugView() {
 	const handleTriggerOverlay = useCallback(async () => {
 		try {
 			if (habits.length === 0) {
-				setStatus("No habits found — create one first!");
+				notifications.show({
+					message: "No habits found — create one first!",
+					color: "orange",
+				});
 				return;
 			}
 			const habit = habits[0];
@@ -124,13 +127,20 @@ export function DebugView() {
 
 			webview.once("tauri://error", (e) => {
 				console.error("Overlay window error:", e);
-				setStatus(`Error: ${String(e.payload)}`);
+				notifications.show({
+					title: "Error",
+					message: String(e.payload),
+					color: "red",
+				});
 			});
 
-			setStatus(`Overlay opened for "${habit.name}"`);
+			notifications.show({
+				message: `Overlay opened for "${habit.name}"`,
+				color: "teal",
+			});
 		} catch (error) {
 			const message = error instanceof Error ? error.message : String(error);
-			setStatus(`Error: ${message}`);
+			notifications.show({ title: "Error", message, color: "red" });
 		}
 	}, [habits]);
 
@@ -138,11 +148,11 @@ export function DebugView() {
 		(action: () => Promise<string>) => async () => {
 			try {
 				const msg = await action();
-				setStatus(msg);
+				notifications.show({ message: msg, color: "teal" });
 				await refreshDayState();
 			} catch (error) {
 				const message = error instanceof Error ? error.message : String(error);
-				setStatus(`Error: ${message}`);
+				notifications.show({ title: "Error", message, color: "red" });
 			}
 		},
 		[refreshDayState],
@@ -244,7 +254,7 @@ export function DebugView() {
 								} catch (error) {
 									const message =
 										error instanceof Error ? error.message : String(error);
-									setStatus(`Error: ${message}`);
+									notifications.show({ title: "Error", message, color: "red" });
 								}
 							}}
 							leftSection={<RotateCcw size={16} />}
@@ -446,20 +456,6 @@ export function DebugView() {
 							Restart app after to trigger real freeze consumption flow.
 						</Text>
 					</Box>
-
-					{/* Status message */}
-					{status ? (
-						<Card
-							withBorder
-							radius="md"
-							p="xs"
-							bg="var(--mantine-color-dark-6)"
-						>
-							<Text size="sm" ta="center">
-								{status}
-							</Text>
-						</Card>
-					) : null}
 				</Stack>
 			</motion.div>
 		</Container>

@@ -16,7 +16,7 @@ function getPerformanceBadge(
 	totalScheduledDays: number,
 ) {
 	if (totalScheduledDays === 0) {
-		return { label: "NO DATA", color: "gray" };
+		return { label: "JUST STARTED 🌱", color: "teal" };
 	}
 	const ratio = daysPracticed / totalScheduledDays;
 	if (ratio > 0.8) return { label: "GREAT", color: "teal" };

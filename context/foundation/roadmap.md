@@ -359,7 +359,8 @@ Tasks that are not dev slices but need to happen before or around release. Track
 - [ ] **Generate new app icons** for Pauzaro (all required platform sizes)
 - [ ] **Generate mascot variants:**
   - Mascot waving an arm (friendly greeting pose)
-  - Mascot that is busy noting something in a small notepad, wearing glasses on its nose, with a "pleasing dog eyes" facial expression
+  - Mascot that is busy noting something in a small notepad, wearing glasses on its nose
+  - "pleasing dog eyes" facial expression
 - [ ] Integrate new mascot assets into the app (replace or extend current `mascot-happy.png` / `mascot-neutral.png` / `mascot-sad.png`)
 
 ## Done

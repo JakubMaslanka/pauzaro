@@ -1,7 +1,6 @@
 import {
 	Button,
 	Collapse,
-	Container,
 	Group,
 	Stack,
 	Text,
@@ -14,12 +13,14 @@ import { DateInput } from "@mantine/dates";
 import { useNavigate } from "@tanstack/react-router";
 import { emit } from "@tauri-apps/api/event";
 import { motion } from "framer-motion";
-import { ArrowLeft, ChevronDown } from "lucide-react";
-import { useState } from "react";
+import { ChevronDown } from "lucide-react";
+import { useEffect, useState } from "react";
 import { createHabit } from "../../lib/invoke";
 import type { TimeSlot } from "../../types";
 import { IconPicker } from "../shared/IconPicker";
+import { MascotImage } from "../shared/MascotImage";
 import { SchedulePicker } from "../shared/SchedulePicker";
+import { SpeechBubble } from "../shared/SpeechBubble";
 
 type Step = "details" | "schedule";
 
@@ -35,6 +36,15 @@ const DEFAULT_DETAILS: HabitDetails = {
 	icon: { name: "Dumbbell", color: "#0d9488", strokeWidth: 2 },
 };
 
+function stagger(index: number, animate: boolean) {
+	if (!animate) return { initial: false, animate: { opacity: 1, y: 0 } };
+	return {
+		initial: { opacity: 0, y: 15 },
+		animate: { opacity: 1, y: 0 },
+		transition: { delay: index * 0.2, duration: 0.3 },
+	};
+}
+
 export function CreateHabitView() {
 	const navigate = useNavigate();
 	const [step, setStep] = useState<Step>("details");
@@ -47,14 +57,22 @@ export function CreateHabitView() {
 		const now = new Date();
 		return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
 	});
-	const [endDate, setEndDate] = useState("");
+	const [endDate, setEndDate] = useState<string | null>(null);
 	const [optionsOpen, setOptionsOpen] = useState(false);
 	const [error, setError] = useState("");
 	const [submitting, setSubmitting] = useState(false);
+	const [bubbleVisible, setBubbleVisible] = useState(false);
+
+	// biome-ignore lint/correctness/useExhaustiveDependencies: step triggers bubble reset on step change
+	useEffect(() => {
+		setBubbleVisible(false);
+		const timer = setTimeout(() => setBubbleVisible(true), 350);
+		return () => clearTimeout(timer);
+	}, [step]);
 
 	const handleDetailsNext = () => {
 		if (!details.name.trim()) {
-			setError("Every habit needs a name! 🏷️");
+			setError("Every habit needs a name!");
 			return;
 		}
 		setError("");
@@ -72,15 +90,15 @@ export function CreateHabitView() {
 
 	const handleSubmit = async () => {
 		if (scheduleDays.length === 0) {
-			setError("Pick at least one day! 📅");
+			setError("Pick at least one day!");
 			return;
 		}
 		if (scheduleTimes.length === 0) {
-			setError("Add at least one time slot! ⏰");
+			setError("Add at least one time slot!");
 			return;
 		}
 		if (hasDuplicates()) {
-			setError("Remove duplicate time slots first! 🔁");
+			setError("Remove duplicate time slots first!");
 			return;
 		}
 
@@ -112,18 +130,7 @@ export function CreateHabitView() {
 	};
 
 	return (
-		<Container size="sm" py="xl">
-			<Button
-				variant="subtle"
-				color="gray"
-				radius="xl"
-				leftSection={<ArrowLeft size={16} />}
-				onClick={() => navigate({ to: "/dashboard" })}
-				mb="md"
-			>
-				Back to dashboard
-			</Button>
-
+		<>
 			{step === "details" ? (
 				<motion.div
 					key="details"
@@ -131,67 +138,99 @@ export function CreateHabitView() {
 					animate={{ opacity: 1, x: 0 }}
 					exit={{ opacity: 0, x: -50 }}
 					transition={{ duration: 0.3 }}
+					style={{
+						display: "flex",
+						flexDirection: "column",
+						alignItems: "center",
+						height: "100%",
+						padding: 32,
+						overflowY: "auto",
+					}}
 				>
-					<Stack align="center" gap="lg" maw={420} mx="auto">
-						<Stack gap={4} align="center">
-							<Text size="xl">✨🦕</Text>
+					<Stack align="center" gap="md" maw={420} w="100%">
+						{/* Mascot + bubble */}
+						<motion.div {...stagger(0, true)}>
+							<div
+								style={{
+									position: "relative",
+									display: "inline-block",
+									marginTop: 48,
+								}}
+							>
+								<SpeechBubble
+									message={`Another great habit incoming!\nLet's set it up - you know the drill! 💪`}
+									visible={bubbleVisible}
+									offsetY={-10}
+									offsetX={-140}
+									width={340}
+								/>
+								<MascotImage reaction="promising" size={140} />
+							</div>
+						</motion.div>
+
+						{/* Title */}
+						<motion.div {...stagger(2, true)}>
 							<Title order={2} fw={800} ta="center">
 								Create a new habit!
 							</Title>
-							<Text size="sm" c="dimmed" ta="center">
-								Pick a name, icon, and give it some personality.
-							</Text>
-						</Stack>
+						</motion.div>
 
-						<Stack gap="md" w="100%">
-							<TextInput
-								label="Habit name"
-								placeholder="e.g. Stretch break, Walk time, Eye rest"
-								value={details.name}
-								onChange={(e) =>
-									setDetails({
-										...details,
-										name: e.currentTarget.value,
-									})
-								}
-								error={error && step === "details" ? error : undefined}
-								size="md"
-								radius="lg"
-								styles={{
-									label: { fontWeight: 700, marginBottom: 4 },
-								}}
-							/>
-							<Textarea
-								label="Description (optional)"
-								placeholder="What will you do? 🤸"
-								value={details.description}
-								onChange={(e) =>
-									setDetails({
-										...details,
-										description: e.currentTarget.value,
-									})
-								}
-								size="md"
-								radius="lg"
-								rows={2}
-								styles={{
-									label: { fontWeight: 700, marginBottom: 4 },
-								}}
-							/>
-							<div>
-								<Text size="sm" fw={700} mb={4}>
-									Pick an icon
-								</Text>
-								<IconPicker
-									value={details.icon}
-									onChange={(icon) => setDetails({ ...details, icon })}
+						{/* Form */}
+						<motion.div {...stagger(3, true)} style={{ width: "100%" }}>
+							<Stack gap="md" w="100%">
+								<Group gap="sm" align="flex-end" wrap="nowrap">
+									<TextInput
+										label="Habit name"
+										placeholder="e.g. Stretch break, Walk time, Eye rest"
+										value={details.name}
+										onChange={(e) =>
+											setDetails({
+												...details,
+												name: e.currentTarget.value.slice(0, 45),
+											})
+										}
+										error={error && step === "details" ? error : undefined}
+										maxLength={45}
+										size="md"
+										radius="lg"
+										style={{ flex: 1 }}
+										styles={{
+											label: { fontWeight: 700, marginBottom: 4 },
+										}}
+									/>
+									<IconPicker
+										value={details.icon}
+										onChange={(icon) => setDetails({ ...details, icon })}
+									/>
+								</Group>
+
+								<Textarea
+									label="Description (optional)"
+									placeholder="What will you do? 🤸"
+									value={details.description}
+									onChange={(e) =>
+										setDetails({
+											...details,
+											description: e.currentTarget.value.slice(0, 255),
+										})
+									}
+									maxLength={255}
+									size="md"
+									radius="lg"
+									rows={2}
+									styles={{
+										label: { fontWeight: 700, marginBottom: 4 },
+									}}
 								/>
-							</div>
-						</Stack>
+							</Stack>
+						</motion.div>
 
-						<Button color="teal" radius="xl" onClick={handleDetailsNext}>
-							Next step 📅
-						</Button>
+						{/* Button */}
+						<motion.div {...stagger(4, true)}>
+							<Button color="teal" radius="xl" onClick={handleDetailsNext}>
+								Next step 📅
+							</Button>
+						</motion.div>
 					</Stack>
 				</motion.div>
 			) : (
@@ -201,65 +240,85 @@ export function CreateHabitView() {
 					animate={{ opacity: 1, x: 0 }}
 					exit={{ opacity: 0, x: -50 }}
 					transition={{ duration: 0.3 }}
+					style={{
+						display: "flex",
+						flexDirection: "column",
+						alignItems: "center",
+						height: "100%",
+						padding: 32,
+						overflowY: "auto",
+					}}
 				>
-					<Stack align="center" gap="lg" maw={460} mx="auto">
-						<Stack gap={4} align="center">
-							<Text size="xl">📅🦕</Text>
+					<Stack align="center" gap="lg" maw={500} w="100%">
+						{/* Mascot + bubble */}
+						<motion.div {...stagger(0, true)}>
+							<div style={{ position: "relative", display: "inline-block" }}>
+								<SpeechBubble
+									message="Pick your schedule and I'll keep you on track — as always! ⏰"
+									visible={bubbleVisible}
+									offsetY={4}
+								/>
+								<MascotImage reaction="happy" size={100} />
+							</div>
+						</motion.div>
+
+						{/* Title */}
+						<motion.div {...stagger(2, true)}>
 							<Title order={2} fw={800} ta="center">
 								When should we remind you?
 							</Title>
-							<Text size="sm" c="dimmed" ta="center">
-								Set your schedule — our dino will nudge you on time!
-							</Text>
-						</Stack>
+						</motion.div>
 
-						<Stack gap="md" w="100%">
-							<SchedulePicker
-								days={scheduleDays}
-								times={scheduleTimes}
-								onDaysChange={setScheduleDays}
-								onTimesChange={setScheduleTimes}
-							/>
+						{/* Form */}
+						<motion.div {...stagger(3, true)} style={{ width: "100%" }}>
+							<Stack gap="md" w="100%">
+								<SchedulePicker
+									days={scheduleDays}
+									times={scheduleTimes}
+									onDaysChange={setScheduleDays}
+									onTimesChange={setScheduleTimes}
+								/>
 
-							<UnstyledButton
-								onClick={() => setOptionsOpen((o) => !o)}
-								style={{ alignSelf: "flex-start" }}
-							>
-								<Group gap={4}>
-									<Text size="sm" fw={600} c="teal">
-										Options
-									</Text>
-									<ChevronDown
-										size={16}
-										color="var(--mantine-color-teal-6)"
-										style={{
-											transform: optionsOpen
-												? "rotate(180deg)"
-												: "rotate(0deg)",
-											transition: "transform 200ms ease",
+								<UnstyledButton
+									onClick={() => setOptionsOpen((o) => !o)}
+									style={{ alignSelf: "flex-start" }}
+								>
+									<Group gap={4}>
+										<Text size="sm" fw={600} c="teal">
+											Options
+										</Text>
+										<ChevronDown
+											size={16}
+											color="var(--mantine-color-teal-6)"
+											style={{
+												transform: optionsOpen
+													? "rotate(180deg)"
+													: "rotate(0deg)",
+												transition: "transform 200ms ease",
+											}}
+										/>
+									</Group>
+								</UnstyledButton>
+
+								<Collapse expanded={optionsOpen}>
+									<DateInput
+										label="End date (optional)"
+										placeholder="Pick an end date"
+										clearable
+										size="md"
+										radius="lg"
+										value={endDate}
+										onChange={(value) => setEndDate(value)}
+										styles={{
+											label: {
+												fontWeight: 700,
+												marginBottom: 4,
+											},
 										}}
 									/>
-								</Group>
-							</UnstyledButton>
-
-							<Collapse expanded={optionsOpen}>
-								<DateInput
-									label="End date (optional)"
-									placeholder="Pick an end date"
-									clearable
-									size="md"
-									radius="lg"
-									value={endDate || null}
-									onChange={(value) => setEndDate(value ?? "")}
-									styles={{
-										label: {
-											fontWeight: 700,
-											marginBottom: 4,
-										},
-									}}
-								/>
-							</Collapse>
-						</Stack>
+								</Collapse>
+							</Stack>
+						</motion.div>
 
 						{error ? (
 							<Text size="sm" c="red" ta="center">
@@ -267,31 +326,34 @@ export function CreateHabitView() {
 							</Text>
 						) : null}
 
-						<Group>
-							<Button
-								variant="subtle"
-								color="gray"
-								radius="xl"
-								onClick={() => {
-									setError("");
-									setStep("details");
-								}}
-							>
-								← Back
-							</Button>
-							<Button
-								color="teal"
-								radius="xl"
-								size="md"
-								onClick={handleSubmit}
-								loading={submitting}
-							>
-								Create habit! 🎉
-							</Button>
-						</Group>
+						{/* Buttons */}
+						<motion.div {...stagger(4, true)}>
+							<Group>
+								<Button
+									variant="subtle"
+									color="gray"
+									radius="xl"
+									onClick={() => {
+										setError("");
+										setStep("details");
+									}}
+								>
+									← Back
+								</Button>
+								<Button
+									color="teal"
+									radius="xl"
+									size="md"
+									onClick={handleSubmit}
+									loading={submitting}
+								>
+									Create habit! 🎉
+								</Button>
+							</Group>
+						</motion.div>
 					</Stack>
 				</motion.div>
 			)}
-		</Container>
+		</>
 	);
 }
