@@ -34,3 +34,25 @@
 .checkbox {
 	pointer-events: none;
 }
+
+.wrapper {
+	display: flex;
+	flex-direction: column;
+	min-height: calc(100vh - var(--mantine-spacing-xl) * 2);
+}
+
+.content {
+	flex: 1;
+}
+
+.versionFooter {
+	position: sticky;
+	bottom: 0;
+	padding-block: var(--mantine-spacing-md);
+	text-align: center;
+	background: linear-gradient(
+		to bottom,
+		transparent,
+		light-dark(#f7f5f0, var(--mantine-color-dark-7)) 30%
+	);
+}

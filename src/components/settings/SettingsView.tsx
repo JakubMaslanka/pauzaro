@@ -86,8 +86,9 @@ export function SettingsView() {
 				initial={{ opacity: 0, y: -10 }}
 				animate={{ opacity: 1, y: 0 }}
 				transition={{ duration: 0.4 }}
+				className={classes.wrapper}
 			>
-				<Stack gap="lg">
+				<Stack gap="lg" className={classes.content}>
 					<Group gap="sm">
 						<SettingsIcon size={28} color="var(--mantine-color-teal-6)" />
 						<Title order={2}>Settings</Title>
@@ -132,13 +133,15 @@ export function SettingsView() {
 							⚠️ {error}
 						</Text>
 					) : null}
+				</Stack>
 
-					{version ? (
-						<Text size="xs" c="dimmed" ta="center" mt="xl">
+				{version ? (
+					<div className={classes.versionFooter}>
+						<Text size="xs" c="dimmed">
 							Pauzaro v{version}
 						</Text>
-					) : null}
-				</Stack>
+					</div>
+				) : null}
 			</motion.div>
 		</Container>
 	);

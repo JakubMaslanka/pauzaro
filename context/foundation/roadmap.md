@@ -3,7 +3,7 @@ project: "Pauzaro"
 version: 1
 status: draft
 created: 2026-08-25
-updated: 2026-09-12
+updated: 2026-09-13
 
 prd_version: 1
 main_goal: learn
@@ -45,8 +45,8 @@ A developer in deep focus loses track of time — forgets breaks, movement, and 
 | S-10 | schedule-alert-limit          | see at most 10 time slots per day with info tooltip explaining the cap                      | S-01          | —                                     | in-progress |
 | S-11 | calendar-week-start-setting   | choose Sunday or Monday as first day of week, auto-detected from locale                     | S-03          | —                                     | backlog |
 | S-12 | overlay-window-polish         | see a full-bleed overlay panel (no rounded corners, no scroll, edge-to-edge)                | S-02          | —                                     | in-progress |
-| S-13 | settings-version-footer       | always see app version pinned to the bottom of the settings view                            | S-07          | —                                     | backlog |
-| S-14 | creation-view-simplify        | create a habit without seeing start/end date fields unless expanding "Advanced options"      | S-01          | —                                     | backlog |
+| S-13 | settings-version-footer       | always see app version pinned to the bottom of the settings view                            | S-07          | —                                     | in-progress |
+| S-14 | creation-view-simplify        | create a habit without seeing start/end date fields unless expanding "Options"               | S-01          | —                                     | in-progress |
 | T-03 | testing-cross-platform-gates | (testing) cross-platform overlay smoke + test runner wired into CI/pre-commit               | T-02          | test-plan §3 Phase 3                  | backlog |
 
 ## Streams
@@ -279,7 +279,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Risk:** Low. CSS-only change.
 - **Scope:**
   - **Frontend (React):** In `SettingsView`, restructure the layout so the settings content scrolls independently while the version text remains fixed at the bottom of the viewport (or the settings container). Use `position: sticky; bottom: 0` or a flex layout with `margin-top: auto` on the version element. Keep the current styling (xs, dimmed, centered).
-- **Status:** backlog
+- **Status:** in-progress
 
 ### S-14: Creation view simplification
 
@@ -294,9 +294,9 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Scope:**
   - **Frontend (React):** Applies to both `CreateHabitView` (dashboard) and `ScheduleStep` (onboarding).
     - **Remove start date field:** Delete the start date `<input type="date">` from the schedule step. The `startDate` state stays initialized to today's date and is sent to the backend as-is, silently.
-    - **Collapse end date into "Advanced options":** Replace the end date input with a collapsible section. Default state: collapsed, showing only a subtle "Advanced options" text button. On click, the section expands to reveal the end date picker. Use Mantine's `Collapse` component for smooth animation.
+    - **Collapse end date into "Options":** Replace the end date input with a collapsible section. Default state: collapsed, showing only a subtle "Options" text button. On click, the section expands to reveal the end date picker. Use Mantine's `Collapse` component for smooth animation.
     - The schedule step's primary view becomes: day picker chips + time slot picker only. Clean and focused.
-- **Status:** backlog
+- **Status:** in-progress
 
 ### T-01: Critical-path backend logic tests
 
