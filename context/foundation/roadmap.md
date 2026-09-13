@@ -232,6 +232,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
   - **Frontend (React):** In `SchedulePicker`, disable/hide the "+ Add time slot" button once `times.length >= 10`. Add a Mantine `Tooltip` wrapping a small `?` `ActionIcon` next to the "What time?" heading. Tooltip text: "You can schedule up to 10 reminders per day. Too many alerts reduce their effectiveness." Same limit applies in both `ScheduleStep` (onboarding) and `CreateHabitView` (dashboard) since both use the shared `SchedulePicker` component.
   - **Backend (Rust):** Optionally add server-side validation in `CreateHabitInput::validate()` rejecting `schedule_times.len() > 10` as a safety net.
 - **Status:** done
+- **Linear:** [JAC-20](https://linear.app/jacobs-agents-playground/issue/JAC-20/s-10-schedule-alert-limit-max-10-time-slots)
 
 ### S-11: Calendar week start setting
 
@@ -266,6 +267,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
   - **Backend (Rust):** In `TauriOverlaySpawner::spawn_overlay`, adjust `inner_size` to a comfortable fixed width (around 400px) and a height that fits the tallest state (auto-fail text) without scrolling. Keep `decorations(false)` and `always_on_top(true)`. Remove any `transparent` flag if set.
   - **Frontend (React):** In `OverlayPanel`, replace the current `OverlayCard` wrapper (centered `<Card radius="xl" shadow="xl">` inside transparent `100vh` container) with a full-bleed layout: remove outer padding, set `radius={0}` (square corners), remove `maxWidth` constraint, make the card fill the entire viewport edge-to-edge. The background should cover the full window area. Ensure no content overflow causes scrolling.
 - **Status:** done
+- **Linear:** [JAC-21](https://linear.app/jacobs-agents-playground/issue/JAC-21/s-12-overlay-window-polish-full-bleed-panel)
 
 ### S-13: Settings version sticky footer
 
@@ -280,6 +282,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Scope:**
   - **Frontend (React):** In `SettingsView`, restructure the layout so the settings content scrolls independently while the version text remains fixed at the bottom of the viewport (or the settings container). Use `position: sticky; bottom: 0` or a flex layout with `margin-top: auto` on the version element. Keep the current styling (xs, dimmed, centered).
 - **Status:** done
+- **Linear:** [JAC-22](https://linear.app/jacobs-agents-playground/issue/JAC-22/s-13-settings-version-sticky-footer)
 
 ### S-14: Creation view simplification
 
@@ -297,6 +300,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
     - **Collapse end date into "Options":** Replace the end date input with a collapsible section. Default state: collapsed, showing only a subtle "Options" text button. On click, the section expands to reveal the end date picker. Use Mantine's `Collapse` component for smooth animation.
     - The schedule step's primary view becomes: day picker chips + time slot picker only. Clean and focused.
 - **Status:** done
+- **Linear:** [JAC-23](https://linear.app/jacobs-agents-playground/issue/JAC-23/s-14-creation-view-simplification-options-toggle)
 
 ### T-01: Critical-path backend logic tests
 
