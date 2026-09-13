@@ -13,6 +13,7 @@ import { motion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import { useEffect, useState } from "react";
 import { completeOnboarding, createHabit } from "../../lib/invoke";
+import { useSettingsStore } from "../../stores/settings";
 import type { TimeSlot } from "../../types";
 import { MascotImage } from "../shared/MascotImage";
 import { SchedulePicker } from "../shared/SchedulePicker";
@@ -45,6 +46,7 @@ export function ScheduleStep({
 	animate,
 }: ScheduleStepProps) {
 	const navigate = useNavigate();
+	const weekStartDay = useSettingsStore((s) => s.weekStartDay);
 	const [scheduleDays, setScheduleDays] = useState<number[]>([1, 2, 3, 4, 5]);
 	const [scheduleTimes, setScheduleTimes] = useState<TimeSlot[]>([
 		{ start_time: "10:00" },
@@ -159,6 +161,7 @@ export function ScheduleStep({
 						<SchedulePicker
 							days={scheduleDays}
 							times={scheduleTimes}
+							weekStartDay={weekStartDay}
 							onDaysChange={setScheduleDays}
 							onTimesChange={setScheduleTimes}
 						/>

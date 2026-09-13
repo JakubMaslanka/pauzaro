@@ -22,6 +22,7 @@ import {
 	markDone,
 } from "../../lib/invoke";
 import { useDashboardStore } from "../../stores/dashboard";
+import { useSettingsStore } from "../../stores/settings";
 import type {
 	Completion,
 	Habit,
@@ -167,6 +168,7 @@ export function Dashboard() {
 	}, [loadData]);
 
 	const activeHabitId = useDashboardStore((s) => s.activeHabitId);
+	const weekStartDay = useSettingsStore((s) => s.weekStartDay);
 
 	const activeHabit = useMemo(() => {
 		if (state.status !== "ready") return null;
@@ -372,6 +374,7 @@ export function Dashboard() {
 							slotsPerDay={slotsPerDay}
 							habitStartDate={activeHabit.start_date}
 							frozenDates={frozenDates}
+							weekStartDay={weekStartDay}
 							onMonthChange={handleMonthChange}
 						/>
 					</Stack>

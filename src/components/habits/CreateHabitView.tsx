@@ -16,6 +16,7 @@ import { motion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import { useEffect, useState } from "react";
 import { createHabit } from "../../lib/invoke";
+import { useSettingsStore } from "../../stores/settings";
 import type { TimeSlot } from "../../types";
 import { IconPicker } from "../shared/IconPicker";
 import { MascotImage } from "../shared/MascotImage";
@@ -47,6 +48,7 @@ function stagger(index: number, animate: boolean) {
 
 export function CreateHabitView() {
 	const navigate = useNavigate();
+	const weekStartDay = useSettingsStore((s) => s.weekStartDay);
 	const [step, setStep] = useState<Step>("details");
 	const [details, setDetails] = useState<HabitDetails>(DEFAULT_DETAILS);
 	const [scheduleDays, setScheduleDays] = useState<number[]>([1, 2, 3, 4, 5]);
@@ -275,6 +277,7 @@ export function CreateHabitView() {
 								<SchedulePicker
 									days={scheduleDays}
 									times={scheduleTimes}
+									weekStartDay={weekStartDay}
 									onDaysChange={setScheduleDays}
 									onTimesChange={setScheduleTimes}
 								/>

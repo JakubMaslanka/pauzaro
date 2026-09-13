@@ -1,7 +1,9 @@
 import {
+	Box,
 	Checkbox,
 	Container,
 	Group,
+	SegmentedControl,
 	Stack,
 	Text,
 	Title,
@@ -10,13 +12,15 @@ import {
 import { getVersion } from "@tauri-apps/api/app";
 import { listen } from "@tauri-apps/api/event";
 import { motion } from "framer-motion";
-import { Power, Settings as SettingsIcon } from "lucide-react";
+import { Calendar, Power, Settings as SettingsIcon } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useSettingsStore } from "../../stores/settings";
+import type { WeekStartDay } from "../../types";
 import classes from "./SettingsView.module.css";
 
 export function SettingsView() {
 	const autostartEnabled = useSettingsStore((s) => s.autostartEnabled);
+	const weekStartDay = useSettingsStore((s) => s.weekStartDay);
 	const loaded = useSettingsStore((s) => s.loaded);
 
 	const [toggling, setToggling] = useState(false);
@@ -108,6 +112,42 @@ export function SettingsView() {
 							</Group>
 						</UnstyledButton>
 					)}
+
+					{loaded ? (
+						<Box className={classes.card}>
+							<Group wrap="nowrap" align="flex-start" gap="md">
+								<Calendar
+									size={20}
+									color="var(--mantine-color-teal-6)"
+									style={{ marginTop: 2, flexShrink: 0 }}
+								/>
+								<div style={{ flex: 1 }}>
+									<Text fw={600} size="sm" mb={4}>
+										First day of week
+									</Text>
+									<Text size="sm" c="dimmed" mb="sm">
+										Controls calendar grid and day picker order
+									</Text>
+									<SegmentedControl
+										value={weekStartDay}
+										onChange={(value) =>
+											useSettingsStore
+												.getState()
+												.setWeekStart(value as WeekStartDay)
+										}
+										data={[
+											{ label: "Sunday", value: "sunday" },
+											{ label: "Monday", value: "monday" },
+										]}
+										color="teal"
+										size="sm"
+										radius="md"
+										fullWidth
+									/>
+								</div>
+							</Group>
+						</Box>
+					) : null}
 
 					{error ? (
 						<Text size="sm" c="red">

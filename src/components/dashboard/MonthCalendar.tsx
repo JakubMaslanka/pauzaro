@@ -1,7 +1,7 @@
 import { ActionIcon, Box, Group, SimpleGrid, Text } from "@mantine/core";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useMemo } from "react";
-import type { Completion } from "../../types";
+import type { Completion, WeekStartDay } from "../../types";
 import { DayCell } from "./DayCell";
 
 interface MonthCalendarProps {
@@ -12,6 +12,7 @@ interface MonthCalendarProps {
 	slotsPerDay: number;
 	habitStartDate: string;
 	frozenDates: string[];
+	weekStartDay: WeekStartDay;
 	onMonthChange: (year: number, month: number) => void;
 }
 
@@ -30,7 +31,28 @@ const MONTH_NAMES = [
 	"December",
 ] as const;
 
-const DAY_HEADERS = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"] as const;
+const DAY_HEADERS_SUNDAY: readonly string[] = [
+	"Su",
+	"Mo",
+	"Tu",
+	"We",
+	"Th",
+	"Fr",
+	"Sa",
+];
+const DAY_HEADERS_MONDAY: readonly string[] = [
+	"Mo",
+	"Tu",
+	"We",
+	"Th",
+	"Fr",
+	"Sa",
+	"Su",
+];
+
+function getDayHeaders(weekStart: WeekStartDay): readonly string[] {
+	return weekStart === "sunday" ? DAY_HEADERS_SUNDAY : DAY_HEADERS_MONDAY;
+}
 
 interface CalendarDay {
 	dayNumber: number;
@@ -38,12 +60,18 @@ interface CalendarDay {
 	date: string;
 }
 
-function buildCalendarGrid(year: number, month: number): CalendarDay[] {
+export function buildCalendarGrid(
+	year: number,
+	month: number,
+	weekStart: WeekStartDay = "sunday",
+): CalendarDay[] {
 	const days: CalendarDay[] = [];
 
 	// First day of month (local)
 	const firstOfMonth = new Date(year, month, 1);
-	const startDow = firstOfMonth.getDay();
+	const rawDow = firstOfMonth.getDay();
+	// Sunday-first: getDay() directly. Monday-first: shift so Mon=0, Sun=6
+	const startDow = weekStart === "sunday" ? rawDow : (rawDow + 6) % 7;
 
 	// Last day of month
 	const lastOfMonth = new Date(year, month + 1, 0);
@@ -260,6 +288,7 @@ export function MonthCalendar({
 	slotsPerDay,
 	habitStartDate,
 	frozenDates,
+	weekStartDay,
 	onMonthChange,
 }: MonthCalendarProps) {
 	const todayStr = getTodayString();
@@ -274,9 +303,11 @@ export function MonthCalendar({
 		return map;
 	}, [completions]);
 
+	const dayHeaders = useMemo(() => getDayHeaders(weekStartDay), [weekStartDay]);
+
 	const calendarDays = useMemo(
-		() => buildCalendarGrid(year, month),
-		[year, month],
+		() => buildCalendarGrid(year, month, weekStartDay),
+		[year, month, weekStartDay],
 	);
 
 	const derivedDays = useMemo(
@@ -367,7 +398,7 @@ export function MonthCalendar({
 			</Group>
 
 			<SimpleGrid cols={7} spacing={0}>
-				{DAY_HEADERS.map((label) => (
+				{dayHeaders.map((label) => (
 					<Box
 						key={label}
 						style={{

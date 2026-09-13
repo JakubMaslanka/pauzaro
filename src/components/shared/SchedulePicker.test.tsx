@@ -15,6 +15,7 @@ describe("SchedulePicker", () => {
 			<SchedulePicker
 				days={[]}
 				times={[{ start_time: "09:00" }]}
+				weekStartDay="monday"
 				onDaysChange={vi.fn()}
 				onTimesChange={vi.fn()}
 			/>,
@@ -32,6 +33,7 @@ describe("SchedulePicker", () => {
 			<SchedulePicker
 				days={[1, 3]}
 				times={[{ start_time: "09:00" }]}
+				weekStartDay="monday"
 				onDaysChange={onDaysChange}
 				onTimesChange={vi.fn()}
 			/>,
@@ -48,6 +50,7 @@ describe("SchedulePicker", () => {
 			<SchedulePicker
 				days={[1, 3, 5]}
 				times={[{ start_time: "09:00" }]}
+				weekStartDay="monday"
 				onDaysChange={onDaysChange}
 				onTimesChange={vi.fn()}
 			/>,
@@ -64,6 +67,7 @@ describe("SchedulePicker", () => {
 			<SchedulePicker
 				days={[1]}
 				times={[{ start_time: "09:00" }]}
+				weekStartDay="monday"
 				onDaysChange={vi.fn()}
 				onTimesChange={onTimesChange}
 			/>,
@@ -82,6 +86,7 @@ describe("SchedulePicker", () => {
 			<SchedulePicker
 				days={[1]}
 				times={[{ start_time: "09:00" }]}
+				weekStartDay="monday"
 				onDaysChange={vi.fn()}
 				onTimesChange={onTimesChange}
 			/>,
@@ -101,6 +106,7 @@ describe("SchedulePicker", () => {
 			<SchedulePicker
 				days={[1]}
 				times={[{ start_time: "09:00" }, { start_time: "09:00" }]}
+				weekStartDay="monday"
 				onDaysChange={vi.fn()}
 				onTimesChange={vi.fn()}
 			/>,
@@ -120,6 +126,7 @@ describe("SchedulePicker", () => {
 			<SchedulePicker
 				days={[1]}
 				times={tenSlots}
+				weekStartDay="monday"
 				onDaysChange={vi.fn()}
 				onTimesChange={vi.fn()}
 			/>,
@@ -139,6 +146,7 @@ describe("SchedulePicker", () => {
 			<SchedulePicker
 				days={[1]}
 				times={nineSlots}
+				weekStartDay="monday"
 				onDaysChange={vi.fn()}
 				onTimesChange={vi.fn()}
 			/>,
@@ -154,6 +162,7 @@ describe("SchedulePicker", () => {
 			<SchedulePicker
 				days={[1]}
 				times={[{ start_time: "09:00" }]}
+				weekStartDay="monday"
 				onDaysChange={vi.fn()}
 				onTimesChange={vi.fn()}
 			/>,
@@ -163,5 +172,68 @@ describe("SchedulePicker", () => {
 		expect(
 			screen.getByRole("button", { name: "Schedule limit info" }),
 		).toBeInTheDocument();
+	});
+});
+
+describe("SchedulePicker chip order", () => {
+	it("Monday-first: first day label is Mon, last is Sun", () => {
+		render(
+			<SchedulePicker
+				days={[]}
+				times={[{ start_time: "09:00" }]}
+				weekStartDay="monday"
+				onDaysChange={vi.fn()}
+				onTimesChange={vi.fn()}
+			/>,
+			{ wrapper: Wrapper },
+		);
+
+		const dayNames = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+		const elements = dayNames.map((name) => screen.getByText(name));
+		// Verify render order by DOM position
+		for (let i = 0; i < elements.length - 1; i++) {
+			const pos = elements[i].compareDocumentPosition(elements[i + 1]);
+			// Node.DOCUMENT_POSITION_FOLLOWING = 4
+			expect(pos & 4).toBeTruthy();
+		}
+	});
+
+	it("Sunday-first: first day label is Sun, last is Sat", () => {
+		render(
+			<SchedulePicker
+				days={[]}
+				times={[{ start_time: "09:00" }]}
+				weekStartDay="sunday"
+				onDaysChange={vi.fn()}
+				onTimesChange={vi.fn()}
+			/>,
+			{ wrapper: Wrapper },
+		);
+
+		const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+		const elements = dayNames.map((name) => screen.getByText(name));
+		// Verify render order by DOM position
+		for (let i = 0; i < elements.length - 1; i++) {
+			const pos = elements[i].compareDocumentPosition(elements[i + 1]);
+			expect(pos & 4).toBeTruthy();
+		}
+	});
+
+	it("day toggle sends correct numeric values regardless of display order", () => {
+		const onDaysChange = vi.fn();
+		render(
+			<SchedulePicker
+				days={[]}
+				times={[{ start_time: "09:00" }]}
+				weekStartDay="sunday"
+				onDaysChange={onDaysChange}
+				onTimesChange={vi.fn()}
+			/>,
+			{ wrapper: Wrapper },
+		);
+
+		// Click "Sun" (first chip in Sunday-first mode, value=0)
+		fireEvent.click(screen.getByText("Sun"));
+		expect(onDaysChange).toHaveBeenCalledWith([0]);
 	});
 });

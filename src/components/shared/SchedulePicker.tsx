@@ -9,17 +9,21 @@ import {
 	Tooltip,
 } from "@mantine/core";
 import { CircleHelp, X } from "lucide-react";
-import { useCallback, useRef } from "react";
-import type { TimeSlot } from "../../types";
+import { useCallback, useMemo, useRef } from "react";
+import type { TimeSlot, WeekStartDay } from "../../types";
 
-const DAY_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-const DAY_VALUES = [1, 2, 3, 4, 5, 6, 0];
+const DAY_LABELS_MONDAY = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+const DAY_VALUES_MONDAY = [1, 2, 3, 4, 5, 6, 0];
+
+const DAY_LABELS_SUNDAY = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const DAY_VALUES_SUNDAY = [0, 1, 2, 3, 4, 5, 6];
 
 const MAX_TIME_SLOTS = 10;
 
 interface SchedulePickerProps {
 	days: number[];
 	times: TimeSlot[];
+	weekStartDay: WeekStartDay;
 	onDaysChange: (days: number[]) => void;
 	onTimesChange: (times: TimeSlot[]) => void;
 }
@@ -29,9 +33,18 @@ let nextSlotKey = 0;
 export function SchedulePicker({
 	days,
 	times,
+	weekStartDay,
 	onDaysChange,
 	onTimesChange,
 }: SchedulePickerProps) {
+	const dayLabels = useMemo(
+		() => (weekStartDay === "sunday" ? DAY_LABELS_SUNDAY : DAY_LABELS_MONDAY),
+		[weekStartDay],
+	);
+	const dayValues = useMemo(
+		() => (weekStartDay === "sunday" ? DAY_VALUES_SUNDAY : DAY_VALUES_MONDAY),
+		[weekStartDay],
+	);
 	const slotKeysRef = useRef<string[]>([]);
 
 	while (slotKeysRef.current.length < times.length) {
@@ -106,10 +119,10 @@ export function SchedulePicker({
 					onChange={handleDaysChange}
 				>
 					<Group gap={6}>
-						{DAY_LABELS.map((label, i) => (
+						{dayLabels.map((label, i) => (
 							<Chip
-								key={DAY_VALUES[i]}
-								value={String(DAY_VALUES[i])}
+								key={dayValues[i]}
+								value={String(dayValues[i])}
 								color="teal"
 								variant="outline"
 								radius="xl"

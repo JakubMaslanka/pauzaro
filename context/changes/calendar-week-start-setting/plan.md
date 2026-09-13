@@ -395,9 +395,9 @@ Note: `buildCalendarGrid` is currently a module-private function. Export it (or 
 
 #### Automated
 
-- [x] 2.1 TypeScript compiles: `pnpm tsc --noEmit`
-- [x] 2.2 Lint passes: `pnpm lint`
-- [x] 2.3 Existing frontend tests pass: `pnpm test`
+- [x] 2.1 TypeScript compiles: `pnpm tsc --noEmit` — 97a9f51
+- [x] 2.2 Lint passes: `pnpm lint` — 97a9f51
+- [x] 2.3 Existing frontend tests pass: `pnpm test` — 97a9f51
 
 #### Manual
 
@@ -408,10 +408,10 @@ Note: `buildCalendarGrid` is currently a module-private function. Export it (or 
 
 #### Automated
 
-- [ ] 3.1 TypeScript compiles: `pnpm tsc --noEmit`
-- [ ] 3.2 All tests pass (including new): `pnpm test`
-- [ ] 3.3 Lint passes: `pnpm lint`
-- [ ] 3.4 Rust check still passes: `cd src-tauri && cargo check`
+- [x] 3.1 TypeScript compiles: `pnpm tsc --noEmit`
+- [x] 3.2 All tests pass (including new): `pnpm test`
+- [x] 3.3 Lint passes: `pnpm lint`
+- [x] 3.4 Rust check still passes: `cd src-tauri && cargo check`
 
 #### Manual
 
