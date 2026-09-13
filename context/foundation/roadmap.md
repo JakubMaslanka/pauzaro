@@ -43,11 +43,12 @@ A developer in deep focus loses track of time — forgets breaks, movement, and 
 | T-01 | testing-critical-path-backend | (testing) streak calc and snooze rules proven correct via Rust unit tests                  | S-02          | test-plan §3 Phase 1                  | done |
 | T-02 | testing-scheduler-overlay   | (testing) scheduler fires correctly, overlay→dashboard sync works                            | T-01          | test-plan §3 Phase 2                  | done |
 | S-10 | schedule-alert-limit          | see at most 10 time slots per day with info tooltip explaining the cap                      | S-01          | —                                     | done |
-| S-11 | calendar-week-start-setting   | choose Sunday or Monday as first day of week, auto-detected from locale                     | S-03          | —                                     | backlog |
+| S-11 | calendar-week-start-setting   | choose Sunday or Monday as first day of week, auto-detected from locale                     | S-03          | —                                     | done |
 | S-12 | overlay-window-polish         | see a full-bleed overlay panel (no rounded corners, no scroll, edge-to-edge)                | S-02          | —                                     | done |
 | S-13 | settings-version-footer       | always see app version pinned to the bottom of the settings view                            | S-07          | —                                     | done |
 | S-14 | creation-view-simplify        | create a habit without seeing start/end date fields unless expanding "Options"               | S-01          | —                                     | done |
 | T-03 | testing-cross-platform-gates | (testing) cross-platform overlay smoke + test runner wired into CI/pre-commit               | T-02          | test-plan §3 Phase 3                  | backlog |
+| D-01 | readme-certification-docs    | (docs) README.md with project overview, architecture, setup, and feature docs for 10xDevs reviewers | —          | —                                     | done |
 
 ## Streams
 
@@ -59,6 +60,7 @@ Navigation aid — groups items that share a Prerequisites chain. Canonical orde
 | B      | Gamification extras | `S-04` / `S-05`                    | Both join Stream A at `S-02`. Parallel with `S-03` and each other. |
 | C      | Test coverage       | `T-01` → `T-02` → `T-03`          | Sequential rollout from `context/foundation/test-plan.md`. T-01 depends on S-02 (tests existing backend logic). Linear: JAC-13 → JAC-14 → JAC-15. |
 | D      | Pre-release polish  | `S-10` / `S-11` / `S-12` / `S-13` / `S-14` | UX refinements before first public release. All independent of each other; each depends only on its parent slice being done (all parents are done). |
+| E      | Documentation       | `D-01`                              | Certification-ready README for 10xDevs reviewers. No prerequisites. |
 
 ## Baseline
 
@@ -251,7 +253,8 @@ Foundations below assume these are present and do NOT re-scaffold them.
     - **Settings UI:** Add a new card in `SettingsView` with a segmented control or radio group: "Week starts on: Sunday / Monday".
     - **MonthCalendar:** Make `DAY_HEADERS` and `buildCalendarGrid` respect the setting. When `"monday"`: headers become `["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"]`; grid fill logic shifts so Monday = column 0.
     - **SchedulePicker:** Make `DAY_LABELS` and `DAY_VALUES` order dynamic based on the setting. When `"sunday"`: chips show `["Sun", "Mon", "Tue", ..., "Sat"]`. When `"monday"`: chips show `["Mon", "Tue", ..., "Sun"]` (current default). The underlying day values (0-6) sent to the backend stay unchanged.
-- **Status:** backlog
+- **Status:** done
+- **Linear:** [JAC-24](https://linear.app/jacobs-agents-playground/issue/JAC-24/s-11-calendar-week-start-setting)
 
 ### S-12: Overlay window polish
 
@@ -341,13 +344,26 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Status:** backlog
 - **Linear:** [JAC-15](https://linear.app/jacobs-agents-playground/issue/JAC-15/t-03-cross-platform-smoke-quality-gates)
 
+### D-01: README for 10xDevs certification reviewers
+
+- **Outcome:** (docs) project README.md contains full project overview, architecture diagram, tech stack, feature list, setup instructions, dev commands, and project structure — everything a 10xDevs certification reviewer needs to understand and evaluate the project
+- **Change ID:** readme-certification-docs
+- **PRD refs:** —
+- **Prerequisites:** —
+- **Parallel with:** all slices
+- **Blockers:** —
+- **Unknowns:** —
+- **Risk:** None. Documentation-only change.
+- **Scope:**
+  - **README.md:** Replace Tauri template README with comprehensive project documentation: vision, tech stack, architecture (Tauri 2 + React 19 + Rust), features, prerequisites, setup, dev commands, project structure, testing strategy, and key design decisions.
+- **Status:** done
+
 ## Open Roadmap Questions
 
 (none — PRD has zero open questions; no new cross-cutting questions surfaced during framing)
 
 ## Parked
 
-- **Multi-habit management (FR-005)** — Why parked: PRD §FR-005 demoted to nice-to-have (v2). MVP = 1 habit.
 - **Internationalization (FR-010)** — Why parked: PRD §FR-010 demoted to nice-to-have. One language in MVP; i18n when other users appear.
 - **Dark/light mode (FR-011)** — Why parked: PRD §FR-011 demoted to nice-to-have. System preference reading deferred to v2.
 - **Cloud sync / multi-device** — Why parked: PRD §Non-Goals. Zero backend, zero network calls.
@@ -355,17 +371,6 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Mascot editor + Lottie animations** — Why parked: shape-notes §Forward: technical-roadmap. Developer tooling for v2; MVP uses static assets per FR-009 resolution.
 - **SchedulePicker ref mutation during render** — Why parked: `slotKeysRef.current` mutated during render (push/slice) is unsafe under React 18+ concurrent mode. Not a bug today (Tauri webview has no concurrent features), but fragile. Fix: move key generation into addTimeSlot/removeTimeSlot callbacks. Source: impl-review F9 (2026-08-31).
 - **Backend time format validation** — Why parked: `CreateHabitInput::validate()` doesn't check `start_time` format (expected "HH:MM"). Invalid string silently never fires in scheduler. Low risk since UI uses `<input type="time">`. Fix: add `NaiveTime::parse_from_str` check. Source: impl-review F10 (2026-08-31).
-
-## Personal TODO (design / non-code)
-
-Tasks that are not dev slices but need to happen before or around release. Tracked here so they don't get lost.
-
-- [ ] **Generate new app icons** for Pauzaro (all required platform sizes)
-- [ ] **Generate mascot variants:**
-  - Mascot waving an arm (friendly greeting pose)
-  - Mascot that is busy noting something in a small notepad, wearing glasses on its nose
-  - "pleasing dog eyes" facial expression
-- [ ] Integrate new mascot assets into the app (replace or extend current `mascot-happy.png` / `mascot-neutral.png` / `mascot-sad.png`)
 
 ## Done
 
