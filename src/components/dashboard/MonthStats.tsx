@@ -6,9 +6,8 @@ interface MonthStatsProps {
 	totalScheduledDays: number;
 	streak: number;
 	endDate?: string | null;
-	frozenDates?: string[];
-	currentYear?: number;
-	currentMonth?: number;
+	freezesRemaining: number;
+	maxFreezes: number;
 }
 
 function getPerformanceBadge(
@@ -41,33 +40,19 @@ export function MonthStats({
 	totalScheduledDays,
 	streak,
 	endDate,
-	frozenDates = [],
-	currentYear,
-	currentMonth,
+	freezesRemaining,
+	maxFreezes,
 }: MonthStatsProps) {
 	const badge = getPerformanceBadge(daysPracticed, totalScheduledDays);
 	const daysLeft = endDate ? computeDaysLeft(endDate) : null;
 	const showEndDate = daysLeft !== null;
-
-	// Count frozen days in displayed month
-	const frozenInMonth =
-		currentYear !== undefined && currentMonth !== undefined
-			? frozenDates.filter((d) => {
-					const prefix = `${currentYear}-${String(currentMonth + 1).padStart(2, "0")}-`;
-					return d.startsWith(prefix);
-				}).length
-			: 0;
 
 	return (
 		<Stack gap="xs" align="center">
 			<Badge variant="light" color={badge.color} size="lg" radius="xl">
 				{badge.label}
 			</Badge>
-			<SimpleGrid
-				cols={showEndDate ? 1 : 2}
-				spacing="sm"
-				style={{ width: "100%" }}
-			>
+			<SimpleGrid cols={2} spacing="sm" style={{ width: "100%" }}>
 				<Card shadow="xs" padding="md" radius="md" withBorder>
 					<Stack align="center" gap={4}>
 						<CircleCheck size={24} color="#0d9488" />
@@ -90,6 +75,17 @@ export function MonthStats({
 						</Text>
 					</Stack>
 				</Card>
+				<Card shadow="xs" padding="md" radius="md" withBorder>
+					<Stack align="center" gap={4}>
+						<Snowflake size={24} color="#60a5fa" />
+						<Text fw={700} size="xl" lh={1}>
+							{freezesRemaining}/{maxFreezes}
+						</Text>
+						<Text size="xs" c="dimmed">
+							Freezes left
+						</Text>
+					</Stack>
+				</Card>
 				{showEndDate ? (
 					<Card shadow="xs" padding="md" radius="md" withBorder>
 						<Stack align="center" gap={4}>
@@ -99,19 +95,6 @@ export function MonthStats({
 							</Text>
 							<Text size="xs" c="dimmed">
 								Days left
-							</Text>
-						</Stack>
-					</Card>
-				) : null}
-				{frozenInMonth > 0 ? (
-					<Card shadow="xs" padding="md" radius="md" withBorder>
-						<Stack align="center" gap={4}>
-							<Snowflake size={24} color="#60a5fa" />
-							<Text fw={700} size="xl" lh={1}>
-								{frozenInMonth}
-							</Text>
-							<Text size="xs" c="dimmed">
-								Days frozen
 							</Text>
 						</Stack>
 					</Card>

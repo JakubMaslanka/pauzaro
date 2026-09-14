@@ -385,7 +385,6 @@ export function Dashboard() {
 					<Stack gap="md" className="dashboard-right-col">
 						<StreakHero
 							streak={streak}
-							freezesRemaining={freezesRemaining}
 							isFrozen={frozenDates.includes(
 								new Date().toISOString().slice(0, 10),
 							)}
@@ -395,9 +394,8 @@ export function Dashboard() {
 							totalScheduledDays={totalScheduledDays}
 							streak={streak}
 							endDate={activeHabit.end_date}
-							frozenDates={frozenDates}
-							currentYear={currentMonth.year}
-							currentMonth={currentMonth.month}
+							freezesRemaining={freezesRemaining}
+							maxFreezes={2}
 						/>
 					</Stack>
 				</Grid.Col>

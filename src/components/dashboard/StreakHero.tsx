@@ -1,18 +1,12 @@
-import { Group, Stack, Text, Title } from "@mantine/core";
+import { Stack, Text, Title } from "@mantine/core";
 import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { getMascotReaction } from "../../lib/mascot";
 import { MascotImage } from "../shared/MascotImage";
 import { SpeechBubble } from "../shared/SpeechBubble";
 
-const FREEZE_SLOTS = [
-	{ key: "freeze-a", index: 0 },
-	{ key: "freeze-b", index: 1 },
-] as const;
-
 interface StreakHeroProps {
 	streak: number;
-	freezesRemaining: number;
 	isFrozen: boolean;
 }
 
@@ -26,11 +20,7 @@ function getStreakMessage(streak: number, isFrozen: boolean): string {
 	return "Time to start!";
 }
 
-export function StreakHero({
-	streak,
-	freezesRemaining,
-	isFrozen,
-}: StreakHeroProps) {
+export function StreakHero({ streak, isFrozen }: StreakHeroProps) {
 	const [bubbleVisible, setBubbleVisible] = useState(false);
 	const prevStreakRef = useRef(streak);
 
@@ -93,19 +83,6 @@ export function StreakHero({
 				<Text size="sm" fw={600} c="dimmed" ta="center">
 					day streak
 				</Text>
-				<Group gap={4} justify="center">
-					{FREEZE_SLOTS.map((slot) => (
-						<Text
-							key={slot.key}
-							size="lg"
-							style={{
-								opacity: slot.index < freezesRemaining ? 1 : 0.25,
-							}}
-						>
-							❄️
-						</Text>
-					))}
-				</Group>
 			</Stack>
 		</motion.div>
 	);
