@@ -235,37 +235,37 @@ Final end-to-end verification — type check + live run confirming schema-valid 
 
 #### Automated
 
-- [ ] 1.1 Type check passes after schema + prompt extraction
+- [x] 1.1 Type check passes after schema + prompt extraction
 
 #### Manual
 
-- [ ] 1.2 Schemas match intended review output shape
+- [x] 1.2 Schemas match intended review output shape
 
 ### Phase 2: Provider + Agent Module
 
 #### Automated
 
-- [ ] 2.1 Type check passes after provider + agent wiring
+- [x] 2.1 Type check passes after provider + agent wiring
 
 #### Manual
 
-- [ ] 2.2 Agent construction compiles with correct Output typing
+- [x] 2.2 Agent construction compiles with correct Output typing
 
 ### Phase 3: Public Surface & CLI
 
 #### Automated
 
-- [ ] 3.1 Type check passes
-- [ ] 3.2 `pnpm start` produces structured JSON output
+- [x] 3.1 Type check passes
+- [x] 3.2 `pnpm start` produces structured JSON output
 
 #### Manual
 
-- [ ] 3.3 Barrel exports are minimal — no provider leaking
-- [ ] 3.4 Demo output contains findings array with all schema fields
+- [x] 3.3 Barrel exports are minimal — no provider leaking
+- [x] 3.4 Demo output contains findings array with all schema fields
 
 ### Phase 4: Verify
 
 #### Automated
 
-- [ ] 4.1 Final `npx tsc --noEmit` clean
-- [ ] 4.2 Final `pnpm start` smoke run — schema-valid output
+- [x] 4.1 Final `npx tsc --noEmit` clean
+- [x] 4.2 Final `pnpm start` smoke run — schema-valid output

@@ -2,9 +2,12 @@
 	"name": "code-reviewer",
 	"version": "1.0.0",
 	"type": "module",
+	"exports": {
+		".": "./src/index.ts"
+	},
 	"scripts": {
-		"start": "tsx --env-file=.env src/index.ts",
-		"dev": "tsx --env-file=.env watch src/index.ts"
+		"start": "tsx --env-file=.env src/cli.ts",
+		"dev": "tsx --env-file=.env watch src/cli.ts"
 	},
 	"keywords": [],
 	"author": "",
