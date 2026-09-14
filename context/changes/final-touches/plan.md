@@ -303,9 +303,9 @@ None. Config changes are zero-cost. Tile layout change removes a conditional (si
 
 #### Automated
 
-- [x] 3.1 Rust compiles: `cd src-tauri && cargo check`
-- [x] 3.2 Rust tests pass: `cd src-tauri && cargo test`
-- [x] 3.3 Lint passes: `pnpm lint`
+- [x] 3.1 Rust compiles: `cd src-tauri && cargo check` — 921c1b9
+- [x] 3.2 Rust tests pass: `cd src-tauri && cargo test` — 921c1b9
+- [x] 3.3 Lint passes: `pnpm lint` — 921c1b9
 
 #### Manual
 

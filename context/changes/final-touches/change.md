@@ -1,7 +1,7 @@
 ---
 change_id: final-touches
 title: Dashboard polish, tile layout, app naming, and tray icon fix
-status: implementing
+status: implemented
 created: 2026-09-14
 updated: 2026-09-14
 archived_at: null
