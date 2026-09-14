@@ -61,7 +61,7 @@ export function WelcomeStep({ onNext, animate }: WelcomeStepProps) {
 								animate ? { type: "spring", stiffness: 200 } : undefined
 							}
 						>
-							<MascotImage reaction="happy" size={140} />
+							<MascotImage reaction="greeter" size={140} />
 						</motion.div>
 					</div>
 				</motion.div>

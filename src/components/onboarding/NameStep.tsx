@@ -75,7 +75,7 @@ export function NameStep({ onNext, onBack, animate }: NameStepProps) {
 						offsetX={-100}
 						width={270}
 					/>
-					<MascotImage reaction="happy" size={140} />
+					<MascotImage reaction="noteing" size={140} />
 				</div>
 
 				<Title order={2} fw={800} ta="center">

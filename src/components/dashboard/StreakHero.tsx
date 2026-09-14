@@ -16,7 +16,8 @@ interface StreakHeroProps {
 	isFrozen: boolean;
 }
 
-function getStreakMessage(streak: number): string {
+function getStreakMessage(streak: number, isFrozen: boolean): string {
+	if (isFrozen) return "Brrr! Your streak is frozen!";
 	if (streak >= 30) return "Legendary streak!";
 	if (streak >= 14) return "Unstoppable!";
 	if (streak >= 7) return "One week warrior!";
@@ -58,7 +59,7 @@ export function StreakHero({
 			<Stack align="center" gap={4} py="md">
 				<div style={{ position: "relative", display: "inline-block" }}>
 					<SpeechBubble
-						message={getStreakMessage(streak)}
+						message={getStreakMessage(streak, isFrozen)}
 						visible={bubbleVisible}
 						offsetY={4}
 					/>

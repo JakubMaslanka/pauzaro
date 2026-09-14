@@ -144,7 +144,7 @@ export function ScheduleStep({
 							visible={bubbleVisible}
 							offsetY={4}
 						/>
-						<MascotImage reaction="happy" size={100} />
+						<MascotImage reaction="exercising" size={100} />
 					</div>
 				</motion.div>
 

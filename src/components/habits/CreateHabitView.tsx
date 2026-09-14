@@ -166,7 +166,7 @@ export function CreateHabitView() {
 									offsetX={-140}
 									width={340}
 								/>
-								<MascotImage reaction="promising" size={140} />
+								<MascotImage reaction="noteing" size={140} />
 							</div>
 						</motion.div>
 
@@ -260,7 +260,7 @@ export function CreateHabitView() {
 									visible={bubbleVisible}
 									offsetY={4}
 								/>
-								<MascotImage reaction="happy" size={100} />
+								<MascotImage reaction="exercising" size={100} />
 							</div>
 						</motion.div>
 

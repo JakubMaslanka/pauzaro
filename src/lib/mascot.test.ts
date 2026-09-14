@@ -19,16 +19,28 @@ describe("getMascotReaction", () => {
 			);
 		});
 
-		it("returns 'happy' for streak 3", () => {
-			expect(getMascotReaction({ streak: 3, isFrozen: false })).toBe("happy");
+		it("returns 'exercising' for streak 3", () => {
+			expect(getMascotReaction({ streak: 3, isFrozen: false })).toBe(
+				"exercising",
+			);
 		});
 
-		it("returns 'happy' for streak 6", () => {
-			expect(getMascotReaction({ streak: 6, isFrozen: false })).toBe("happy");
+		it("returns 'exercising' for streak 4", () => {
+			expect(getMascotReaction({ streak: 4, isFrozen: false })).toBe(
+				"exercising",
+			);
 		});
 
-		it("returns 'successful' for streak 7", () => {
-			expect(getMascotReaction({ streak: 7, isFrozen: false })).toBe(
+		it("returns 'happy' for streak 5", () => {
+			expect(getMascotReaction({ streak: 5, isFrozen: false })).toBe("happy");
+		});
+
+		it("returns 'happy' for streak 8", () => {
+			expect(getMascotReaction({ streak: 8, isFrozen: false })).toBe("happy");
+		});
+
+		it("returns 'successful' for streak 9", () => {
+			expect(getMascotReaction({ streak: 9, isFrozen: false })).toBe(
 				"successful",
 			);
 		});
