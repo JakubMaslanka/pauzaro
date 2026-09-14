@@ -279,9 +279,9 @@ None. Config changes are zero-cost. Tile layout change removes a conditional (si
 
 #### Manual
 
-- [ ] 1.3 Generated Info.plist contains capitalised CFBundleDisplayName and CFBundleName
-- [ ] 1.4 App name in macOS Dock shows "Pauzaro"
-- [ ] 1.5 Main window opens at 660px height
+- [x] 1.3 Generated Info.plist contains capitalised CFBundleDisplayName and CFBundleName
+- [x] 1.4 App name in macOS Dock shows "Pauzaro"
+- [x] 1.5 Main window opens at 660px height
 
 ### Phase 2: Dashboard Tile Refactor
 
@@ -293,11 +293,11 @@ None. Config changes are zero-cost. Tile layout change removes a conditional (si
 
 #### Manual
 
-- [ ] 2.4 Tiles always 2 columns (with and without end date)
-- [ ] 2.5 Freeze tile shows fraction with Snowflake icon
-- [ ] 2.6 Freeze tile visible when all freezes available
-- [ ] 2.7 No ❄️ icons below "day streak" in StreakHero
-- [ ] 2.8 Layout balanced with 3 and 4 tiles
+- [x] 2.4 Tiles always 2 columns (with and without end date)
+- [x] 2.5 Freeze tile shows fraction with Snowflake icon
+- [x] 2.6 Freeze tile visible when all freezes available
+- [x] 2.7 No ❄️ icons below "day streak" in StreakHero
+- [x] 2.8 Layout balanced with 3 and 4 tiles
 
 ### Phase 3: Tray Dock Icon Fix
 
@@ -309,6 +309,6 @@ None. Config changes are zero-cost. Tile layout change removes a conditional (si
 
 #### Manual
 
-- [ ] 3.4 Close to tray then "Show Dashboard" shows Pauzaro icon in Dock
-- [ ] 3.5 Left-click tray icon also restores correct icon
-- [ ] 3.6 Repeat close→show cycle 3 times — icon consistently correct
+- [x] 3.4 Close to tray then "Show Dashboard" shows Pauzaro icon in Dock
+- [x] 3.5 Left-click tray icon also restores correct icon
+- [x] 3.6 Repeat close→show cycle 3 times — icon consistently correct
