@@ -318,7 +318,7 @@ export function Dashboard() {
 	return (
 		<Container size="lg" py="xl" px="xl">
 			<style>
-				{`@media (min-width: 48em) { .dashboard-right-col { padding-top: 60px; } }`}
+				{`@media (min-width: 48em) { .dashboard-right-col { padding-top: 8px; } }`}
 			</style>
 			<Grid gap="xl">
 				{/* Left column: greeting + habit info + calendar */}

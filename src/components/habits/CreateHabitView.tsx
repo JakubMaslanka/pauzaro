@@ -251,16 +251,18 @@ export function CreateHabitView() {
 						overflowY: "auto",
 					}}
 				>
-					<Stack align="center" gap="lg" maw={500} w="100%">
+					<Stack align="center" gap="lg" maw={500} w="100%" mt={64}>
 						{/* Mascot + bubble */}
-						<motion.div {...stagger(0, true)}>
+						<motion.div {...stagger(0, true)} style={{ marginBottom: -24 }}>
 							<div style={{ position: "relative", display: "inline-block" }}>
 								<SpeechBubble
-									message="Pick your schedule and I'll keep you on track — as always! ⏰"
+									message="Pick your schedule and I'll keep you on track! ⏰"
 									visible={bubbleVisible}
-									offsetY={4}
+									offsetY={-6}
+									offsetX={-95}
+									width={210}
 								/>
-								<MascotImage reaction="exercising" size={100} />
+								<MascotImage reaction="exercising" size={140} />
 							</div>
 						</motion.div>
 

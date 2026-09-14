@@ -135,16 +135,18 @@ export function ScheduleStep({
 				overflowY: "auto",
 			}}
 		>
-			<Stack align="center" gap="lg" maw={500} w="100%">
+			<Stack align="center" gap="lg" maw={500} w="100%" mt={64}>
 				{/* Mascot + bubble */}
-				<motion.div {...stagger(0, animate)}>
+				<motion.div {...stagger(0, animate)} style={{ marginBottom: -24 }}>
 					<div style={{ position: "relative", display: "inline-block" }}>
 						<SpeechBubble
-							message="Almost there! Tell me when to nudge you, I promise I'll be on time!"
+							message={`Almost there!\nTell me when to nudge you,\nI promise I'll be on time!`}
 							visible={bubbleVisible}
-							offsetY={4}
+							offsetY={-6}
+							offsetX={-95}
+							width={210}
 						/>
-						<MascotImage reaction="exercising" size={100} />
+						<MascotImage reaction="exercising" size={140} />
 					</div>
 				</motion.div>
 

@@ -108,8 +108,8 @@ export function SchedulePicker({
 	);
 
 	return (
-		<Stack gap="md">
-			<div>
+		<Stack gap="lg">
+			<Stack gap="xs">
 				<Text size="sm" fw={700} mb={6}>
 					🗓️ Which days?
 				</Text>
@@ -133,9 +133,9 @@ export function SchedulePicker({
 						))}
 					</Group>
 				</Chip.Group>
-			</div>
+			</Stack>
 
-			<div>
+			<Stack gap="xs">
 				<Group gap={6} mb={6}>
 					<Text size="sm" fw={700}>
 						⏰ What time?
@@ -200,7 +200,7 @@ export function SchedulePicker({
 						+ Add time slot
 					</Button>
 				</Stack>
-			</div>
+			</Stack>
 		</Stack>
 	);
 }
