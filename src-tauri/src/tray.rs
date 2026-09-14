@@ -200,6 +200,16 @@ pub fn show_main_window(app: &tauri::AppHandle) {
     #[cfg(target_os = "macos")]
     {
         let _ = app.set_activation_policy(tauri::ActivationPolicy::Regular);
+
+        // macOS does not restore the dock icon when switching activation policy
+        // from Accessory back to Regular. Explicitly re-set it from the bundle.
+        use objc2_app_kit::{NSApplication, NSImage, NSImageNameApplicationIcon};
+        use objc2_foundation::MainThreadMarker;
+        let mtm = unsafe { MainThreadMarker::new_unchecked() };
+        let ns_app = NSApplication::sharedApplication(mtm);
+        if let Some(icon) = NSImage::imageNamed(unsafe { NSImageNameApplicationIcon }) {
+            unsafe { ns_app.setApplicationIconImage(Some(&icon)) };
+        }
     }
 
     if let Some(w) = app.get_webview_window("main") {

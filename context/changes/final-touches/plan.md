@@ -287,9 +287,9 @@ None. Config changes are zero-cost. Tile layout change removes a conditional (si
 
 #### Automated
 
-- [x] 2.1 Type-check passes: `tsc --noEmit`
-- [x] 2.2 Lint passes: `pnpm lint`
-- [x] 2.3 Frontend tests pass: `pnpm test`
+- [x] 2.1 Type-check passes: `tsc --noEmit` — 857fc8a
+- [x] 2.2 Lint passes: `pnpm lint` — 857fc8a
+- [x] 2.3 Frontend tests pass: `pnpm test` — 857fc8a
 
 #### Manual
 
@@ -303,9 +303,9 @@ None. Config changes are zero-cost. Tile layout change removes a conditional (si
 
 #### Automated
 
-- [ ] 3.1 Rust compiles: `cd src-tauri && cargo check`
-- [ ] 3.2 Rust tests pass: `cd src-tauri && cargo test`
-- [ ] 3.3 Lint passes: `pnpm lint`
+- [x] 3.1 Rust compiles: `cd src-tauri && cargo check`
+- [x] 3.2 Rust tests pass: `cd src-tauri && cargo test`
+- [x] 3.3 Lint passes: `pnpm lint`
 
 #### Manual
 
