@@ -36,18 +36,13 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - name: Setup pnpm
-      uses: pnpm/action-setup@v4
-      with:
-        version: 10
-
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
         node-version: "22"
 
     - name: Install dependencies
-      run: cd packages/code-reviewer && pnpm install --frozen-lockfile
+      run: cd packages/code-reviewer && npm install
       shell: bash
 
     - name: Fetch and cap diff
@@ -84,7 +79,7 @@ runs:
         fi
 
         cd packages/code-reviewer
-        node --import tsx src/cli.ts \
+        npx tsx src/cli.ts \
           --diff-file "${{ steps.diff.outputs.diff-file }}" \
           --pr-title "${{ inputs.pr-title }}" \
           --pr-body "${{ inputs.pr-body }}" \

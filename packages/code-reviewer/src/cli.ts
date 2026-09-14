@@ -70,16 +70,16 @@ async function main(): Promise<void> {
 		process.exit(1);
 	}
 
-	// Lazy import — provider validates env vars on load, so defer until args are valid
-	const { reviewCode } = await import("./agent/reviewer.js");
-
-	const input: ReviewInput = {
-		diff,
-		prTitle: args.prTitle,
-		prBody: args.prBody,
-	};
-
 	try {
+		// Lazy import — provider validates env vars on load, so defer until args are valid
+		const { reviewCode } = await import("./agent/reviewer.js");
+
+		const input: ReviewInput = {
+			diff,
+			prTitle: args.prTitle,
+			prBody: args.prBody,
+		};
+
 		const result = await reviewCode(input);
 		await writeFile(args.output, JSON.stringify(result, null, 2));
 		console.log(`Review complete: ${result.verdict}`);
