@@ -1,0 +1,22 @@
+{
+	"name": "code-reviewer",
+	"version": "1.0.0",
+	"type": "module",
+	"scripts": {
+		"start": "tsx --env-file=.env src/index.ts",
+		"dev": "tsx --env-file=.env watch src/index.ts"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"dependencies": {
+		"@ai-sdk/openai": "^4.0.66",
+		"ai": "^7.0.99",
+		"zod": "^4.6.5"
+	},
+	"devDependencies": {
+		"@types/node": "^26.5.1",
+		"tsx": "^4.23.13",
+		"typescript": "^7.0.2"
+	}
+}
