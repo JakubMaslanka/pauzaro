@@ -1,10 +1,10 @@
 ---
 change_id: dinosaur-mascot
 title: Dinosaur mascot
-status: implemented
+status: archived
 created: 2026-09-10
-updated: 2026-09-11
-archived_at: null
+updated: 2026-09-14
+archived_at: 2026-09-14T14:46:27Z
 ---
 
 ## Notes

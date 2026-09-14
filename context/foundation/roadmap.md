@@ -386,3 +386,4 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **S-04: freeze streak for up to 2 days to protect series from missed days** — Archived 2026-09-10 → `context/archive/2026-09-09-streak-freeze/`. Lesson: —.
 - **S-09: (infra) only one app instance runs at a time, keeping memory footprint minimal** — Archived 2026-09-10 → `context/archive/2026-09-09-single-instance-enforcement/`. Lesson: —.
 - **S-11: choose Sunday or Monday as first day of week, auto-detected from locale** — Archived 2026-09-14 → `context/archive/2026-09-13-calendar-week-start-setting/`. Lesson: —.
+- **S-05: see dinosaur mascot reacting to current streak status (happy/neutral/sad)** — Archived 2026-09-14 → `context/archive/2026-09-10-dinosaur-mascot/`. Lesson: —.
