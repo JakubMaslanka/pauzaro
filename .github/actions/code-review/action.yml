@@ -77,6 +77,7 @@ runs:
       id: review
       run: |
         RESULT_FILE="$RUNNER_TEMP/review-result.json"
+        echo '{"error":"Review CLI did not produce output"}' > "$RESULT_FILE"
 
         if [ -n "$LLM_MODEL_OVERRIDE" ]; then
           export LLM_PROVIDER_MODEL="$LLM_MODEL_OVERRIDE"
