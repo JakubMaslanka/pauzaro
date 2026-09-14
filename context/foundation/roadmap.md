@@ -388,3 +388,4 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **S-11: choose Sunday or Monday as first day of week, auto-detected from locale** — Archived 2026-09-14 → `context/archive/2026-09-13-calendar-week-start-setting/`. Lesson: —.
 - **S-05: see dinosaur mascot reacting to current streak status (happy/neutral/sad)** — Archived 2026-09-14 → `context/archive/2026-09-10-dinosaur-mascot/`. Lesson: —.
 - **S-12: see a full-bleed overlay panel (no rounded corners, no scroll, edge-to-edge)** — Archived 2026-09-14 → `context/archive/2026-09-12-overlay-window-polish/`. Lesson: —.
+- **S-10: see at most 10 time slots per day with info tooltip explaining the cap** — Archived 2026-09-14 → `context/archive/2026-09-12-schedule-alert-limit/`. Lesson: —.
