@@ -1,10 +1,10 @@
 ---
 change_id: settings-creation-polish
 title: Settings version footer and habit creation simplification
-status: implemented
+status: archived
 created: 2026-09-13
-updated: 2026-09-13
-archived_at: null
+updated: 2026-09-14
+archived_at: 2026-09-14T14:46:27Z
 ---
 
 ## Notes
