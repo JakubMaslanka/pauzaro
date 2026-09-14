@@ -83,7 +83,8 @@ runs:
           export LLM_PROVIDER_MODEL="$LLM_MODEL_OVERRIDE"
         fi
 
-        node --import tsx packages/code-reviewer/src/cli.ts \
+        cd packages/code-reviewer
+        node --import tsx src/cli.ts \
           --diff-file "${{ steps.diff.outputs.diff-file }}" \
           --pr-title "${{ inputs.pr-title }}" \
           --pr-body "${{ inputs.pr-body }}" \
