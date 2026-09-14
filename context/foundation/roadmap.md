@@ -3,7 +3,7 @@ project: "Pauzaro"
 version: 1
 status: draft
 created: 2026-08-25
-updated: 2026-09-13
+updated: 2026-09-14
 
 prd_version: 1
 main_goal: learn
@@ -385,3 +385,4 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **S-07: app launches at system startup, lives in menu bar tray, user can toggle autostart in settings** — Archived 2026-09-09 → `context/archive/2026-09-09-autostart-and-tray/`. Lesson: —.
 - **S-04: freeze streak for up to 2 days to protect series from missed days** — Archived 2026-09-10 → `context/archive/2026-09-09-streak-freeze/`. Lesson: —.
 - **S-09: (infra) only one app instance runs at a time, keeping memory footprint minimal** — Archived 2026-09-10 → `context/archive/2026-09-09-single-instance-enforcement/`. Lesson: —.
+- **S-11: choose Sunday or Monday as first day of week, auto-detected from locale** — Archived 2026-09-14 → `context/archive/2026-09-13-calendar-week-start-setting/`. Lesson: —.
