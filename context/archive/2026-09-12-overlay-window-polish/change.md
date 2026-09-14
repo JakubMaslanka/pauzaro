@@ -1,10 +1,10 @@
 ---
 change_id: overlay-window-polish
 title: Full-bleed overlay panel with no rounded corners
-status: implemented
+status: archived
 created: 2026-09-12
-updated: 2026-09-12
-archived_at: null
+updated: 2026-09-14
+archived_at: 2026-09-14T14:46:27Z
 ---
 
 ## Notes
