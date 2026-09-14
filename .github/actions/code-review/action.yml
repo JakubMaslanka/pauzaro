@@ -1,0 +1,135 @@
+name: "AI Code Review"
+description: "Run LLM-powered code review on a PR diff"
+
+inputs:
+  pr-number:
+    description: "Pull request number"
+    required: true
+  pr-title:
+    description: "Pull request title"
+    required: true
+  pr-body:
+    description: "Pull request body"
+    required: true
+  github-token:
+    description: "GitHub token for fetching PR diff and posting comments"
+    required: true
+  llm-api-key:
+    description: "LLM provider API key"
+    required: true
+  llm-model:
+    description: "LLM model override"
+    required: false
+    default: ""
+
+outputs:
+  result-file:
+    description: "Path to the review JSON output"
+    value: ${{ steps.review.outputs.result-file }}
+  verdict:
+    description: "Review verdict: passed, failed, or error"
+    value: ${{ steps.verdict.outputs.verdict }}
+  comment-body-file:
+    description: "Path to the rendered markdown comment"
+    value: ${{ steps.render.outputs.comment-body-file }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v4
+      with:
+        version: 10
+      shell: bash
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: "22"
+      shell: bash
+
+    - name: Install dependencies
+      run: cd packages/code-reviewer && pnpm install --frozen-lockfile
+      shell: bash
+
+    - name: Fetch and cap diff
+      id: diff
+      run: |
+        DIFF_FILE="$RUNNER_TEMP/ai-cr-diff.patch"
+        gh pr diff "$PR_NUMBER" --patch > "$DIFF_FILE"
+
+        LINES=$(wc -l < "$DIFF_FILE")
+        if [ "$LINES" -gt 3000 ]; then
+          echo "truncated=true" >> "$GITHUB_OUTPUT"
+          echo "original-lines=$LINES" >> "$GITHUB_OUTPUT"
+          head -n 3000 "$DIFF_FILE" > "${DIFF_FILE}.tmp" && mv "${DIFF_FILE}.tmp" "$DIFF_FILE"
+          echo "Diff truncated from $LINES to 3000 lines." >&2
+        else
+          echo "truncated=false" >> "$GITHUB_OUTPUT"
+          echo "original-lines=$LINES" >> "$GITHUB_OUTPUT"
+        fi
+
+        echo "diff-file=$DIFF_FILE" >> "$GITHUB_OUTPUT"
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.github-token }}
+        PR_NUMBER: ${{ inputs.pr-number }}
+
+    - name: Run code review
+      id: review
+      run: |
+        RESULT_FILE="$RUNNER_TEMP/review-result.json"
+
+        if [ -n "$LLM_MODEL_OVERRIDE" ]; then
+          export LLM_PROVIDER_MODEL="$LLM_MODEL_OVERRIDE"
+        fi
+
+        node --import tsx packages/code-reviewer/src/cli.ts \
+          --diff-file "${{ steps.diff.outputs.diff-file }}" \
+          --pr-title "${{ inputs.pr-title }}" \
+          --pr-body "${{ inputs.pr-body }}" \
+          --output "$RESULT_FILE" || true
+
+        echo "result-file=$RESULT_FILE" >> "$GITHUB_OUTPUT"
+      shell: bash
+      env:
+        LLM_PROVIDER_API_KEY: ${{ inputs.llm-api-key }}
+        LLM_MODEL_OVERRIDE: ${{ inputs.llm-model }}
+
+    - name: Render comment
+      id: render
+      run: |
+        COMMENT_FILE="$RUNNER_TEMP/review-comment.md"
+        TRUNCATED_FLAG=""
+        LINES_FLAG=""
+
+        if [ "${{ steps.diff.outputs.truncated }}" = "true" ]; then
+          TRUNCATED_FLAG="--truncated"
+          LINES_FLAG="--original-lines ${{ steps.diff.outputs.original-lines }}"
+        fi
+
+        node .github/actions/code-review/render-comment.mjs \
+          --result-file "${{ steps.review.outputs.result-file }}" \
+          --output "$COMMENT_FILE" \
+          $TRUNCATED_FLAG $LINES_FLAG
+
+        echo "comment-body-file=$COMMENT_FILE" >> "$GITHUB_OUTPUT"
+      shell: bash
+
+    - name: Parse verdict
+      id: verdict
+      run: |
+        RESULT_FILE="${{ steps.review.outputs.result-file }}"
+
+        if [ ! -f "$RESULT_FILE" ]; then
+          echo "verdict=error" >> "$GITHUB_OUTPUT"
+          exit 0
+        fi
+
+        VERDICT=$(node -p "
+          try { const r = JSON.parse(require('fs').readFileSync('$RESULT_FILE','utf8'));
+            r.error ? 'error' : r.verdict || 'error'
+          } catch { 'error' }
+        ")
+        echo "verdict=$VERDICT" >> "$GITHUB_OUTPUT"
+      shell: bash

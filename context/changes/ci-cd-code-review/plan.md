@@ -333,9 +333,9 @@ permissions:
 
 #### Automated
 
-- [ ] 1.1 Type-check passes: `cd packages/code-reviewer && npx tsc --noEmit`
-- [ ] 1.2 CLI prints usage with no args (exit code 1)
-- [ ] 1.3 CLI with valid input produces JSON with all 6 criteria, verdict, summary, findings
+- [x] 1.1 Type-check passes: `cd packages/code-reviewer && npx tsc --noEmit`
+- [x] 1.2 CLI prints usage with no args (exit code 1)
+- [x] 1.3 CLI with valid input produces JSON with all 6 criteria, verdict, summary, findings
 
 #### Manual
 
@@ -346,9 +346,9 @@ permissions:
 
 #### Automated
 
-- [ ] 2.1 `action.yml` is valid YAML
-- [ ] 2.2 All inputs and outputs declared
-- [ ] 2.3 Every `run:` step has explicit `shell:` key
+- [x] 2.1 `action.yml` is valid YAML
+- [x] 2.2 All inputs and outputs declared
+- [x] 2.3 Every `run:` step has explicit `shell:` key
 
 #### Manual
 
@@ -358,9 +358,9 @@ permissions:
 
 #### Automated
 
-- [ ] 3.1 Workflow YAML is valid
-- [ ] 3.2 Correct `on.pull_request` triggers and `if:` guard
-- [ ] 3.3 Permissions block with `contents: read` and `pull-requests: write`
+- [x] 3.1 Workflow YAML is valid
+- [x] 3.2 Correct `on.pull_request` triggers and `if:` guard
+- [x] 3.3 Permissions block with `contents: read` and `pull-requests: write`
 
 #### Manual
 

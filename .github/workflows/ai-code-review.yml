@@ -1,0 +1,71 @@
+name: AI Code Review
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled]
+    branches: [master]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  review:
+    name: AI Code Review
+    runs-on: ubuntu-latest
+    if: >-
+      github.event.action != 'labeled' ||
+      github.event.label.name == 'ai-cr:review'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run AI code review
+        id: review
+        uses: ./.github/actions/code-review
+        with:
+          pr-number: ${{ github.event.pull_request.number }}
+          pr-title: ${{ github.event.pull_request.title }}
+          pr-body: ${{ github.event.pull_request.body || '' }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          llm-api-key: ${{ secrets.LLM_PROVIDER_API_KEY }}
+
+      - name: Post review comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const body = fs.readFileSync('${{ steps.review.outputs.comment-body-file }}', 'utf8');
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body,
+            });
+
+      - name: Apply verdict label
+        if: steps.review.outputs.verdict != 'error'
+        run: |
+          PR=${{ github.event.pull_request.number }}
+          VERDICT="${{ steps.review.outputs.verdict }}"
+
+          gh pr edit "$PR" --remove-label "ai-cr:passed" 2>/dev/null || true
+          gh pr edit "$PR" --remove-label "ai-cr:failed" 2>/dev/null || true
+
+          if [ "$VERDICT" = "passed" ]; then
+            gh pr edit "$PR" --add-label "ai-cr:passed"
+          elif [ "$VERDICT" = "failed" ]; then
+            gh pr edit "$PR" --add-label "ai-cr:failed"
+          fi
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Remove retry label
+        if: github.event.action == 'labeled'
+        run: |
+          gh pr edit ${{ github.event.pull_request.number }} --remove-label "ai-cr:review" || true
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
